@@ -1,0 +1,64 @@
+package com.yelf42.paradise;
+
+
+import com.yelf42.paradise.registry.*;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
+
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
+@Mod(Paradise.MOD_ID)
+public class ParadiseNeoforge {
+
+    public static IEventBus eventBus;
+
+    public ParadiseNeoforge(IEventBus eventBus, Dist dist) {
+
+        ParadiseNeoforge.eventBus = eventBus;
+
+        bind(Registries.PARTICLE_TYPE, ModParticles::register);
+
+        bind(Registries.BLOCK, ModBlocks::registerBlocks);
+        bind(Registries.ITEM, ModBlocks::registerItems);
+
+        bind(Registries.BLOCK_ENTITY_TYPE, ModBlockEntities::register);
+
+        bind(Registries.ITEM, ModItems::registerItems);
+        bind(Registries.CREATIVE_MODE_TAB, ModItems::registerTabs);
+        bind(Registries.RECIPE_SERIALIZER, ModItems::registerRecipes);
+
+        bind(Registries.DATA_COMPONENT_TYPE, ModComponents::register);
+
+        bind(Registries.ENTITY_TYPE, ModEntities::register);
+        eventBus.addListener(this::registerEntityAttributes);
+        
+        if (dist.isClient()) {
+            eventBus.addListener(ParadiseNeoforgeClient::registerBlocks);
+            eventBus.addListener(ParadiseNeoforgeClient::registerEntityRenderers);
+            eventBus.addListener(ParadiseNeoforgeClient::registerParticleFactories);
+        }
+
+        Paradise.init();
+
+    }
+
+    public static <T> void bind(ResourceKey<Registry<T>> registry, Consumer<BiConsumer<T, ResourceLocation>> source) {
+        eventBus.addListener((Consumer<RegisterEvent>) event -> {
+            if (registry.equals(event.getRegistryKey())) {
+                source.accept((t, rl) -> event.register(registry, rl, () -> t));
+            }
+        });
+    }
+
+    private void registerEntityAttributes(EntityAttributeCreationEvent event) {
+        // TODO this is how I did entity attributes, might be an easier way in common?
+    }
+}

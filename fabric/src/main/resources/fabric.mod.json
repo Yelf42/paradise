@@ -16,12 +16,12 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-          "com.bonsai.pixelpets.PixelPetsFabric"
+          "com.yelf42.paradise.ParadiseFabric"
         ]
     },
     "mixins": [
-        "pixelpets.mixins.json",
-        "pixelpets.fabric.mixins.json"
+      "paradise.mixins.json",
+      "paradise.fabric.mixins.json"
     ],
     "depends": {
         "fabricloader": ">=${fabric_loader_version}",
