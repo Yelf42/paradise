@@ -50,9 +50,9 @@ public class ModItems {
 
 
     // TAB
-    public static final CreativeModeTab PIXEL_PETS_TAB = Services.PLATFORM.tabBuilder()
-            .icon(() -> new ItemStack(Items.NAME_TAG)) // TODO
-            .title(Component.translatable("itemGroup.pixelpets"))
+    public static final CreativeModeTab PARADISE_TAB = Services.PLATFORM.tabBuilder()
+            .icon(() -> new ItemStack(ModBlocks.DIGITAL_GRASS_BARRIER.asItem()))
+            .title(Component.translatable("itemGroup.paradise"))
             .displayItems((itemDisplayParameters, output) -> {
                 ModItems.REGISTERED_ITEMS.forEach((s, item) -> output.accept(item));
                 ModBlocks.REGISTERED_BLOCK_ITEMS.forEach((s, item) -> output.accept(item));
@@ -60,7 +60,7 @@ public class ModItems {
 
     /// BINDER
     public static void registerTabs(BiConsumer<CreativeModeTab, ResourceLocation> consumer) {
-        consumer.accept(PIXEL_PETS_TAB, ResourceLocation.fromNamespaceAndPath(Paradise.MOD_ID, "pixelpets_tab"));
+        consumer.accept(PARADISE_TAB, ResourceLocation.fromNamespaceAndPath(Paradise.MOD_ID, "paradise_tab"));
     }
 
 

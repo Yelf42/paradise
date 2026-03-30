@@ -17,7 +17,10 @@
     "entrypoints": {
         "main": [
           "com.yelf42.paradise.ParadiseFabric"
-        ]
+        ],
+      "client": [
+        "com.yelf42.paradise.ParadiseFabricClient"
+      ]
     },
     "mixins": [
       "paradise.mixins.json",
@@ -27,8 +30,7 @@
         "fabricloader": ">=${fabric_loader_version}",
         "fabric-api": "*",
         "minecraft": "${minecraft_version}",
-        "java": ">=${java_version}",
-        "geckolib": "*"
+        "java": ">=${java_version}"
     }
 }
   

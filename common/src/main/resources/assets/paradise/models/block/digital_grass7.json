@@ -1,0 +1,6 @@
+{
+  "parent": "paradise:block/digital_grass_parent",
+  "textures": {
+    "0": "paradise:block/digital_grass7"
+  }
+}

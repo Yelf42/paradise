@@ -1,16 +1,22 @@
 package com.yelf42.paradise.platform;
 
+import com.yelf42.paradise.dimensions.DimensionAddedCallback;
+import com.yelf42.paradise.dimensions.DimensionRemovedCallback;
 import com.yelf42.paradise.platform.services.IPlatformHelper;
 import com.mojang.datafixers.DSL;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
 
@@ -47,5 +53,22 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
     @Override
     public SimpleParticleType simpleParticleType() {
         return new SimpleParticleType(false);
+    }
+
+    @Override
+    public void registerAddedEvent(DimensionAddedCallback listener) {
+
+    }
+    @Override
+    public void registerRemovedEvent(DimensionRemovedCallback listener) {
+
+    }
+    @Override
+    public void invokeRemovedEvent(@NotNull ResourceKey<Level> key, @NotNull ServerLevel level) {
+
+    }
+    @Override
+    public void invokeAddedEvent(@NotNull ResourceKey<Level> key, @NotNull ServerLevel level) {
+
     }
 }

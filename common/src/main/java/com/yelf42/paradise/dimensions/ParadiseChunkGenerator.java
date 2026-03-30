@@ -1,0 +1,173 @@
+package com.yelf42.paradise.dimensions;
+
+import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.yelf42.paradise.blocks.DigitalGrassBarrierBlock;
+import com.yelf42.paradise.blocks.DigitalGrassBlock;
+import com.yelf42.paradise.registry.ModBlocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.world.level.*;
+import net.minecraft.world.level.biome.BiomeManager;
+import net.minecraft.world.level.biome.BiomeSource;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.biome.FixedBiomeSource;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.*;
+import net.minecraft.world.level.levelgen.blending.Blender;
+import net.minecraft.world.level.levelgen.synth.PerlinSimplexNoise;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Vector2i;
+
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+
+public class ParadiseChunkGenerator extends ChunkGenerator {
+
+    public ParadiseChunkGenerator(RegistryAccess registryAccess) {
+        this(new FixedBiomeSource(
+                registryAccess.registryOrThrow(Registries.BIOME)
+                        .getHolderOrThrow(Biomes.PLAINS)
+        ));
+    }
+
+    private final WorldgenRandom random;
+    private final PerlinSimplexNoise noise;
+
+    private ParadiseChunkGenerator(BiomeSource biomeSource) {
+        super(biomeSource);
+        this.random = new WorldgenRandom(new LegacyRandomSource(new Random().nextLong()));
+        this.noise = new PerlinSimplexNoise(this.random, ImmutableList.of(0, 0, 0)); // 3 octaves
+    }
+
+    public static final MapCodec<ParadiseChunkGenerator> CODEC = MapCodec.unit(
+            () -> new ParadiseChunkGenerator((BiomeSource) null) // CODEC-only, never called at runtime
+    );
+
+
+
+    @Override
+    protected MapCodec<? extends ChunkGenerator> codec() {
+        return CODEC;
+    }
+
+    // Return 0 — void world has no solid base height
+    @Override
+    public int getBaseHeight(int x, int z, Heightmap.Types type, LevelHeightAccessor level, RandomState random) {
+        return 0;
+    }
+
+    // Return an empty column — no blocks anywhere by default
+    @Override
+    public NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor level, RandomState random) {
+        return new NoiseColumn(0, new BlockState[0]);
+    }
+
+    @Override
+    public void addDebugScreenInfo(List<String> info, RandomState random, BlockPos pos) {
+        // optional, leave empty
+    }
+
+    @Override
+    public void applyCarvers(WorldGenRegion region, long seed, RandomState random,
+                             BiomeManager biomeManager, StructureManager structureManager,
+                             ChunkAccess chunk, GenerationStep.Carving step) {
+        // No carvers in a pocket dimension
+    }
+
+    // Needed to suppress structure generation
+    @Override
+    public void applyBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager) {
+        // Leave empty unless you want decoration/structures
+    }
+
+    @Override
+    public void buildSurface(WorldGenRegion worldGenRegion, StructureManager structureManager, RandomState randomState, ChunkAccess chunkAccess) {
+
+    }
+
+    @Override
+    public void spawnOriginalMobs(WorldGenRegion worldGenRegion) {
+
+    }
+
+    @Override
+    public int getGenDepth() {
+        return 0;
+    }
+
+    @Override
+    public @NotNull CompletableFuture<ChunkAccess> fillFromNoise(
+            Blender blender, RandomState randomState,
+            StructureManager structureManager, ChunkAccess chunk) {
+
+        ChunkPos chunkPos = chunk.getPos();
+        if (chunkPos.x > 12 || chunkPos.x < -12 || chunkPos.z > 12 || chunkPos.z < -12) return CompletableFuture.completedFuture(chunk);
+
+        int hillAmplitude = 6; // how tall the hills are
+        double scale = 0.015;  // lower = broader/smoother hills
+
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                int worldX = chunkPos.getMinBlockX() + x;
+                int worldZ = chunkPos.getMinBlockZ() + z;
+
+                double noiseVal = (this.noise.getValue(worldX * scale, worldZ * scale, false) + 1.0) / 2.0;
+
+                double dist = (new Vector2i(worldX, worldZ)).distance(0, 0);
+                double sCurve = 1.0 / (1.0 + Math.pow(Math.E, 0.2 * (dist - 75.0)));
+
+                int surfaceHeight = (int) (sCurve + noiseVal * hillAmplitude * sCurve);
+
+                for (int y = chunk.getMinBuildHeight(); y <= surfaceHeight; y++) {
+                    if (y==0) {
+                        BlockPos zero = new BlockPos(worldX, 0, worldZ);
+                        if (dist <= 80) {
+                            chunk.setBlockState(zero, grassBarrierStateForPos(zero), false);
+                        } else if (dist > 80 && dist < 128) {
+                            double distT = (dist - 80.0) / 48.0;
+                            double noiseScale = 0.01 + distT * 0.08;
+                            double edgeNoiseVal = (this.noise.getValue(worldX * noiseScale, worldZ * noiseScale, false) + 1.0) / 2.0;
+
+                            if (edgeNoiseVal > distT) {
+                                chunk.setBlockState(zero, grassBarrierStateForPos(zero), false);
+                            } else {
+                                chunk.setBlockState(zero, ModBlocks.DIGITAL_BARRIER.defaultBlockState(), false);
+                            }
+                        } else {
+                            chunk.setBlockState(zero, ModBlocks.DIGITAL_BARRIER.defaultBlockState(), false);
+                        }
+                    } else {
+                        BlockPos norm = new BlockPos(worldX, y, worldZ);
+                        chunk.setBlockState(norm, grassStateForPos(norm), false);
+                    }
+                }
+            }
+        }
+
+        return CompletableFuture.completedFuture(chunk);
+    }
+
+    @Override
+    public int getSeaLevel() {
+        return 0;
+    }
+
+    @Override
+    public int getMinY() {
+        return 0;
+    }
+
+    private BlockState grassStateForPos(BlockPos pos) {
+        return ModBlocks.DIGITAL_GRASS.defaultBlockState().setValue(DigitalGrassBlock.OFFSET, 7 - Math.floorMod(pos.getZ(), 8));
+    }
+    private BlockState grassBarrierStateForPos(BlockPos pos) {
+        return ModBlocks.DIGITAL_GRASS_BARRIER.defaultBlockState().setValue(DigitalGrassBarrierBlock.OFFSET, 7 - Math.floorMod(pos.getZ(), 8));
+    }
+}

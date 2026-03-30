@@ -1,7 +1,15 @@
 package com.yelf42.paradise;
 
+import com.yelf42.paradise.dimensions.DimensionAddedCallback;
+import com.yelf42.paradise.dimensions.DimensionRemovedCallback;
+import com.yelf42.paradise.dimensions.ParadiseChunkGenerator;
 import com.yelf42.paradise.registry.*;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -11,7 +19,18 @@ import java.util.function.Consumer;
 
 // TODO change icon.png
 public class ParadiseFabric implements ModInitializer {
-    
+
+    public static final Event<DimensionAddedCallback> DIMENSION_ADDED_EVENT = EventFactory.createArrayBacked(DimensionAddedCallback.class, t -> (key, level) -> {
+        for (DimensionAddedCallback callback : t) {
+            callback.dimensionAdded(key, level);
+        }
+    });
+    public static final Event<DimensionRemovedCallback> DIMENSION_REMOVED_EVENT = EventFactory.createArrayBacked(DimensionRemovedCallback.class, t -> (key, level) -> {
+        for (DimensionRemovedCallback callback : t) {
+            callback.dimensionRemoved(key, level);
+        }
+    });
+
     @Override
     public void onInitialize() {
 
@@ -31,11 +50,27 @@ public class ParadiseFabric implements ModInitializer {
         bind(BuiltInRegistries.ENTITY_TYPE, ModEntities::register);
         registerEntityAttributes();
 
+        Registry.register(BuiltInRegistries.CHUNK_GENERATOR,
+                Paradise.identifier("paradise_generator"),
+                ParadiseChunkGenerator.CODEC);
+
+        if (FabricLoader.getInstance().isModLoaded("fabric-lifecycle-events-v1")) {
+            registerFabricEventListeners();
+        }
+
+        PayloadTypeRegistry.playS2C().register(ModPackets.CreateDimensionPayload.ID, ModPackets.CreateDimensionPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(ModPackets.RemoveDimensionPayload.ID, ModPackets.RemoveDimensionPayload.CODEC);
+
         Paradise.init();
     }
 
     public static <T> void bind(Registry<T> registry, Consumer<BiConsumer<T, ResourceLocation>> source) {
         source.accept((t, rl) -> Registry.register(registry, rl, t));
+    }
+
+    private static void registerFabricEventListeners() {
+        DIMENSION_ADDED_EVENT.register((key, level) -> ServerWorldEvents.LOAD.invoker().onWorldLoad(level.getServer(), level));
+        DIMENSION_REMOVED_EVENT.register((key, level) -> ServerWorldEvents.UNLOAD.invoker().onWorldUnload(level.getServer(), level));
     }
 
     private void registerEntityAttributes() {

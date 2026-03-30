@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "offset=0": {
+      "model": "paradise:block/digital_grass0"
+    },
+    "offset=1": {
+      "model": "paradise:block/digital_grass1"
+    },
+    "offset=2": {
+      "model": "paradise:block/digital_grass2"
+    },
+    "offset=3": {
+      "model": "paradise:block/digital_grass3"
+    },
+    "offset=4": {
+      "model": "paradise:block/digital_grass4"
+    },
+    "offset=5": {
+      "model": "paradise:block/digital_grass5"
+    },
+    "offset=6": {
+      "model": "paradise:block/digital_grass6"
+    },
+    "offset=7": {
+      "model": "paradise:block/digital_grass7"
+    }
+  }
+}

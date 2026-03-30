@@ -1,15 +1,18 @@
 package com.yelf42.paradise.platform.services;
 
+import com.yelf42.paradise.dimensions.DimensionAddedCallback;
+import com.yelf42.paradise.dimensions.DimensionRemovedCallback;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.effect.MobEffect;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
 
@@ -51,4 +54,11 @@ public interface IPlatformHelper {
     <T extends BlockEntity> BlockEntityType<T> blockEntityType(BiFunction<BlockPos, BlockState, T> function, Block... validBlocks);
     SimpleParticleType simpleParticleType();
 
+    void registerAddedEvent(DimensionAddedCallback listener);
+
+    void registerRemovedEvent(DimensionRemovedCallback listener);
+
+    void invokeRemovedEvent(@NotNull ResourceKey<Level> key, @NotNull ServerLevel level);
+
+    void invokeAddedEvent(@NotNull ResourceKey<Level> key, @NotNull ServerLevel level);
 }

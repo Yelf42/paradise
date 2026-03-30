@@ -4,8 +4,20 @@
   "package": "com.yelf42.paradise.mixin",
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_18",
-  "mixins": [],
+  "mixins": [
+    "ChunkMapAccessor",
+    "DistanceManagerAccessor",
+    "HolderSetNamedAccessor",
+    "MappedRegistryAccessor",
+    "MinecraftServerAccessor",
+    "MinecraftServerMixin",
+    "PrimaryLevelDataMixin",
+    "ReloadableServerResourcesAccessor",
+    "ServerChunkCacheAccessor",
+    "ServerPlayerMixin"
+  ],
   "client": [
+    "LevelRendererMixin"
   ],
   "server": [],
   "injectors": {

@@ -42,8 +42,6 @@ neoForge {
 }
 
 dependencies {
-    // Add Geckolib for NeoForge
-    implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
