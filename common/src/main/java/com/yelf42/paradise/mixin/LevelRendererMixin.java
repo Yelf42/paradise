@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.client.renderer.ParadiseSkyRenderer;
-import com.yelf42.paradise.client.renderer.Quad;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -24,6 +23,7 @@ import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -88,19 +88,15 @@ public class LevelRendererMixin {
         RenderSystem.disableBlend();
     }
 
-    // TODO
     @Inject(method = "renderWorldBorder", at = @At("HEAD"), cancellable = true)
     private void onRenderWorldBorder(Camera camera, CallbackInfo ci) {
         if (level == null) return;
-
         if (!level.dimensionTypeRegistration().is(
                 ResourceKey.create(Registries.DIMENSION_TYPE,
                         Paradise.identifier("paradise_dimension")))) return;
-
         ci.cancel();
 
         WorldBorder border = this.level.getWorldBorder();
-
         double camX = camera.getPosition().x;
         double camY = camera.getPosition().y;
         double camZ = camera.getPosition().z;
@@ -108,16 +104,16 @@ public class LevelRendererMixin {
         double range = 6.0;
         double height = 6.0;
 
-        // Only render if near border
         if (camX >= border.getMinX() + range &&
                 camX <= border.getMaxX() - range &&
                 camZ >= border.getMinZ() + range &&
-                camZ <= border.getMaxZ() - range) {
-            return;
-        }
+                camZ <= border.getMaxZ() - range) return;
 
-        double minY = camY - height / 2.0;
-        double maxY = camY + height / 2.0;
+        float time = (float)(Util.getMillis() % 3000L) / 3000.0F;
+        float minY = (float)(camY - height / 2.0);
+        float maxY = (float)(camY + height / 2.0);
+        float vMin = minY * 0.25f + time * 2.0f;
+        float vMax = maxY * 0.25f + time * 2.0f;
 
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
@@ -125,146 +121,107 @@ public class LevelRendererMixin {
                 GlStateManager.SourceFactor.SRC_ALPHA,
                 GlStateManager.DestFactor.ONE,
                 GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO
-        );
-
+                GlStateManager.DestFactor.ZERO);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, FORCEFIELD_LOCATION);
-
         RenderSystem.depthMask(Minecraft.useShaderTransparency());
         RenderSystem.disableCull();
 
-        float time = (float)(Util.getMillis() % 3000L) / 3000.0F;
-        float vOffset = (float)(-Mth.frac(camY * 0.5F));
-
         BufferBuilder buffer = Tesselator.getInstance().begin(
-                VertexFormat.Mode.QUADS,
-                DefaultVertexFormat.POSITION_TEX_COLOR
-        );
+                VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
-        // Helper for alpha
-        java.util.function.BiFunction<Double, Double, Float> computeAlpha = (worldX, worldZ) -> {
-            double dx = worldX - camX;
-            double dz = worldZ - camZ;
-
-            double dist = Math.sqrt(dx * dx + dz * dz);
-
-            // --- Horizontal fade (camera distance) ---
-            double distFade = 1.0 - (dist / 32.0);
-            distFade = Mth.clamp(distFade, 0.0, 1.0);
-            distFade = Math.pow(distFade, 1.2);
-
-            // --- Edge fade (distance to render cutoff) ---
-            double edgeDist = range - dist; // THIS is the key fix
-            double edgeFade = edgeDist / range;
-            edgeFade = Mth.clamp(edgeFade, 0.0, 1.0);
-
-            // Make edge fade sharper so it actually reaches 0
-            edgeFade = Math.pow(edgeFade, 2.0);
-
-            // --- Combine ---
-            double alpha = distFade * edgeFade;
-
-            return (float) Mth.clamp(alpha, 0.0, 1.0);
-        };
-
-        // Render one vertical quad strip helper
-        java.util.function.Consumer<Quad> renderQuad = (q) -> {
-            float alpha1 = computeAlpha.apply(q.x1, q.z1);
-            float alpha2 = computeAlpha.apply(q.x2, q.z2);
-
-            float u1 = (float)(q.x1 * 0.25);
-            float u2 = (float)(q.x2 * 0.25);
-            float v1 = (float)(minY * 0.25);
-            float v2 = (float)(maxY * 0.25);
-
-            float vScroll = time * 2.0f;
-
-            buffer.addVertex((float)(q.x1 - camX), (float)(minY - camY), (float)(q.z1 - camZ))
-                    .setUv(u1, v1 + vScroll)
-                    .setColor(0.4f, 0.65f, 1.0f, alpha1);
-
-            buffer.addVertex((float)(q.x2 - camX), (float)(minY - camY), (float)(q.z2 - camZ))
-                    .setUv(u2, v1 + vScroll)
-                    .setColor(0.4f, 0.65f, 1.0f, alpha2);
-
-            buffer.addVertex((float)(q.x2 - camX), (float)(maxY - camY), (float)(q.z2 - camZ))
-                    .setUv(u2, v2 + vScroll)
-                    .setColor(0.4f, 0.65f, 1.0f, alpha2);
-
-            buffer.addVertex((float)(q.x1 - camX), (float)(maxY - camY), (float)(q.z1 - camZ))
-                    .setUv(u1, v2 + vScroll)
-                    .setColor(0.4f, 0.65f, 1.0f, alpha1);
-        };
-
-        double minZ = Math.max(Mth.floor(camZ - range), border.getMinZ());
-        double maxZ = Math.min(Mth.ceil(camZ + range), border.getMaxZ());
-
-        double minX = Math.max(Mth.floor(camX - range), border.getMinX());
-        double maxX = Math.min(Mth.ceil(camX + range), border.getMaxX());
-
-        // +X side
+        // +X wall — U from Z
         if (camX > border.getMaxX() - range) {
-            for (double z = minZ; z < maxZ; z++) {
-                double nextZ = Math.min(z + 1.0, maxZ);
-
-                renderQuad.accept(new Quad(
-                        border.getMaxX(), z,
-                        border.getMaxX(), nextZ,
-                        0.0f, 0.5f
-                ));
+            double wallX = border.getMaxX();
+            double z0 = Math.max(camZ - range, border.getMinZ());
+            double z1 = Math.min(camZ + range, border.getMaxZ());
+            for (double z = z0; z < z1; z++) {
+                double zNext = Math.min(z + 1, z1);
+                float alpha0 = wallAlpha(wallX, z,     camX, camZ, range);
+                float alpha1 = wallAlpha(wallX, zNext, camX, camZ, range);
+                float u0 = (float)(z * 0.25);
+                float u1 = (float)(zNext * 0.25);
+                addWallQuad(buffer, wallX, z, wallX, zNext, camX, camY, camZ, minY, maxY, u0, u1, vMin, vMax, alpha0, alpha1);
             }
         }
 
-        // -X side
+        // -X wall — U from Z
         if (camX < border.getMinX() + range) {
-            for (double z = minZ; z < maxZ; z++) {
-                double nextZ = Math.min(z + 1.0, maxZ);
-
-                renderQuad.accept(new Quad(
-                        border.getMinX(), z,
-                        border.getMinX(), nextZ,
-                        0.0f, 0.5f
-                ));
+            double wallX = border.getMinX();
+            double z0 = Math.max(camZ - range, border.getMinZ());
+            double z1 = Math.min(camZ + range, border.getMaxZ());
+            for (double z = z0; z < z1; z++) {
+                double zNext = Math.min(z + 1, z1);
+                float alpha0 = wallAlpha(wallX, z,     camX, camZ, range);
+                float alpha1 = wallAlpha(wallX, zNext, camX, camZ, range);
+                float u0 = (float)(z * 0.25);
+                float u1 = (float)(zNext * 0.25);
+                addWallQuad(buffer, wallX, z, wallX, zNext, camX, camY, camZ, minY, maxY, u0, u1, vMin, vMax, alpha0, alpha1);
             }
         }
 
-        // +Z side
+        // +Z wall — U from X
         if (camZ > border.getMaxZ() - range) {
-            for (double x = minX; x < maxX; x++) {
-                double nextX = Math.min(x + 1.0, maxX);
-
-                renderQuad.accept(new Quad(
-                        x, border.getMaxZ(),
-                        nextX, border.getMaxZ(),
-                        0.0f, 0.5f
-                ));
+            double wallZ = border.getMaxZ();
+            double x0 = Math.max(camX - range, border.getMinX());
+            double x1 = Math.min(camX + range, border.getMaxX());
+            for (double x = x0; x < x1; x++) {
+                double xNext = Math.min(x + 1, x1);
+                float alpha0 = wallAlpha(x,     wallZ, camX, camZ, range);
+                float alpha1 = wallAlpha(xNext, wallZ, camX, camZ, range);
+                float u0 = (float)(x * 0.25);
+                float u1 = (float)(xNext * 0.25);
+                addWallQuad(buffer, x, wallZ, xNext, wallZ, camX, camY, camZ, minY, maxY, u0, u1, vMin, vMax, alpha0, alpha1);
             }
         }
 
-        // -Z side
+        // -Z wall — U from X
         if (camZ < border.getMinZ() + range) {
-            for (double x = minX; x < maxX; x++) {
-                double nextX = Math.min(x + 1.0, maxX);
-
-                renderQuad.accept(new Quad(
-                        x, border.getMinZ(),
-                        nextX, border.getMinZ(),
-                        0.0f, 0.5f
-                ));
+            double wallZ = border.getMinZ();
+            double x0 = Math.max(camX - range, border.getMinX());
+            double x1 = Math.min(camX + range, border.getMaxX());
+            for (double x = x0; x < x1; x++) {
+                double xNext = Math.min(x + 1, x1);
+                float alpha0 = wallAlpha(x,     wallZ, camX, camZ, range);
+                float alpha1 = wallAlpha(xNext, wallZ, camX, camZ, range);
+                float u0 = (float)(x * 0.25);
+                float u1 = (float)(xNext * 0.25);
+                addWallQuad(buffer, x, wallZ, xNext, wallZ, camX, camY, camZ, minY, maxY, u0, u1, vMin, vMax, alpha0, alpha1);
             }
         }
 
         MeshData mesh = buffer.build();
-        if (mesh != null) {
-            BufferUploader.drawWithShader(mesh);
-        }
+        if (mesh != null) BufferUploader.drawWithShader(mesh);
 
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.depthMask(true);
+    }
+
+    @Unique
+    private static float wallAlpha(double x, double z, double camX, double camZ, double range) {
+        double dx = x - camX;
+        double dz = z - camZ;
+        double dist = Math.sqrt(dx * dx + dz * dz);
+        double t = 1.0 - (dist / range);
+        t = Mth.clamp(t, 0.0, 1.0);
+        return (float)(t * t * 0.8);
+    }
+
+    @Unique
+    private static void addWallQuad(BufferBuilder buffer,
+                                    double x1, double z1, double x2, double z2,
+                                    double camX, double camY, double camZ,
+                                    float minY, float maxY,
+                                    float u1, float u2, float vMin, float vMax,
+                                    float alpha1, float alpha2) {
+        float r = 0.4f, g = 0.65f, b = 1.0f;
+        buffer.addVertex((float)(x1-camX), minY-(float)camY, (float)(z1-camZ)).setUv(u1, vMin).setColor(r, g, b, alpha1);
+        buffer.addVertex((float)(x2-camX), minY-(float)camY, (float)(z2-camZ)).setUv(u2, vMin).setColor(r, g, b, alpha2);
+        buffer.addVertex((float)(x2-camX), maxY-(float)camY, (float)(z2-camZ)).setUv(u2, vMax).setColor(r, g, b, alpha2);
+        buffer.addVertex((float)(x1-camX), maxY-(float)camY, (float)(z1-camZ)).setUv(u1, vMax).setColor(r, g, b, alpha1);
     }
 
 }

@@ -1,9 +1,7 @@
 package com.yelf42.paradise.registry;
 
 import com.yelf42.paradise.Paradise;
-import com.yelf42.paradise.blocks.DigitalBarrierBlock;
-import com.yelf42.paradise.blocks.DigitalGrassBarrierBlock;
-import com.yelf42.paradise.blocks.DigitalGrassBlock;
+import com.yelf42.paradise.blocks.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -21,6 +19,7 @@ import java.util.function.Function;
 
 public class ModBlocks {
     public static final LinkedHashMap<String, Item> REGISTERED_BLOCK_ITEMS = new LinkedHashMap<>();
+    public static final LinkedHashMap<String, Item> REGISTERED_CREATIVE_BLOCK_ITEMS = new LinkedHashMap<>();
     public static final LinkedHashMap<String, Block> REGISTERED_BLOCKS = new LinkedHashMap<>();
 
     public static final Block DIGITAL_GRASS = register(
@@ -28,13 +27,13 @@ public class ModBlocks {
             DigitalGrassBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_GREEN)
-                    .strength(0.6F)
+                    .strength(0.0F)
                     .sound(SoundType.GRASS)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.RARE)
+            new Item.Properties().rarity(Rarity.UNCOMMON)
     );
 
-    public static final Block DIGITAL_GRASS_BARRIER = register(
+    public static final Block DIGITAL_GRASS_BARRIER = registerCreative(
             "digital_grass_barrier",
             DigitalGrassBarrierBlock::new,
             BlockBehaviour.Properties.of()
@@ -45,20 +44,100 @@ public class ModBlocks {
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
                     .noTerrainParticles()
                     .pushReaction(PushReaction.BLOCK),
-            new Item.Properties().rarity(Rarity.RARE)
+            new Item.Properties().rarity(Rarity.UNCOMMON)
     );
 
-    public static final Block DIGITAL_BARRIER = register(
+    public static final Block DIGITAL_BARRIER = registerCreative(
             "digital_barrier",
             DigitalBarrierBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.NONE)
                     .strength(-1.0F, 3600000.8F)
-                    .sound(SoundType.AMETHYST)
                     .noLootTable()
                     .noOcclusion()
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
                     .noTerrainParticles()
+                    .pushReaction(PushReaction.BLOCK),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+
+    public static final Block DIGITAL_VOLUME = register(
+            "digital_volume",
+            DigitalVolumeBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_PINK)
+                    .strength(0.0F)
+                    .randomTicks()
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+
+    public static final Block DIGITAL_VOLUME_BARRIER = registerCreative(
+            "digital_volume_barrier",
+            DigitalVolumeBarrierBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_PINK)
+                    .strength(-1.0F, 3600000.8F)
+                    .noLootTable()
+                    .randomTicks()
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
+                    .noTerrainParticles()
+                    .pushReaction(PushReaction.BLOCK),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+
+    public static final Block DATA_CORE = registerCreative(
+            "data_core",
+            DataCoreBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(-1.0F, 3600000.8F)
+                    .noLootTable()
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
+                    .noTerrainParticles()
+                    .lightLevel((state) -> 15)
+                    .noOcclusion()
+                    .sound(SoundType.METAL)
+                    .pushReaction(PushReaction.BLOCK),
+            new Item.Properties().rarity(Rarity.RARE)
+    );
+    public static final Block DATA_SERVER = registerCreative(
+            "data_server",
+            DataServerBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(-1.0F, 3600000.8F)
+                    .noLootTable()
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
+                    .noTerrainParticles()
+                    .sound(SoundType.METAL)
+                    .pushReaction(PushReaction.BLOCK),
+            new Item.Properties().rarity(Rarity.RARE)
+    );
+    public static final Block DATA_SHIELD = registerCreative(
+            "data_shield",
+            Block::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(-1.0F, 3600000.8F)
+                    .noLootTable()
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
+                    .noTerrainParticles()
+                    .sound(SoundType.METAL)
+                    .pushReaction(PushReaction.BLOCK),
+            new Item.Properties().rarity(Rarity.RARE)
+    );
+
+    public static final Block DATA_READER = register(
+            "data_reader",
+            DataReaderBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(2.5F, 3600000.8F)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
+                    .noTerrainParticles()
+                    .lightLevel((state) -> (state.getValue(DataReaderBlock.ON) || state.getValue(DataReaderBlock.HAS_DISC)) ? (state.getValue(DataReaderBlock.ON) && state.getValue(DataReaderBlock.HAS_DISC)) ? 12 : 4 : 0)
+                    .sound(SoundType.METAL)
                     .pushReaction(PushReaction.BLOCK),
             new Item.Properties().rarity(Rarity.RARE)
     );
@@ -70,12 +149,17 @@ public class ModBlocks {
         return block;
     }
 
-    public static Block register(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties settings, boolean shouldRegisterItem) {
+    public static Block register(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties settings) {
+        return register(name, factory, settings, new Item.Properties());
+    }
+
+    public static Block registerCreative(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties settings) {
+        return registerCreative(name, factory, settings, new Item.Properties());
+    }
+    public static Block registerCreative(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties settings, Item.Properties itemSettings) {
         Block block = factory.apply(settings);
         REGISTERED_BLOCKS.put(name, block);
-        if (shouldRegisterItem) {
-            REGISTERED_BLOCK_ITEMS.put(name, new BlockItem(block, new Item.Properties()));
-        }
+        REGISTERED_CREATIVE_BLOCK_ITEMS.put(name, new BlockItem(block, itemSettings));
         return block;
     }
 
@@ -88,6 +172,7 @@ public class ModBlocks {
     /// BINDERS
     public static void registerItems(BiConsumer<Item, ResourceLocation> consumer) {
         REGISTERED_BLOCK_ITEMS.forEach((key, value) -> consumer.accept(value, Paradise.identifier(key)));
+        REGISTERED_CREATIVE_BLOCK_ITEMS.forEach((key, value) -> consumer.accept(value, Paradise.identifier(key)));
     }
     public static void registerBlocks(BiConsumer<Block, ResourceLocation> consumer) {
         REGISTERED_BLOCKS.forEach((key, value) -> consumer.accept(value, Paradise.identifier(key)));

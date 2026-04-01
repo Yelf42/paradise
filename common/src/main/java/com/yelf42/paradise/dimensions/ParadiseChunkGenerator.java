@@ -2,12 +2,14 @@ package com.yelf42.paradise.dimensions;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.MapCodec;
+import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.blocks.DigitalGrassBarrierBlock;
 import com.yelf42.paradise.blocks.DigitalGrassBlock;
 import com.yelf42.paradise.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.BiomeManager;
@@ -33,8 +35,9 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
     public ParadiseChunkGenerator(RegistryAccess registryAccess) {
         this(new FixedBiomeSource(
                 registryAccess.registryOrThrow(Registries.BIOME)
-                        .getHolderOrThrow(Biomes.PLAINS)
+                        .getHolderOrThrow(ResourceKey.create(Registries.BIOME, Paradise.identifier("digital_biome"))) // TODO custom biome
         ));
+
     }
 
     private final WorldgenRandom random;
@@ -47,7 +50,7 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
     }
 
     public static final MapCodec<ParadiseChunkGenerator> CODEC = MapCodec.unit(
-            () -> new ParadiseChunkGenerator((BiomeSource) null) // CODEC-only, never called at runtime
+            () -> new ParadiseChunkGenerator((BiomeSource) null)
     );
 
 
@@ -81,10 +84,44 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
         // No carvers in a pocket dimension
     }
 
-    // Needed to suppress structure generation
+    // TODO nicer platform block
     @Override
     public void applyBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager) {
         // Leave empty unless you want decoration/structures
+        ChunkPos chunkPos = chunk.getPos();
+        if (chunkPos.x == 3) {
+            if (chunkPos.z == 0) {
+                for (int x = 7; x < 10; x++) {
+                    for (int y = 0; y < 10; y++) {
+                        for (int z = 0; z < 2; z++) {
+                            int worldX = chunkPos.getMinBlockX() + x;
+                            int worldZ = chunkPos.getMinBlockZ() + z;
+                            BlockPos pos = new BlockPos(worldX, y, worldZ);
+                            if (y < 5) {
+                                chunk.setBlockState(pos, ModBlocks.DATA_SHIELD.defaultBlockState(), false);
+                            } else {
+                                chunk.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
+                            }                        }
+                    }
+                }
+            } else if (chunkPos.z == -1) {
+                for (int x = 7; x < 10; x++) {
+                    for (int y = 0; y < 10; y++) {
+                        int worldX = chunkPos.getMinBlockX() + x;
+                        int worldZ = chunkPos.getMinBlockZ() + 15;
+                        BlockPos pos = new BlockPos(worldX, y, worldZ);
+                        if (y < 5) {
+                            chunk.setBlockState(pos, ModBlocks.DATA_SHIELD.defaultBlockState(), false);
+                        } else {
+                            chunk.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
+                        }
+
+                    }
+                }
+            }
+        }
+
+
     }
 
     @Override
@@ -126,26 +163,34 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
                 int surfaceHeight = (int) (sCurve + noiseVal * hillAmplitude * sCurve);
 
                 for (int y = chunk.getMinBuildHeight(); y <= surfaceHeight; y++) {
+                    BlockPos pos = new BlockPos(worldX, y, worldZ);
+                    if (y < surfaceHeight) {
+                        if (y==0) {
+                            chunk.setBlockState(pos, ModBlocks.DIGITAL_VOLUME_BARRIER.defaultBlockState(), false);
+                        } else {
+                            chunk.setBlockState(pos, ModBlocks.DIGITAL_VOLUME.defaultBlockState(), false);
+                        }
+                        continue;
+                    }
+
                     if (y==0) {
-                        BlockPos zero = new BlockPos(worldX, 0, worldZ);
                         if (dist <= 80) {
-                            chunk.setBlockState(zero, grassBarrierStateForPos(zero), false);
+                            chunk.setBlockState(pos, grassBarrierStateForPos(pos), false);
                         } else if (dist > 80 && dist < 128) {
                             double distT = (dist - 80.0) / 48.0;
                             double noiseScale = 0.01 + distT * 0.08;
                             double edgeNoiseVal = (this.noise.getValue(worldX * noiseScale, worldZ * noiseScale, false) + 1.0) / 2.0;
 
                             if (edgeNoiseVal > distT) {
-                                chunk.setBlockState(zero, grassBarrierStateForPos(zero), false);
+                                chunk.setBlockState(pos, grassBarrierStateForPos(pos), false);
                             } else {
-                                chunk.setBlockState(zero, ModBlocks.DIGITAL_BARRIER.defaultBlockState(), false);
+                                chunk.setBlockState(pos, ModBlocks.DIGITAL_BARRIER.defaultBlockState(), false);
                             }
                         } else {
-                            chunk.setBlockState(zero, ModBlocks.DIGITAL_BARRIER.defaultBlockState(), false);
+                            chunk.setBlockState(pos, ModBlocks.DIGITAL_BARRIER.defaultBlockState(), false);
                         }
                     } else {
-                        BlockPos norm = new BlockPos(worldX, y, worldZ);
-                        chunk.setBlockState(norm, grassStateForPos(norm), false);
+                        chunk.setBlockState(pos, grassStateForPos(pos), false);
                     }
                 }
             }

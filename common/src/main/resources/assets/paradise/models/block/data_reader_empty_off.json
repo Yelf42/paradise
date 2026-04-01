@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "paradise:block/server_side",
+    "east": "paradise:block/server_side",
+    "north": "paradise:block/data_reader_front_empty_off",
+    "particle": "paradise:block/server_side",
+    "south": "paradise:block/server_side",
+    "up": "paradise:block/data_reader_top_off",
+    "west": "paradise:block/server_side"
+  }
+}

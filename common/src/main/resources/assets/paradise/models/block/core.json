@@ -1,0 +1,36 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "paradise:block/core_inner",
+        "1": "paradise:block/core_outer",
+		"particle": "paradise:block/core_inner"
+	},
+  "elements": [
+    {
+      "name": "core_inner",
+      "from": [2, 0, 2],
+      "to": [14, 16, 14],
+      "rotation": {"angle": 0, "axis": "y", "origin": [2, 0, 2]},
+      "faces": {
+        "north": {"uv": [6, 0, 12, 8], "texture": "#0"},
+        "east": {"uv": [0, 0, 6, 8], "texture": "#0"},
+        "south": {"uv": [6, 8, 12, 16], "texture": "#0"},
+        "west": {"uv": [0, 8, 6, 16], "texture": "#0"}
+      }
+    },
+    {
+      "name": "core_outer",
+      "from": [1.5, 0, 1.5],
+      "to": [14.5, 16, 14.5],
+      "rotation": {"angle": 0, "axis": "y", "origin": [2, 0, 2]},
+      "faces": {
+        "north": {"uv": [0, 0, 6, 8], "texture": "#1"},
+        "east": {"uv": [6, 8, 12, 16], "texture": "#1"},
+        "south": {"uv": [0, 8, 6, 16], "texture": "#1"},
+        "west": {"uv": [6, 0, 12, 8], "texture": "#1"}
+      }
+    }
+  ]
+
+}

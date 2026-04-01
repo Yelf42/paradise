@@ -1,5 +1,7 @@
 package com.yelf42.paradise;
 
+import com.yelf42.paradise.client.renderer.blockentity.DataCoreBlockEntityRenderer;
+import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModBlocks;
 import com.yelf42.paradise.registry.ModPackets;
 import com.yelf42.paradise.registry.RegistryUtil;
@@ -9,6 +11,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +24,18 @@ public class ParadiseFabricClient implements ClientModInitializer {
         // Blocks
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DIGITAL_GRASS, RenderType.solid());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DIGITAL_GRASS_BARRIER, RenderType.solid());
+
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DIGITAL_VOLUME, RenderType.solid());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DIGITAL_VOLUME_BARRIER, RenderType.solid());
+
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DATA_CORE, RenderType.cutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DATA_SERVER, RenderType.solid());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DATA_SHIELD, RenderType.solid());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DATA_READER, RenderType.solid());
+
+        // Block Entities
+        BlockEntityRenderers.register(ModBlockEntities.DATA_CORE, DataCoreBlockEntityRenderer::new);
+
 
         // Packets
         ClientPlayNetworking.registerGlobalReceiver(ModPackets.CreateDimensionPayload.ID, (payload, context) -> {

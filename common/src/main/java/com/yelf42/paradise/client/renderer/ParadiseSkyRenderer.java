@@ -10,13 +10,11 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.lwjgl.opengl.GL11;
 
 import static com.yelf42.paradise.Paradise.PARADISE_SKY;
 import static com.yelf42.paradise.Paradise.PARADISE_SKY_REFLECTION;
 
-//TODO shift from sky to sky reflection color at horizon
 public class ParadiseSkyRenderer {
 
     public static void renderSky(PoseStack poseStack, float partialTick, ClientLevel level) {

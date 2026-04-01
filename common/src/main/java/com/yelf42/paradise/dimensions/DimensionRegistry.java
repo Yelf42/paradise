@@ -41,7 +41,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ForcedChunksSavedData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.BiomeManager;
-import net.minecraft.world.level.border.BorderChangeListener;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
@@ -84,6 +83,7 @@ public class DimensionRegistry {
 
         // Create new dimensions that don't exist yet
         createIfAbsent(savedData, Paradise.identifier("test_pocket"));
+        createIfAbsent(savedData, Paradise.identifier("test_pocket2"));
 
         Paradise.LOGGER.info("Loaded {} dynamic dimensions", this.dynamicDimensions.size());
     }

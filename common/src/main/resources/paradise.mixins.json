@@ -11,10 +11,10 @@
     "MappedRegistryAccessor",
     "MinecraftServerAccessor",
     "MinecraftServerMixin",
+    "PlayerListMixin",
     "PrimaryLevelDataMixin",
     "ReloadableServerResourcesAccessor",
-    "ServerChunkCacheAccessor",
-    "ServerPlayerMixin"
+    "ServerChunkCacheAccessor"
   ],
   "client": [
     "LevelRendererMixin"

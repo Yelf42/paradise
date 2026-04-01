@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "paradise:block/data_server"
+    }
+  }
+}

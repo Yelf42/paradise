@@ -1,6 +1,7 @@
 package com.yelf42.paradise.blocks;
 
 import com.mojang.serialization.MapCodec;
+import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -33,6 +34,8 @@ public class DigitalGrassBlock extends Block {
         return CODEC;
     }
 
+
+
     protected boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
         return true;
     }
@@ -44,6 +47,8 @@ public class DigitalGrassBlock extends Block {
 
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+        boolean digital = context.getLevel().dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS);
+        if (!digital) return null;
         BlockPos pos = context.getClickedPos();
         return ModBlocks.DIGITAL_GRASS.defaultBlockState().setValue(OFFSET, 7 - Math.floorMod(pos.getZ(), 8));
     }

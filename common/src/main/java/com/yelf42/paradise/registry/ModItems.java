@@ -11,14 +11,17 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+// TODO register include REGISTERED_CREATIVE_ITEMS
 public class ModItems {
 
     // ITEMS
     public static final LinkedHashMap<String, Item> REGISTERED_ITEMS = new LinkedHashMap<>();
+    public static final LinkedHashMap<String, Item> REGISTERED_CREATIVE_ITEMS = new LinkedHashMap<>();
 
     private static ResourceKey<Item> vanillaItemId(String name) {
         return ResourceKey.create(Registries.ITEM, Paradise.identifier(name));
@@ -46,6 +49,7 @@ public class ModItems {
     /// BINDER
     public static void registerItems(BiConsumer<Item, ResourceLocation> consumer) {
         REGISTERED_ITEMS.forEach((key, value) -> consumer.accept(value, Paradise.identifier(key)));
+        REGISTERED_CREATIVE_ITEMS.forEach((key, value) -> consumer.accept(value, Paradise.identifier(key)));
     }
 
 
@@ -58,9 +62,18 @@ public class ModItems {
                 ModBlocks.REGISTERED_BLOCK_ITEMS.forEach((s, item) -> output.accept(item));
             }).build();
 
+    public static final CreativeModeTab PARADISE_CREATIVE_TAB = Services.PLATFORM.tabBuilder()
+            .icon(() -> new ItemStack(ModBlocks.DIGITAL_VOLUME_BARRIER.asItem()))
+            .title(Component.translatable("itemGroup.paradise_creative"))
+            .displayItems((itemDisplayParameters, output) -> {
+                ModItems.REGISTERED_CREATIVE_ITEMS.forEach((s, item) -> output.accept(item));
+                ModBlocks.REGISTERED_CREATIVE_BLOCK_ITEMS.forEach((s, item) -> output.accept(item));
+            }).build();
+
     /// BINDER
     public static void registerTabs(BiConsumer<CreativeModeTab, ResourceLocation> consumer) {
         consumer.accept(PARADISE_TAB, ResourceLocation.fromNamespaceAndPath(Paradise.MOD_ID, "paradise_tab"));
+        consumer.accept(PARADISE_CREATIVE_TAB, ResourceLocation.fromNamespaceAndPath(Paradise.MOD_ID, "paradise_creative_tab"));
     }
 
 

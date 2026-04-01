@@ -1,12 +1,25 @@
 {
   "itemGroup.paradise": "Paradise",
+  "itemGroup.paradise_creative": "Paradise (Creative Only)",
+
 
   "block.paradise.digital_grass": "Digital Grass",
   "item.paradise.digital_grass": "Digital Grass",
-
   "block.paradise.digital_grass_barrier": "Digital Grass Barrier",
   "item.paradise.digital_grass_barrier": "Digital Grass Barrier",
 
   "block.paradise.digital_barrier": "Digital Barrier",
-  "item.paradise.digital_barrier": "Digital Barrier"
+  "item.paradise.digital_barrier": "Digital Barrier",
+
+  "block.paradise.digital_volume": "Digital Volume",
+  "item.paradise.digital_volume": "Digital Volume",
+  "block.paradise.digital_volume_barrier": "Digital Volume Barrier",
+  "item.paradise.digital_volume_barrier": "Digital Volume Barrier",
+
+  "block.paradise.data_core": "Data Core",
+  "item.paradise.data_core": "Data Core",
+  "block.paradise.data_server": "Data Server",
+  "item.paradise.data_server": "Data Server",
+  "block.paradise.data_shield": "Data Shield",
+  "item.paradise.data_shield": "Data Shield"
 }

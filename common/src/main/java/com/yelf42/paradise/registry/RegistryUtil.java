@@ -35,6 +35,7 @@ public final class RegistryUtil {
                 }
 
                 // fixme: this is very unsafe !!!
+                //  Yelf42: Not too important, shouldn't be removing dimensions
                 Holder.Reference<T> removed = byId.remove(rawId);
                 assert removed.value() == value;
                 accessor.getToId().replaceAll((t, i) -> i > rawId ? i - 1 : i);

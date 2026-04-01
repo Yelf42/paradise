@@ -1,15 +1,16 @@
 package com.yelf42.paradise;
 
 import com.yelf42.paradise.platform.Services;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO world border in dimensions
-// TODO digital grass
-// TODO digital sky block
-// TODO digital skybox
+
+// TODO override fishing in digital biomes
 public class Paradise {
 
     public static final String MOD_ID = "paradise";
@@ -19,6 +20,11 @@ public class Paradise {
 
     public static final Vector3f PARADISE_SKY = new Vector3f(60/ 255.0f, 119/ 255.0f, 239/ 255.0f);
     public static final Vector3f PARADISE_SKY_REFLECTION = new Vector3f(30/ 255.0f, 100/ 255.0f, 239/ 255.0f);
+
+    public static final TagKey<DimensionType> PARADISE_DIMENSIONS = TagKey.create(
+            Registries.DIMENSION_TYPE,
+            Paradise.identifier("paradise_dimensions")
+    );
 
     public static void init() {
         LOGGER.info("Common init on {}! we are currently in a {} environment!", Services.PLATFORM.getPlatformName(), Services.PLATFORM.getEnvironmentName());

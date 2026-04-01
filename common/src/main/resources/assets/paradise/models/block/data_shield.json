@@ -1,0 +1,7 @@
+{
+  "parent": "paradise:block/ctm",
+  "textures": {
+    "all": "paradise:block/server_side",
+    "base": "paradise:block/shield"
+  }
+}
