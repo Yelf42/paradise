@@ -2,7 +2,6 @@
   "itemGroup.paradise": "Paradise",
   "itemGroup.paradise_creative": "Paradise (Creative Only)",
 
-
   "block.paradise.digital_grass": "Digital Grass",
   "item.paradise.digital_grass": "Digital Grass",
   "block.paradise.digital_grass_barrier": "Digital Grass Barrier",
@@ -21,5 +20,8 @@
   "block.paradise.data_server": "Data Server",
   "item.paradise.data_server": "Data Server",
   "block.paradise.data_shield": "Data Shield",
-  "item.paradise.data_shield": "Data Shield"
+  "item.paradise.data_shield": "Data Shield",
+
+  "item.paradise.access_disc": "Access Disc"
+
 }

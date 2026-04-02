@@ -114,6 +114,8 @@ public class ModBlocks {
                     .pushReaction(PushReaction.BLOCK),
             new Item.Properties().rarity(Rarity.RARE)
     );
+
+    // TODO graphical issue
     public static final Block DATA_SHIELD = registerCreative(
             "data_shield",
             Block::new,
@@ -136,7 +138,7 @@ public class ModBlocks {
                     .strength(2.5F, 3600000.8F)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
                     .noTerrainParticles()
-                    .lightLevel((state) -> (state.getValue(DataReaderBlock.ON) || state.getValue(DataReaderBlock.HAS_DISC)) ? (state.getValue(DataReaderBlock.ON) && state.getValue(DataReaderBlock.HAS_DISC)) ? 12 : 4 : 0)
+                    .lightLevel((state) -> (state.getValue(DataReaderBlock.HAS_DISC)) * 6)
                     .sound(SoundType.METAL)
                     .pushReaction(PushReaction.BLOCK),
             new Item.Properties().rarity(Rarity.RARE)

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/template_music_disc",
+  "textures": {
+    "layer0": "paradise:item/access_disc"
+  }
+}

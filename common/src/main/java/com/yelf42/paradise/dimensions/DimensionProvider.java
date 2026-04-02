@@ -23,6 +23,7 @@ package com.yelf42.paradise.dimensions;
  */
 
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +37,8 @@ public interface DimensionProvider {
     boolean paradise$isIdPendingCreation(@NotNull ResourceKey<Level> key);
 
     void paradise$registerLevel(ServerLevel level);
+
+    ResourceLocation paradise$createIfAbsent();
 
     @NotNull DimensionRegistry paradise$registry();
 }

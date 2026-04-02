@@ -2,6 +2,8 @@ package com.yelf42.paradise.registry;
 
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.blocks.DataCoreBlockEntity;
+import com.yelf42.paradise.blocks.DataReaderBlockEntity;
+import com.yelf42.paradise.blocks.DataSeverBlockEntity;
 import com.yelf42.paradise.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -18,6 +20,9 @@ public class ModBlockEntities {
     public static final LinkedHashMap<String, BlockEntityType<?>> REGISTERED_BLOCK_ENTITIES = new LinkedHashMap<>();
 
     public static BlockEntityType<DataCoreBlockEntity> DATA_CORE = register("data_core", DataCoreBlockEntity::new, ModBlocks.DATA_CORE);
+    public static BlockEntityType<DataSeverBlockEntity> DATA_SERVER = register("data_server", DataSeverBlockEntity::new, ModBlocks.DATA_SERVER);
+    public static BlockEntityType<DataReaderBlockEntity> DATA_READER = register("data_reader", DataReaderBlockEntity::new, ModBlocks.DATA_READER);
+
 
 
     public static <T extends BlockEntity> BlockEntityType<T> register(String name, BiFunction<BlockPos, BlockState, T> function, Block block) {

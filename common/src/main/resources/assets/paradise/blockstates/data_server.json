@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
+    "burning=false": {
       "model": "paradise:block/data_server"
+    },
+    "burning=true": {
+      "model": "paradise:block/data_server_burning"
     }
   }
 }

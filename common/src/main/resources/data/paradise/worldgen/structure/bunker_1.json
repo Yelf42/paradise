@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:jigsaw",
+  "biomes": "#minecraft:stronghold_biased_to",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "bury",
+  "start_pool": "paradise:bunker_1",
+  "size": 1,
+  "start_height": {
+    "absolute": -56
+  },
+  "max_distance_from_center": 80,
+  "use_expansion_hack": false,
+  "dimension_padding": {
+    "bottom": 5,
+    "top": 16
+  },
+  "liquid_settings": "ignore_waterlogging"
+}

@@ -61,6 +61,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.BooleanSupplier;
 
 @Mixin(MinecraftServer.class)
@@ -100,6 +101,28 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
     @Inject(method = "prepareLevels", at = @At("RETURN"))
     private void loadDynamicDimensions(ChunkProgressListener chunkProgressListener, CallbackInfo ci) {
         this.dynamicDimensions.loadDynamicDimensions();
+    }
+
+    public ResourceLocation paradise$createIfAbsent() {
+        ResourceLocation out = Paradise.identifier(paradise$generateRandomChars("abcdefghijklmnopqrstuvwxyz0123456789", 12));
+        ResourceLocation fail = Paradise.identifier("");
+        while (this.dynamicDimensions.anyDimensionExists(out)) {
+            out = Paradise.identifier(paradise$generateRandomChars("abcdefghijklmnopqrstuvwxyz0123456789", 12));
+        }
+
+        this.dynamicDimensions.createIfAbsent(out);
+        return out;
+    }
+    @Unique
+    private static String paradise$generateRandomChars(String candidateChars, int length) {
+        StringBuilder sb = new StringBuilder ();
+        Random random = new Random ();
+        for (int i = 0; i < length; i ++) {
+            sb.append (candidateChars.charAt (random.nextInt (candidateChars
+                    .length ())));
+        }
+
+        return sb.toString ();
     }
 
     public void paradise$removeLevel(ResourceKey<Level> key, @Nullable PlayerRemover removalMode, boolean removeFiles) {

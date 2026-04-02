@@ -47,6 +47,7 @@ import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.storage.DerivedLevelData;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WorldData;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,44 +56,42 @@ import java.util.List;
 public class DimensionRegistry {
     private final @NotNull List<ResourceKey<Level>> dynamicDimensions;
     private final MinecraftServer server;
-    private final Registry<DimensionType> dimTypes;
-    private final Registry<LevelStem> stems;
     private final Holder<DimensionType> typeHolder;
+
+    private ParadiseDimensionSavedData savedData;
 
     public DimensionRegistry(MinecraftServer server) {
         this.server = server;
-        this.dimTypes = server.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE);
-        this.stems = server.registries().compositeAccess().registryOrThrow(Registries.LEVEL_STEM);
         this.dynamicDimensions = ((PrimaryLevelDataAccessor) server.getWorldData()).getDynamicDimensions();
 
-        this.typeHolder = this.dimTypes.getHolderOrThrow(
+        this.typeHolder = server.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).getHolderOrThrow(
                 ResourceKey.create(Registries.DIMENSION_TYPE,
                         Paradise.identifier("paradise_dimension"))
         );
+
     }
 
     public void loadDynamicDimensions() {
-        ParadiseDimensionSavedData savedData = ParadiseDimensionSavedData.getOrCreate(server.overworld());
+        this.savedData = ParadiseDimensionSavedData.getOrCreate(server.overworld());
 
-        // Re-register previously created dimensions
-        for (ResourceLocation id : savedData.getDimensions()) {
+        for (ResourceLocation id : this.savedData.getDimensions()) {
             Paradise.LOGGER.debug("Loading dynamic dimension {}", id);
             ServerLevel level = this.createDynamicLevel(ResourceKey.create(Registries.DIMENSION, id));
             applyWorldBorder(level);
         }
 
         // Create new dimensions that don't exist yet
-        createIfAbsent(savedData, Paradise.identifier("test_pocket"));
-        createIfAbsent(savedData, Paradise.identifier("test_pocket2"));
+        //createIfAbsent(Paradise.identifier("test_pocket"));
+        //createIfAbsent(Paradise.identifier("test_pocket2"));
 
         Paradise.LOGGER.info("Loaded {} dynamic dimensions", this.dynamicDimensions.size());
     }
 
-    private void createIfAbsent(ParadiseDimensionSavedData savedData, ResourceLocation id) {
-        if (!savedData.getDimensions().contains(id)) {
+    public void createIfAbsent(ResourceLocation id) {
+        if (!this.savedData.getDimensions().contains(id)) {
             ServerLevel level = this.createDynamicLevel(id, false);
             applyWorldBorder(level);
-            savedData.addDimension(id);
+            this.savedData.addDimension(id);
             Paradise.LOGGER.debug("Created new dimension {}", id);
         }
     }
@@ -104,9 +103,7 @@ public class DimensionRegistry {
 
 
     public boolean anyDimensionExists(@NotNull ResourceLocation id) {
-        return this.server.levelKeys().contains(ResourceKey.create(Registries.DIMENSION, id))
-                || this.dimTypes.containsKey(id)
-                || this.stems.containsKey(id);
+        return this.server.levelKeys().contains(ResourceKey.create(Registries.DIMENSION, id));
     }
 
 
@@ -217,4 +214,9 @@ public class DimensionRegistry {
 
         ((ServerLevelData) level.getLevelData()).setWorldBorder(border.createSettings());
     }
+
+//    @Contract(value = "_ -> param1", pure = true)
+//    public static @NotNull DimensionRegistry from(@NotNull MinecraftServer server) {
+//        return ((DimensionProvider) server).paradise$registry();
+//    }
 }
