@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "paradise:digital_grass"
+          "name": "paradise:digital_uploader"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "paradise:blocks/digital_grass"
+  "random_sequence": "paradise:blocks/digital_uploader"
 }

@@ -22,12 +22,12 @@ public class ModBlocks {
     public static final LinkedHashMap<String, Item> REGISTERED_CREATIVE_BLOCK_ITEMS = new LinkedHashMap<>();
     public static final LinkedHashMap<String, Block> REGISTERED_BLOCKS = new LinkedHashMap<>();
 
-    public static final Block DIGITAL_GRASS = register(
-            "digital_grass",
+    public static final Block DIGITAL_GRASS_BLOCK = register(
+            "digital_grass_block",
             DigitalGrassBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_GREEN)
-                    .strength(0.0F)
+                    .strength(0.2F)
                     .sound(SoundType.GRASS)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
             new Item.Properties().rarity(Rarity.UNCOMMON)
@@ -66,8 +66,29 @@ public class ModBlocks {
             DigitalVolumeBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_PINK)
-                    .strength(0.0F)
+                    .strength(0.2F)
                     .randomTicks()
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+
+    public static final Block DIGITAL_PILLAR = register(
+            "digital_pillar",
+            DigitalPillarBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.QUARTZ)
+                    .strength(0.2F)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+    public static final Block DIGITAL_PILLAR_BARRIER = registerCreative(
+            "digital_pillar_barrier",
+            DigitalPillarBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.QUARTZ)
+                    .strength(-1.0F, 3600000.8F)
+                    .noLootTable()
+                    .pushReaction(PushReaction.BLOCK)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
             new Item.Properties().rarity(Rarity.UNCOMMON)
     );
@@ -83,6 +104,30 @@ public class ModBlocks {
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
                     .noTerrainParticles()
                     .pushReaction(PushReaction.BLOCK),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+
+    public static final Block DIGITAL_UPLOADER = register(
+            "digital_uploader",
+            DigitalUploaderBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_LIGHT_BLUE)
+                    .strength(0.2F)
+                    .noTerrainParticles()
+                    .pushReaction(PushReaction.BLOCK)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+
+    public static final Block DATA_DOWNLOADER = register(
+            "data_downloader",
+            DataDownloaderBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_GRAY)
+                    .strength(-1.0F, 3600000.8F)
+                    .noTerrainParticles()
+                    .pushReaction(PushReaction.BLOCK)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
             new Item.Properties().rarity(Rarity.UNCOMMON)
     );
 
@@ -115,7 +160,7 @@ public class ModBlocks {
             new Item.Properties().rarity(Rarity.RARE)
     );
 
-    // TODO graphical issue
+    // TODO graphical issue on corner
     public static final Block DATA_SHIELD = registerCreative(
             "data_shield",
             Block::new,
@@ -140,6 +185,19 @@ public class ModBlocks {
                     .noTerrainParticles()
                     .lightLevel((state) -> (state.getValue(DataReaderBlock.HAS_DISC)) * 6)
                     .sound(SoundType.METAL)
+                    .pushReaction(PushReaction.BLOCK),
+            new Item.Properties().rarity(Rarity.RARE)
+    );
+
+    public static final Block EMERGENCY_EXIT = registerCreative("emergency_exit",
+            EmergencyExitBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_RED)
+                    .noOcclusion()
+                    .noLootTable()
+                    .strength(-1.0F, 3600000.8F)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
+                    .noTerrainParticles()
                     .pushReaction(PushReaction.BLOCK),
             new Item.Properties().rarity(Rarity.RARE)
     );

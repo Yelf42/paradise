@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.blocks.DigitalGrassBarrierBlock;
 import com.yelf42.paradise.blocks.DigitalGrassBlock;
+import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
@@ -14,9 +15,9 @@ import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.biome.BiomeSource;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.FixedBiomeSource;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
@@ -32,25 +33,27 @@ import java.util.concurrent.CompletableFuture;
 
 public class ParadiseChunkGenerator extends ChunkGenerator {
 
-    public ParadiseChunkGenerator(RegistryAccess registryAccess) {
+    private final String level;
+
+    public ParadiseChunkGenerator(RegistryAccess registryAccess, ResourceKey<Level> level) {
         this(new FixedBiomeSource(
                 registryAccess.registryOrThrow(Registries.BIOME)
-                        .getHolderOrThrow(ResourceKey.create(Registries.BIOME, Paradise.identifier("digital_biome"))) // TODO custom biome
-        ));
-
+                        .getHolderOrThrow(ResourceKey.create(Registries.BIOME, Paradise.identifier("digital_biome")))
+        ), level.location().getPath());
     }
 
     private final WorldgenRandom random;
     private final PerlinSimplexNoise noise;
 
-    private ParadiseChunkGenerator(BiomeSource biomeSource) {
+    private ParadiseChunkGenerator(BiomeSource biomeSource, String level) {
         super(biomeSource);
         this.random = new WorldgenRandom(new LegacyRandomSource(new Random().nextLong()));
         this.noise = new PerlinSimplexNoise(this.random, ImmutableList.of(0, 0, 0)); // 3 octaves
+        this.level = level;
     }
 
     public static final MapCodec<ParadiseChunkGenerator> CODEC = MapCodec.unit(
-            () -> new ParadiseChunkGenerator((BiomeSource) null)
+            () -> new ParadiseChunkGenerator((BiomeSource) null, "")
     );
 
 
@@ -84,7 +87,6 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
         // No carvers in a pocket dimension
     }
 
-    // TODO nicer platform block
     @Override
     public void applyBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager) {
         // Leave empty unless you want decoration/structures
@@ -92,26 +94,39 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
         if (chunkPos.x == 3) {
             if (chunkPos.z == 0) {
                 for (int x = 7; x < 10; x++) {
-                    for (int y = 0; y < 10; y++) {
+                    for (int y = 0; y < 12; y++) {
                         for (int z = 0; z < 2; z++) {
                             int worldX = chunkPos.getMinBlockX() + x;
                             int worldZ = chunkPos.getMinBlockZ() + z;
                             BlockPos pos = new BlockPos(worldX, y, worldZ);
-                            if (y < 5) {
-                                chunk.setBlockState(pos, ModBlocks.DATA_SHIELD.defaultBlockState(), false);
+                            if (y < 6) {
+                                chunk.setBlockState(pos, ModBlocks.DIGITAL_PILLAR_BARRIER.defaultBlockState(), false);
                             } else {
                                 chunk.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
                             }                        }
                     }
                 }
+                BlockPos exitSignPos = new BlockPos(chunkPos.getMinBlockX() + 8, 2, chunkPos.getMinBlockZ());
+                chunk.setBlockState(exitSignPos, ModBlocks.EMERGENCY_EXIT.defaultBlockState(), false);
+                BlockEntity blockEntity = ModBlockEntities.EMERGENCY_EXIT.create(exitSignPos, ModBlocks.EMERGENCY_EXIT.defaultBlockState());
+                if (blockEntity != null) {
+                    chunk.setBlockEntity(blockEntity);
+                }
+                chunk.setBlockState(exitSignPos.above(1), Blocks.AIR.defaultBlockState(), false);
+                chunk.setBlockState(exitSignPos.above(2), Blocks.AIR.defaultBlockState(), false);
+
+                chunk.setBlockState(exitSignPos.east(), Blocks.AIR.defaultBlockState(), false); // TODO slab
+                chunk.setBlockState(exitSignPos.east().above(1), Blocks.AIR.defaultBlockState(), false);
+                chunk.setBlockState(exitSignPos.east().above(2), Blocks.AIR.defaultBlockState(), false);
+
             } else if (chunkPos.z == -1) {
                 for (int x = 7; x < 10; x++) {
                     for (int y = 0; y < 10; y++) {
                         int worldX = chunkPos.getMinBlockX() + x;
                         int worldZ = chunkPos.getMinBlockZ() + 15;
                         BlockPos pos = new BlockPos(worldX, y, worldZ);
-                        if (y < 5) {
-                            chunk.setBlockState(pos, ModBlocks.DATA_SHIELD.defaultBlockState(), false);
+                        if (y < 6) {
+                            chunk.setBlockState(pos, ModBlocks.DIGITAL_PILLAR_BARRIER.defaultBlockState(), false);
                         } else {
                             chunk.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
                         }
@@ -175,14 +190,14 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
 
                     if (y==0) {
                         if (dist <= 80) {
-                            chunk.setBlockState(pos, grassBarrierStateForPos(pos), false);
+                            chunk.setBlockState(pos, grassBarrierStateForPos(pos, this.level), false);
                         } else if (dist > 80 && dist < 128) {
                             double distT = (dist - 80.0) / 48.0;
                             double noiseScale = 0.01 + distT * 0.08;
                             double edgeNoiseVal = (this.noise.getValue(worldX * noiseScale, worldZ * noiseScale, false) + 1.0) / 2.0;
 
                             if (edgeNoiseVal > distT) {
-                                chunk.setBlockState(pos, grassBarrierStateForPos(pos), false);
+                                chunk.setBlockState(pos, grassBarrierStateForPos(pos, this.level), false);
                             } else {
                                 chunk.setBlockState(pos, ModBlocks.DIGITAL_BARRIER.defaultBlockState(), false);
                             }
@@ -190,7 +205,7 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
                             chunk.setBlockState(pos, ModBlocks.DIGITAL_BARRIER.defaultBlockState(), false);
                         }
                     } else {
-                        chunk.setBlockState(pos, grassStateForPos(pos), false);
+                        chunk.setBlockState(pos, grassStateForPos(pos, this.level), false);
                     }
                 }
             }
@@ -209,10 +224,12 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
         return 0;
     }
 
-    private BlockState grassStateForPos(BlockPos pos) {
-        return ModBlocks.DIGITAL_GRASS.defaultBlockState().setValue(DigitalGrassBlock.OFFSET, 7 - Math.floorMod(pos.getZ(), 8));
+    private BlockState grassStateForPos(BlockPos pos, String level) {
+        int offset = DigitalGrassBlock.getOffsetForPos(pos, level);
+        return ModBlocks.DIGITAL_GRASS_BLOCK.defaultBlockState().setValue(DigitalGrassBlock.OFFSET, offset);
     }
-    private BlockState grassBarrierStateForPos(BlockPos pos) {
-        return ModBlocks.DIGITAL_GRASS_BARRIER.defaultBlockState().setValue(DigitalGrassBarrierBlock.OFFSET, 7 - Math.floorMod(pos.getZ(), 8));
+    private BlockState grassBarrierStateForPos(BlockPos pos, String level) {
+        int offset = DigitalGrassBlock.getOffsetForPos(pos, level);
+        return ModBlocks.DIGITAL_GRASS_BARRIER.defaultBlockState().setValue(DigitalGrassBarrierBlock.OFFSET,  offset);
     }
 }

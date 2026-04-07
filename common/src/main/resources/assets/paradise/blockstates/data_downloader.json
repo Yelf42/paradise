@@ -1,0 +1,37 @@
+{
+  "variants": {
+    "facing=north,powered=true": {
+      "model": "paradise:block/data_downloader_on"
+    },
+    "facing=north,powered=false": {
+      "model": "paradise:block/data_downloader_off"
+    },
+
+    "facing=east,powered=true": {
+      "model": "paradise:block/data_downloader_on",
+      "y": 90
+    },
+    "facing=east,powered=false": {
+      "model": "paradise:block/data_downloader_off",
+      "y": 90
+    },
+
+    "facing=south,powered=true": {
+      "model": "paradise:block/data_downloader_on",
+      "y": 180
+    },
+    "facing=south,powered=false": {
+      "model": "paradise:block/data_downloader_off",
+      "y": 180
+    },
+
+    "facing=west,powered=true": {
+      "model": "paradise:block/data_downloader_on",
+      "y": 270
+    },
+    "facing=west,powered=false": {
+      "model": "paradise:block/data_downloader_off",
+      "y": 270
+    }
+  }
+}

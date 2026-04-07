@@ -1,6 +1,7 @@
 package com.yelf42.paradise.blocks;
 
 import com.yelf42.paradise.Paradise;
+import com.yelf42.paradise.dimensions.DataServerLocations;
 import com.yelf42.paradise.dimensions.DimensionProvider;
 import com.yelf42.paradise.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
@@ -39,9 +40,13 @@ public class DataSeverBlockEntity extends BlockEntity {
     public void setLevel(Level level) {
         super.setLevel(level);
 
-        if (!level.isClientSide && (this.dimension.getPath().isEmpty())) {
-            this.dimension = ((DimensionProvider) level.getServer()).paradise$createIfAbsent();
-            Paradise.LOGGER.info("Created dimension: " + dimension + ", at: " + this.worldPosition);
+        if (!level.isClientSide) {
+            if (this.dimension.getPath().isEmpty()) {
+                this.dimension = ((DimensionProvider) level.getServer()).paradise$createIfAbsent();
+                //Paradise.LOGGER.info("Created dimension: " + dimension + ", at: " + this.worldPosition);
+            }
+            DataServerLocations dsl = DataServerLocations.getOrCreate(level.getServer().overworld());
+            dsl.add(this.dimension, this.getBlockPos(), level.dimension().location());
         }
     }
 

@@ -137,7 +137,7 @@ public class DimensionRegistry {
     }
 
     private @NotNull ServerLevel createDynamicLevel(ResourceKey<Level> key) {
-        LevelStem stem = new LevelStem(this.typeHolder,  new ParadiseChunkGenerator(server.registryAccess()));
+        LevelStem stem = new LevelStem(this.typeHolder,  new ParadiseChunkGenerator(server.registryAccess(), key));
         return this.createDynamicLevel(key, this.server.getWorldData(), stem, this.server.overworld());
     }
 

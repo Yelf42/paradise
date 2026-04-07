@@ -1,6 +1,7 @@
 package com.yelf42.paradise.blocks;
 
 import com.mojang.serialization.MapCodec;
+import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -24,7 +25,7 @@ public class DigitalGrassBarrierBlock extends DigitalGrassBlock {
 
     @Override
     protected @NotNull VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return Shapes.box(0.0, 0.0, 0.0, 1.0, 0.9, 1.0);
+        return Shapes.box(0.05, 0.05, 0.05, 0.95, 0.95, 0.95);
     }
 
     @Override

@@ -1,9 +1,11 @@
 package com.yelf42.paradise.mixin;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.yelf42.paradise.Paradise;
+import com.yelf42.paradise.client.ModRenderTypes;
 import com.yelf42.paradise.client.renderer.ParadiseSkyRenderer;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
@@ -39,6 +41,15 @@ public class LevelRendererMixin {
     @Final
     @Shadow
     private static ResourceLocation FORCEFIELD_LOCATION;
+
+    @Inject(method = "renderLevel", at = @At("HEAD"))
+    private void shaderUniforms(DeltaTracker deltaTracker, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
+        if (ModRenderTypes.hologramShader == null) return;
+        Uniform gameTime = ModRenderTypes.hologramShader.getUniform("GameTime");
+        if (gameTime != null) gameTime.set((float) level.getGameTime() / 20.0f);
+    }
+
+
 
     @Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
     private void onRenderSky(Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick, Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci) {

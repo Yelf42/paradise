@@ -1,9 +1,7 @@
 package com.yelf42.paradise.blocks;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -18,7 +16,7 @@ public class DigitalVolumeBarrierBlock extends DigitalVolumeBlock {
 
     @Override
     protected @NotNull VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return Shapes.box(0.0, 0.0, 0.0, 1.0, 0.9, 1.0);
+        return Shapes.box(0.05, 0.05, 0.05, 0.95, 0.95, 0.95);
     }
 
     @Override

@@ -5,6 +5,7 @@
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_18",
   "mixins": [
+    "BedBlockMixin",
     "ChunkMapAccessor",
     "DistanceManagerAccessor",
     "HolderSetNamedAccessor",
@@ -14,7 +15,9 @@
     "PlayerListMixin",
     "PrimaryLevelDataMixin",
     "ReloadableServerResourcesAccessor",
-    "ServerChunkCacheAccessor"
+    "RespawnAnchorBlockMixin",
+    "ServerChunkCacheAccessor",
+    "ServerPlayerMixin"
   ],
   "client": [
     "LevelRendererMixin"

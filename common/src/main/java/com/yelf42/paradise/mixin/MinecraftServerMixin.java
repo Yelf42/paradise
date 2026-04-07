@@ -101,6 +101,8 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
     @Inject(method = "prepareLevels", at = @At("RETURN"))
     private void loadDynamicDimensions(ChunkProgressListener chunkProgressListener, CallbackInfo ci) {
         this.dynamicDimensions.loadDynamicDimensions();
+        DataServerLocations.getOrCreate(levels.get(Level.OVERWORLD));
+        DownloaderLocations.getOrCreate(levels.get(Level.OVERWORLD));
     }
 
     public ResourceLocation paradise$createIfAbsent() {

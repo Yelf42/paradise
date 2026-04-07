@@ -2,10 +2,21 @@
   "itemGroup.paradise": "Paradise",
   "itemGroup.paradise_creative": "Paradise (Creative Only)",
 
-  "block.paradise.digital_grass": "Digital Grass",
-  "item.paradise.digital_grass": "Digital Grass",
+  "block.paradise.digital_grass_block": "Digital Grass Block",
+  "item.paradise.digital_grass_block": "Digital Grass Block",
   "block.paradise.digital_grass_barrier": "Digital Grass Barrier",
   "item.paradise.digital_grass_barrier": "Digital Grass Barrier",
+
+  "block.paradise.digital_pillar": "Digital Pillar",
+  "item.paradise.digital_pillar": "Digital Pillar",
+  "block.paradise.digital_pillar_barrier": "Digital Pillar Barrier",
+  "item.paradise.digital_pillar_barrier": "Digital Pillar Barrier",
+
+  "block.paradise.digital_uploader": "Digital Uploader",
+  "item.paradise.digital_uploader": "Digital Uploader",
+
+  "block.paradise.data_downloader": "Data Downloader",
+  "item.paradise.data_downloader": "Data Downloader",
 
   "block.paradise.digital_barrier": "Digital Barrier",
   "item.paradise.digital_barrier": "Digital Barrier",
@@ -21,7 +32,14 @@
   "item.paradise.data_server": "Data Server",
   "block.paradise.data_shield": "Data Shield",
   "item.paradise.data_shield": "Data Shield",
+  "block.paradise.data_reader": "Disc Reader",
+  "item.paradise.data_reader": "Disc Reader",
 
-  "item.paradise.access_disc": "Access Disc"
+  "block.paradise.emergency_exit": "Emergency Exit",
+  "item.paradise.emergency_exit": "Emergency Exit",
+
+  "item.paradise.access_disc": "Access Disc",
+
+  "gui.paradise.uploader.title": "Upload Address"
 
 }

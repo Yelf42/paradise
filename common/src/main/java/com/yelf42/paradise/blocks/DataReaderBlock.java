@@ -5,13 +5,17 @@ import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -19,20 +23,22 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.ticks.TickPriority;
 import org.jetbrains.annotations.Nullable;
 
-public class DataReaderBlock extends BaseEntityBlock {
+// TODO emissive top when updated to 1.21.11+
+public class DataReaderBlock extends BaseEntityBlock implements Portal {
 
     public static final MapCodec<DataReaderBlock> CODEC = simpleCodec(DataReaderBlock::new);
 
     // 0 = empty, 1 = loading, 2 = full
     public static final IntegerProperty HAS_DISC = IntegerProperty.create("has_disc", 0, 2);
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;;
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     public DataReaderBlock(Properties properties) {
         super(properties);
@@ -63,7 +69,7 @@ public class DataReaderBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return state.getValue(HAS_DISC) > 0 ? createTickerHelper(blockEntityType, ModBlockEntities.DATA_READER, DataReaderBlockEntity::tick) : null;
+        return createTickerHelper(blockEntityType, ModBlockEntities.DATA_READER, DataReaderBlockEntity::tick);
     }
 
     @Override
@@ -131,5 +137,40 @@ public class DataReaderBlock extends BaseEntityBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(HAS_DISC, FACING);
+    }
+
+    @Override
+    public int getPortalTransitionTime(ServerLevel level, Entity entity) {
+        return 40;
+    }
+
+    @Override
+    public @Nullable DimensionTransition getPortalDestination(ServerLevel level, Entity entity, BlockPos blockPos) {
+        DataReaderBlockEntity drbe = level.getBlockEntity(blockPos, ModBlockEntities.DATA_READER).orElse(null);
+        if (drbe == null || drbe.getCooldown()) return null;
+
+        ServerLevel serverlevel = level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION, drbe.getDimension()));
+        if (serverlevel == null) return null;
+
+        // Clear target location:
+        BlockPos spawnPos = new BlockPos(56, 6, 0);
+        ChunkPos chunkPos = new ChunkPos(spawnPos);
+        serverlevel.setChunkForced(chunkPos.x, chunkPos.z, true);
+        for (int i = 0; i <= 1; i++) {
+            BlockPos target = spawnPos.above(i);
+            Block.dropResources(serverlevel.getBlockState(target), serverlevel, target, serverlevel.getBlockEntity(target));
+            serverlevel.setBlock(target, Blocks.AIR.defaultBlockState(), 3);
+        }
+        serverlevel.setChunkForced(chunkPos.x, chunkPos.z, false);
+
+        Vec3 vec3 = new Vec3(56.5, 6, 0.5);
+        float f = Direction.WEST.toYRot();
+        return new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
+    }
+
+    // TODO replace with digital-y shader
+    @Override
+    public Transition getLocalTransition() {
+        return Transition.CONFUSION;
     }
 }

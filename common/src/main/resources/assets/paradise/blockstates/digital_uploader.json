@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "paradise:block/digital_uploader"
+    },
+    "facing=east": {
+      "model": "paradise:block/digital_uploader",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "paradise:block/digital_uploader",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "paradise:block/digital_uploader",
+      "y": 270
+    }
+  }
+}
