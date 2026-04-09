@@ -10,6 +10,7 @@ out vec4 fragColor;
 
 void main() {
     float progress = vertColor.x;
+    float time = GameTime * 10000.0;
 
     float cols = 32.0;
     float rows = 18.0;
@@ -23,12 +24,12 @@ void main() {
 
     float threshold = mix(0.9 + rand * 0.3, rand * 0.3, distFromCenter);
 
-    float timeNoise = fract(sin(dot(cell + floor(GameTime * 2.0), vec2(127.1, 311.7))) * 43758.5453) * 0.1;
-    threshold += timeNoise;
+    float timeNoise = fract(sin(dot(cell + floor(time), vec2(127.1, 311.7))) * 43758.5453) * 0.15;
 
-    float steps = 8.0;
-    float cellAlpha = ceil(clamp((progress - threshold + 0.5) / 0.5, 0.0, 0.8) * steps) / steps;
+    float steps = 6.0;
+    float cellAlpha = progress * (ceil(clamp((progress - (threshold + timeNoise) + 0.5) / 0.5, 0.0, 0.8) * steps) / steps);
+    float cellColor = 1.0 - clamp(distFromCenter + timeNoise, 0.01, 1.0);
 
-    vec4 tex = texture(Sampler0, texCoord);
+    vec4 tex = texture(Sampler0, vec2(cellColor, 0.0));
     fragColor = tex * vec4(vec3(1.0), cellAlpha);
 }

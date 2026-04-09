@@ -34,7 +34,7 @@ public abstract class GuiMixin {
     private Minecraft minecraft;
 
     @Unique
-    private static final ResourceLocation PORTAL_LOCATION = Paradise.identifier("textures/environment/white.png");
+    private static final ResourceLocation PORTAL_LOCATION = Paradise.identifier("textures/entity/portal_palette.png");
 
     @Inject(method = "renderPortalOverlay", at = @At("HEAD"), cancellable = true)
     private void overrideNetherPortal(GuiGraphics guiGraphics, float alpha, CallbackInfo ci) {

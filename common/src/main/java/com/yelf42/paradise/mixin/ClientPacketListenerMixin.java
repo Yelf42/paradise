@@ -21,7 +21,7 @@ public class ClientPacketListenerMixin {
     private void beforeRespawn(ClientboundRespawnPacket packet, CallbackInfo ci) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && mc.player.portalProcess != null) {
-            Paradise.LOGGER.info("" + ((DigitalOverlay) mc.player).paradise$getPortalOverlayTime());
+            //Paradise.LOGGER.info("" + ((DigitalOverlay) mc.player).paradise$getPortalOverlayTime());
             paradise$savedOverlayTime = ((DigitalOverlay) mc.player).paradise$getPortalOverlayTime();
         }
     }
