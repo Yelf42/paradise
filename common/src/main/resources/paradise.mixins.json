@@ -13,6 +13,7 @@
     "MinecraftServerAccessor",
     "MinecraftServerMixin",
     "PlayerListMixin",
+    "PortalProcessorAccessor",
     "PrimaryLevelDataMixin",
     "ReloadableServerResourcesAccessor",
     "RespawnAnchorBlockMixin",
@@ -20,7 +21,10 @@
     "ServerPlayerMixin"
   ],
   "client": [
-    "LevelRendererMixin"
+    "ClientPacketListenerMixin",
+    "GuiMixin",
+    "LevelRendererMixin",
+    "LocalPlayerMixin"
   ],
   "server": [],
   "injectors": {

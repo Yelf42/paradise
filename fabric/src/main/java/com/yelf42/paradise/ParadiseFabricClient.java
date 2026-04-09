@@ -84,6 +84,12 @@ public class ParadiseFabricClient implements ClientModInitializer {
                     DefaultVertexFormat.NEW_ENTITY,
                     ModRenderTypes::setHologramShader
             );
+
+            context.register(
+                    Paradise.identifier("digital_teleport"),
+                    DefaultVertexFormat.NEW_ENTITY,
+                    ModRenderTypes::setDigitalTeleportShader
+            );
         });
     }
 

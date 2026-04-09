@@ -4,8 +4,13 @@ import com.yelf42.paradise.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class EmergencyExitBlockEntity extends DigitalSymbolBlockEntity {
+public class EmergencyExitBlockEntity extends AbstractDigitalSymbolBlockEntity {
     public EmergencyExitBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlockEntities.EMERGENCY_EXIT, pos, blockState);
+    }
+
+    @Override
+    public boolean shouldRender() {
+        return true;
     }
 }

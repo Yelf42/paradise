@@ -92,6 +92,15 @@ public class ModBlocks {
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
             new Item.Properties().rarity(Rarity.UNCOMMON)
     );
+    public static final Block DIGITAL_PILLAR_SLAB = register(
+            "digital_pillar_slab",
+            DigitalSlabBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.QUARTZ)
+                    .strength(0.2F)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
 
     public static final Block DIGITAL_VOLUME_BARRIER = registerCreative(
             "digital_volume_barrier",

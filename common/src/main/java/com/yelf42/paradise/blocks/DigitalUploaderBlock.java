@@ -5,9 +5,11 @@ import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.dimensions.DownloaderLocations;
 import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModBlocks;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -34,6 +36,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
+
+import java.awt.*;
 
 public class DigitalUploaderBlock extends BaseEntityBlock implements Portal {
 
@@ -151,7 +155,12 @@ public class DigitalUploaderBlock extends BaseEntityBlock implements Portal {
             return null;
         }
 
-        if (!downloader.getOptionalValue(DataDownloaderBlock.POWERED).orElse(true)) return null;
+        if (!downloader.getOptionalValue(DataDownloaderBlock.POWERED).orElse(true)) {
+            if (entity instanceof Player player) {
+                player.displayClientMessage(Component.translatable("gui.paradise.uploader.unavailable").withStyle(ChatFormatting.RED), true);
+            }
+            return null;
+        }
 
         // Clear target location:
         for (int i = 1; i <= 2; i++) {
@@ -166,9 +175,8 @@ public class DigitalUploaderBlock extends BaseEntityBlock implements Portal {
         return new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
     }
 
-    // TODO replace with digital-y shader
     @Override
     public Transition getLocalTransition() {
-        return Transition.NONE;
+        return Transition.CONFUSION;
     }
 }

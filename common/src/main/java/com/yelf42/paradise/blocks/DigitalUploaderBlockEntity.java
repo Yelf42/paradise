@@ -1,10 +1,8 @@
 package com.yelf42.paradise.blocks;
 
-import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.dimensions.DownloaderLocations;
 import com.yelf42.paradise.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Position;
 import net.minecraft.nbt.CompoundTag;
@@ -15,10 +13,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.ticks.ContainerSingleItem;
 
-public class DigitalUploaderBlockEntity extends DigitalSymbolBlockEntity implements Clearable, ContainerSingleItem.BlockContainerSingleItem {
+public class DigitalUploaderBlockEntity extends AbstractDigitalSymbolBlockEntity implements Clearable, ContainerSingleItem.BlockContainerSingleItem {
 
     private ItemStack addressItem= ItemStack.EMPTY;
     private boolean validAddress = false;

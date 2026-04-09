@@ -9,6 +9,8 @@
 
   "block.paradise.digital_pillar": "Digital Pillar",
   "item.paradise.digital_pillar": "Digital Pillar",
+  "block.paradise.digital_pillar_slab": "Digital Pillar Slab",
+  "item.paradise.digital_pillar_slab": "Digital Pillar Slab",
   "block.paradise.digital_pillar_barrier": "Digital Pillar Barrier",
   "item.paradise.digital_pillar_barrier": "Digital Pillar Barrier",
 
@@ -40,6 +42,6 @@
 
   "item.paradise.access_disc": "Access Disc",
 
-  "gui.paradise.uploader.title": "Upload Address"
+  "gui.paradise.uploader.unavailable": "DOWNLOADER ACCESS DENIED"
 
 }

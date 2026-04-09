@@ -47,7 +47,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
     @Override
     public <T extends BlockEntity> BlockEntityType<T> blockEntityType(BiFunction<BlockPos, BlockState, T> function, Block... validBlocks) {
-        return BlockEntityType.Builder.of(function::apply, validBlocks).build(); // TODO test, mildly different from my previous approach
+        return BlockEntityType.Builder.of(function::apply, validBlocks).build();
     }
 
     @Override

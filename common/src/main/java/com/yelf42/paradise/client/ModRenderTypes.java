@@ -48,4 +48,35 @@ public class ModRenderTypes extends RenderType {
             throw new RuntimeException("Failed to create hologram render type", e);
         }
     }
+
+
+    public static void setDigitalTeleportShader(ShaderInstance shader) {
+        digitalTeleportShader = shader;
+    }
+    public static ShaderInstance digitalTeleportShader;
+    private static final ShaderStateShard RENDERTYPE_DIGITAL_TELEPORT_SHADER = new ShaderStateShard(() -> digitalTeleportShader);
+    public static Function<ResourceLocation, RenderType> DIGITAL_TELEPORT = Util.memoize(ModRenderTypes::createDigitalTeleport);
+    private static RenderType createDigitalTeleport(ResourceLocation texture) {
+        try {
+            Method create = RenderType.class.getDeclaredMethod("create", String.class, VertexFormat.class,
+                    VertexFormat.Mode.class, int.class, boolean.class, boolean.class,
+                    RenderType.CompositeState.class);
+            create.setAccessible(true);
+
+            RenderType.CompositeState state = RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_DIGITAL_TELEPORT_SHADER)
+                    .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setLightmapState(NO_LIGHTMAP)
+                    .setOverlayState(NO_OVERLAY)
+                    .setCullState(NO_CULL)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .createCompositeState(true);
+
+            return (RenderType) create.invoke(null, "paradise_digital_teleport", DefaultVertexFormat.NEW_ENTITY,
+                    VertexFormat.Mode.QUADS, 1536, true, false, state);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create hologram render type", e);
+        }
+    }
 }

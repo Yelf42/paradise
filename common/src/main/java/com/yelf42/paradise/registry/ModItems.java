@@ -17,7 +17,6 @@ import java.util.LinkedHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-// TODO register include REGISTERED_CREATIVE_ITEMS
 public class ModItems {
 
     // ITEMS

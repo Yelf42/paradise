@@ -1,27 +1,21 @@
 package com.yelf42.paradise.client.renderer.blockentity;
 
-import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.yelf42.paradise.Paradise;
-import com.yelf42.paradise.blocks.DigitalSymbolBlockEntity;
+import com.yelf42.paradise.blocks.AbstractDigitalSymbolBlockEntity;
 import com.yelf42.paradise.client.ModRenderTypes;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
-public class DigitalSymbolRenderer<T extends DigitalSymbolBlockEntity> implements BlockEntityRenderer<T> {
+public class DigitalSymbolRenderer<T extends AbstractDigitalSymbolBlockEntity> implements BlockEntityRenderer<T> {
     private final BlockEntityRenderDispatcher entityRenderDispatcher;
 
     private final ResourceLocation texture;

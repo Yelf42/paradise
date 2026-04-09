@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "paradise:block/digital_pillar_slab"
+    },
+    "type=double": {
+      "model": "paradise:block/digital_pillar"
+    },
+    "type=top": {
+      "model": "paradise:block/digital_pillar_slab_top"
+    }
+  }
+}

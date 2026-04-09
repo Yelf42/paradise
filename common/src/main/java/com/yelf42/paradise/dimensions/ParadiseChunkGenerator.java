@@ -103,7 +103,8 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
                                 chunk.setBlockState(pos, ModBlocks.DIGITAL_PILLAR_BARRIER.defaultBlockState(), false);
                             } else {
                                 chunk.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
-                            }                        }
+                            }
+                        }
                     }
                 }
                 BlockPos exitSignPos = new BlockPos(chunkPos.getMinBlockX() + 8, 2, chunkPos.getMinBlockZ());
@@ -115,7 +116,7 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
                 chunk.setBlockState(exitSignPos.above(1), Blocks.AIR.defaultBlockState(), false);
                 chunk.setBlockState(exitSignPos.above(2), Blocks.AIR.defaultBlockState(), false);
 
-                chunk.setBlockState(exitSignPos.east(), Blocks.AIR.defaultBlockState(), false); // TODO slab
+                chunk.setBlockState(exitSignPos.east(), ModBlocks.DIGITAL_PILLAR_SLAB.defaultBlockState(), false);
                 chunk.setBlockState(exitSignPos.east().above(1), Blocks.AIR.defaultBlockState(), false);
                 chunk.setBlockState(exitSignPos.east().above(2), Blocks.AIR.defaultBlockState(), false);
 

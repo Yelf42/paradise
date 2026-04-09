@@ -47,6 +47,10 @@ public class LevelRendererMixin {
         if (ModRenderTypes.hologramShader == null) return;
         Uniform gameTime = ModRenderTypes.hologramShader.getUniform("GameTime");
         if (gameTime != null) gameTime.set((float) level.getGameTime() / 20.0f);
+
+        if (ModRenderTypes.digitalTeleportShader == null) return;
+        Uniform gameTime2 = ModRenderTypes.digitalTeleportShader.getUniform("GameTime");
+        if (gameTime2 != null) gameTime2.set((float) level.getGameTime() / 20.0f);
     }
 
 

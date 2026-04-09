@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
@@ -28,6 +29,9 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.ticks.TickPriority;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,6 +52,18 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
     @Override
     protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
+    }
+
+    @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return Block.box(0, 0, 0, 16, 15, 16);
+    }
+
+    @Override
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        if (state.getValue(HAS_DISC) == 2 && entity.canUsePortal(false)) {
+            entity.setAsInsidePortal((Portal) state.getBlock(), pos);
+        }
     }
 
     @Override
@@ -168,7 +184,6 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
         return new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
     }
 
-    // TODO replace with digital-y shader
     @Override
     public Transition getLocalTransition() {
         return Transition.CONFUSION;

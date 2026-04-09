@@ -103,9 +103,8 @@ public class EmergencyExitBlock extends DigitalUploaderBlock {
         return new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
     }
 
-    // TODO replace with digital-y shader
     @Override
     public Portal.Transition getLocalTransition() {
-        return Transition.NONE;
+        return Transition.CONFUSION;
     }
 }

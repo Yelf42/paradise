@@ -122,24 +122,15 @@ public class DataReaderBlockEntity extends BlockEntity implements Clearable, Con
         dataReader.setDisplayPortal(hasDisc == 2);
         if (dataReader.getCooldown() || hasDisc == 0) return;
 
-        if (level.isClientSide) return;
-
-        if (!level.getBlockState(pos.above()).isAir() || !level.getBlockState(pos.above(2)).isAir()) {
-            if (hasDisc == 2) {
-                level.setBlock(pos, state.setValue(DataReaderBlock.HAS_DISC, 1), 3);
-            }
-            return;
-        } else if ((hasDisc == 1) && !dataReader.cooldown && !dataReader.invalidItem()) {
-            level.setBlock(pos, state.setValue(DataReaderBlock.HAS_DISC, 2), 3);
-            return;
-        }
-
-        if (hasDisc < 2) return;
-
-        List<Entity> list = level.getEntitiesOfClass(Entity.class, LOCAL_AABB.move(pos));
-        for (Entity e : list) {
-            if (e.canUsePortal(false)) {
-                e.setAsInsidePortal((Portal) state.getBlock(), pos);
+        if (!level.isClientSide) {
+            if (!level.getBlockState(pos.above()).isAir() || !level.getBlockState(pos.above(2)).isAir()) {
+                if (hasDisc == 2) {
+                    level.setBlock(pos, state.setValue(DataReaderBlock.HAS_DISC, 1), 3);
+                }
+                return;
+            } else if ((hasDisc == 1) && !dataReader.cooldown && !dataReader.invalidItem()) {
+                level.setBlock(pos, state.setValue(DataReaderBlock.HAS_DISC, 2), 3);
+                return;
             }
         }
     }

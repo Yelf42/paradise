@@ -4,7 +4,7 @@ import com.yelf42.paradise.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class DataDownloaderBlockEntity extends DigitalSymbolBlockEntity {
+public class DataDownloaderBlockEntity extends AbstractDigitalSymbolBlockEntity {
     public DataDownloaderBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlockEntities.DATA_DOWNLOADER, pos, blockState);
     }
