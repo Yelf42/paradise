@@ -28,8 +28,6 @@ public class Paradise {
     public static final PerlinSimplexNoise PERLIN = new PerlinSimplexNoise(new WorldgenRandom(new LegacyRandomSource(765341L)), ImmutableList.of(0));
 
     public static final TagKey<Block> DIGITAL_BLOCKS = TagKey.create(Registries.BLOCK, identifier( "digital_blocks"));
-    public static final TagKey<Block> PORTAL_OVERLAY = TagKey.create(Registries.BLOCK, identifier( "renders_digital_overlay"));
-
 
     public static final TagKey<DimensionType> PARADISE_DIMENSIONS = TagKey.create(
             Registries.DIMENSION_TYPE,

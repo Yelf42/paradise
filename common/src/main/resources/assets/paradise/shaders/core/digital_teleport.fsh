@@ -28,6 +28,8 @@ void main() {
 
     float steps = 6.0;
     float cellAlpha = progress * (ceil(clamp((progress - (threshold + timeNoise) + 0.5) / 0.5, 0.0, 0.8) * steps) / steps);
+    cellAlpha -= mod(cell.y, 2.0) * 0.2;
+
     float cellColor = 1.0 - clamp(distFromCenter + timeNoise, 0.01, 1.0);
 
     vec4 tex = texture(Sampler0, vec2(cellColor, 0.0));
