@@ -4,6 +4,12 @@
     "paradise:digital_volume",
     "paradise:digital_pillar",
     "paradise:digital_pillar_slab",
-    "paradise:digital_uploader"
+    "paradise:digital_uploader",
+
+    "paradise:digital_grass_barrier",
+    "paradise:digital_volume_barrier",
+    "paradise:digital_barrier",
+    "paradise:digital_pillar_barrier",
+    "paradise:emergency_exit"
   ]
 }

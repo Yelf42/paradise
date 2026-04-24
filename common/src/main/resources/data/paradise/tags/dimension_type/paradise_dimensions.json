@@ -1,5 +1,7 @@
 {
   "values": [
-    "paradise:paradise_dimension"
+    "paradise:paradise_dimension",
+    "paradise:paradise_dimension_night",
+    "paradise:paradise_dimension_error"
   ]
 }

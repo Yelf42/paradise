@@ -27,7 +27,7 @@ public class ModBlocks {
             DigitalGrassBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_GREEN)
-                    .strength(0.2F)
+                    .strength(0.1F)
                     .sound(SoundType.GRASS)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
             new Item.Properties().rarity(Rarity.UNCOMMON)
@@ -66,7 +66,7 @@ public class ModBlocks {
             DigitalVolumeBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_PINK)
-                    .strength(0.2F)
+                    .strength(0.1F)
                     .randomTicks()
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
             new Item.Properties().rarity(Rarity.UNCOMMON)
@@ -77,7 +77,7 @@ public class ModBlocks {
             DigitalPillarBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.QUARTZ)
-                    .strength(0.2F)
+                    .strength(0.1F)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
             new Item.Properties().rarity(Rarity.UNCOMMON)
     );
@@ -97,7 +97,7 @@ public class ModBlocks {
             DigitalSlabBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.QUARTZ)
-                    .strength(0.2F)
+                    .strength(0.1F)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
             new Item.Properties().rarity(Rarity.UNCOMMON)
     );
@@ -121,7 +121,7 @@ public class ModBlocks {
             DigitalUploaderBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_LIGHT_BLUE)
-                    .strength(0.2F)
+                    .strength(0.1F)
                     .noTerrainParticles()
                     .pushReaction(PushReaction.BLOCK)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),

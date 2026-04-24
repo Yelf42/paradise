@@ -38,7 +38,7 @@ public interface DimensionProvider {
 
     void paradise$registerLevel(ServerLevel level);
 
-    ResourceLocation paradise$createIfAbsent();
+    ResourceLocation paradise$createIfAbsent(DimensionRegistry.ParadiseType type);
 
     @NotNull DimensionRegistry paradise$registry();
 }

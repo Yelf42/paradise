@@ -58,10 +58,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.io.IOException;
 import java.net.Proxy;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.function.BooleanSupplier;
 
 @Mixin(MinecraftServer.class)
@@ -79,6 +76,9 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
     @Shadow
     public abstract LayeredRegistryAccess<RegistryLayer> registries();
 
+    @Shadow
+    @Nullable
+    private String motd;
     @Unique
     private final @NotNull List<ServerLevel> pendingLevels = new ArrayList<>();
     @Unique
@@ -105,16 +105,18 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
         DownloaderLocations.getOrCreate(levels.get(Level.OVERWORLD));
     }
 
-    public ResourceLocation paradise$createIfAbsent() {
-        ResourceLocation out = Paradise.identifier(paradise$generateRandomChars("abcdefghijklmnopqrstuvwxyz0123456789", 12));
-        ResourceLocation fail = Paradise.identifier("");
+    public ResourceLocation paradise$createIfAbsent(DimensionRegistry.ParadiseType type) {
+        ResourceLocation out = Paradise.identifier(paradise$generateDimensionName(type));
         while (this.dynamicDimensions.anyDimensionExists(out)) {
-            out = Paradise.identifier(paradise$generateRandomChars("abcdefghijklmnopqrstuvwxyz0123456789", 12));
+            out = Paradise.identifier(paradise$generateDimensionName(type));
+        }
+        if (type != DimensionRegistry.ParadiseType.ERROR) {
+            this.dynamicDimensions.createIfAbsent(out, type);
         }
 
-        this.dynamicDimensions.createIfAbsent(out);
         return out;
     }
+
     @Unique
     private static String paradise$generateRandomChars(String candidateChars, int length) {
         StringBuilder sb = new StringBuilder ();
@@ -126,6 +128,99 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
 
         return sb.toString ();
     }
+    @Unique
+    private static String paradise$generateDimensionName(DimensionRegistry.ParadiseType type) {
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        switch (type) {
+            case DAY -> sb.append(ADJECTIVES_DAY.get(random.nextInt(ADJECTIVES_DAY.size())));
+            case NIGHT -> sb.append(ADJECTIVES_NIGHT.get(random.nextInt(ADJECTIVES_NIGHT.size())));
+            default -> sb.append(paradise$generateRandomChars("abcdefghijklmnopqrstuvwxyz0123456789", random.nextInt(6, 12)));
+        }
+
+        sb.append('_');
+        sb.append(PLACES_ALL.get(random.nextInt(PLACES_ALL.size())));
+
+        for (int i = sb.length() - 1; i >=0 ; i--) {
+            if (random.nextBoolean()) continue;
+            char c = sb.charAt(i);
+            if (LEET_MAP.containsKey(c)) sb.setCharAt(i,LEET_MAP.get(c));
+        }
+
+        return sb.toString().toLowerCase();
+    }
+    @Unique
+    private static final List<String> PLACES_ALL = List.of(
+            "island",
+            "isle",
+            "islet",
+            "enclave",
+            "haven",
+            "paradise",
+            "eden",
+            "shelter",
+            "sanctuary",
+            "refuge",
+            "retreat",
+            "sanctum",
+            "asylum",
+            "enclave",
+            "reserve",
+            "temple",
+            "oasis",
+            "escape"
+    );
+    @Unique
+    private static final List<String> ADJECTIVES_DAY = List.of(
+            "perfect",
+            "cozy",
+            "wonderful",
+            "idyllic",
+            "beautiful",
+            "dreamy",
+            "warm",
+            "brilliant",
+            "protective",
+            "shielding",
+            "restful",
+            "relaxing",
+            "silly",
+            "gorgeous",
+            "serene",
+            "joyous",
+            "cheerful",
+            "merry",
+            "jubilant",
+            "blessed"
+    );
+    @Unique
+    private static final List<String> ADJECTIVES_NIGHT = List.of(
+            "safe",
+            "enduring",
+            "gentle",
+            "quiet",
+            "quaint",
+            "peaceful",
+            "silent",
+            "calm",
+            "soft",
+            "mellow",
+            "still",
+            "halcyon",
+            "tranquil",
+            "starry"
+    );
+    @Unique
+    private static final Map<Character, Character> LEET_MAP = Map.of(
+            'a', '4',
+            'b', '8',
+            'e', '3',
+            'g', '9',
+            'i', '1',
+            'o', '0',
+            's', '5',
+            't', '7'
+    );
 
     public void paradise$removeLevel(ResourceKey<Level> key, @Nullable PlayerRemover removalMode, boolean removeFiles) {
         if (this.tickingLevels) {

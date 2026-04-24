@@ -18,6 +18,7 @@
     "ReloadableServerResourcesAccessor",
     "RespawnAnchorBlockMixin",
     "ServerChunkCacheAccessor",
+    "ServerLevelMixin",
     "ServerPlayerMixin"
   ],
   "client": [

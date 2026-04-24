@@ -1,11 +1,14 @@
 package com.yelf42.paradise.blocks;
 
 import com.mojang.serialization.MapCodec;
+import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModItems;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -26,11 +29,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.ticks.TickPriority;
 import org.jetbrains.annotations.Nullable;
@@ -165,8 +168,29 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
         DataReaderBlockEntity drbe = level.getBlockEntity(blockPos, ModBlockEntities.DATA_READER).orElse(null);
         if (drbe == null || drbe.getCooldown()) return null;
 
+        Vec3 spawnPoint = new Vec3(56.5, 6, 0.5);
+        float f = Direction.WEST.toYRot();
+
         ServerLevel serverlevel = level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION, drbe.getDimension()));
-        if (serverlevel == null) return null;
+        if (serverlevel == null) {
+            serverlevel = level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Paradise.identifier("nullspace")));
+            if (serverlevel == null) {
+                if (entity instanceof Player player) {
+                    player.displayClientMessage(Component.translatable("gui.paradise.reader.unavailable").withStyle(ChatFormatting.RED), true);
+                }
+                return null;
+            }
+
+            BlockPos spawnPos = new BlockPos(serverlevel.getRandom().nextInt(200) - 100, 0, serverlevel.getRandom().nextInt(200) - 100);
+            ChunkPos chunkPos = new ChunkPos(spawnPos);
+            serverlevel.setChunkForced(chunkPos.x, chunkPos.z, true);
+            spawnPos = serverlevel.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, spawnPos);
+            serverlevel.setChunkForced(chunkPos.x, chunkPos.z, false);
+
+            spawnPoint = spawnPos.getBottomCenter();
+
+            return new DimensionTransition(serverlevel, spawnPoint, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
+        }
 
         // Clear target location:
         BlockPos spawnPos = new BlockPos(56, 6, 0);
@@ -179,9 +203,7 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
         }
         serverlevel.setChunkForced(chunkPos.x, chunkPos.z, false);
 
-        Vec3 vec3 = new Vec3(56.5, 6, 0.5);
-        float f = Direction.WEST.toYRot();
-        return new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
+        return new DimensionTransition(serverlevel, spawnPoint, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
     }
 
     @Override

@@ -3,13 +3,12 @@ package com.yelf42.paradise.blocks;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.dimensions.DataServerLocations;
 import com.yelf42.paradise.dimensions.DimensionProvider;
+import com.yelf42.paradise.dimensions.DimensionRegistry;
 import com.yelf42.paradise.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.LockCode;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,12 +40,17 @@ public class DataSeverBlockEntity extends BlockEntity {
         super.setLevel(level);
 
         if (!level.isClientSide) {
+            DimensionRegistry.ParadiseType type = DimensionRegistry.ParadiseType.DAY;
+            if (level.getRandom().nextInt(4)  == 0) type = DimensionRegistry.ParadiseType.NIGHT;
+            if (level.getRandom().nextInt(20) == 0) type = DimensionRegistry.ParadiseType.ERROR;
+
             if (this.dimension.getPath().isEmpty()) {
-                this.dimension = ((DimensionProvider) level.getServer()).paradise$createIfAbsent();
+                this.dimension = ((DimensionProvider) level.getServer()).paradise$createIfAbsent(type);
                 //Paradise.LOGGER.info("Created dimension: " + dimension + ", at: " + this.worldPosition);
             }
+
             DataServerLocations dsl = DataServerLocations.getOrCreate(level.getServer().overworld());
-            dsl.add(this.dimension, this.getBlockPos(), level.dimension().location());
+            dsl.add((type == DimensionRegistry.ParadiseType.ERROR) ? Paradise.identifier("nullspace") : this.dimension, this.getBlockPos(), level.dimension().location());
         }
     }
 

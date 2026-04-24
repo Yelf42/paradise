@@ -17,9 +17,7 @@ public class PlayerListMixin {
 
     @Inject(method = "sendLevelInfo", at = @At("RETURN"))
     private void onSendLevelInfo(ServerPlayer player, ServerLevel level, CallbackInfo ci) {
-        if (level.dimensionTypeRegistration().is(
-                ResourceKey.create(Registries.DIMENSION_TYPE,
-                        Paradise.identifier("paradise_dimension")))) {
+        if (level.dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS)) {
             player.connection.send(new ClientboundInitializeBorderPacket(level.getWorldBorder()));
         }
     }

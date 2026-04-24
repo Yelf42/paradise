@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "paradise:digital_blocks"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "paradise:digital_volume"
+  }
+}

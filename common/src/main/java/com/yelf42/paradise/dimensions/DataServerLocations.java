@@ -1,5 +1,6 @@
 package com.yelf42.paradise.dimensions;
 
+import com.yelf42.paradise.Paradise;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -40,6 +41,7 @@ public class DataServerLocations extends SavedData {
             BlockPos pos = NbtUtils.readBlockPos(entry, "pos").orElseThrow();
             ResourceLocation dim = ResourceLocation.parse(entry.getString("dim"));
             data.servers.put(id, Pair.of(pos, dim));
+            Paradise.LOGGER.info("DataServerLocation: {} {} {}", id, pos, dim);
         }
         return data;
     }
@@ -61,6 +63,13 @@ public class DataServerLocations extends SavedData {
     public boolean add(ResourceLocation dimId, BlockPos pos, ResourceLocation hostDimId) {
         if (servers.containsKey(dimId)) return false;
         servers.put(dimId, Pair.of(pos,hostDimId));
+        setDirty();
+        return true;
+    }
+
+    public boolean remove(ResourceLocation dimId, BlockPos pos, ResourceLocation hostDimId) {
+        if (!servers.containsKey(dimId)) return false;
+        servers.remove(dimId);
         setDirty();
         return true;
     }

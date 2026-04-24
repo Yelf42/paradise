@@ -38,7 +38,7 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
     public ParadiseChunkGenerator(RegistryAccess registryAccess, ResourceKey<Level> level) {
         this(new FixedBiomeSource(
                 registryAccess.registryOrThrow(Registries.BIOME)
-                        .getHolderOrThrow(ResourceKey.create(Registries.BIOME, Paradise.identifier("digital_biome")))
+                        .getHolderOrThrow(ResourceKey.create(Registries.BIOME, Paradise.identifier("digital")))
         ), level.location().getPath());
     }
 
@@ -53,7 +53,7 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
     }
 
     public static final MapCodec<ParadiseChunkGenerator> CODEC = MapCodec.unit(
-            () -> new ParadiseChunkGenerator((BiomeSource) null, "")
+            () -> new ParadiseChunkGenerator(null, "")
     );
 
 

@@ -13,14 +13,12 @@ import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ParadiseDimensionSavedData extends SavedData {
     private static final String ID = "paradise_dimensions";
-    private final List<ResourceLocation> dimensions = new ArrayList<>();
+    private final Map<ResourceLocation, DimensionRegistry.ParadiseType> dimensions = new ConcurrentHashMap<>();
 
     public static ParadiseDimensionSavedData getOrCreate(ServerLevel overworld) {
         return overworld.getDataStorage().computeIfAbsent(
@@ -35,32 +33,47 @@ public class ParadiseDimensionSavedData extends SavedData {
 
     public static ParadiseDimensionSavedData load(CompoundTag tag, HolderLookup.Provider provider) {
         ParadiseDimensionSavedData data = new ParadiseDimensionSavedData();
-        ListTag list = tag.getList("dimensions", Tag.TAG_STRING);
-        for (int i = 0; i < list.size(); i++) {
-            data.dimensions.add(ResourceLocation.parse(list.getString(i)));
+        ListTag list1 = tag.getList("dimensionsIds", Tag.TAG_STRING);
+        ListTag list2 = tag.getList("dimensionsTypes", Tag.TAG_STRING);
+        for (int i = 0; i < list1.size(); i++) {
+            data.dimensions.put(ResourceLocation.parse(list1.getString(i)), DimensionRegistry.ParadiseType.valueOf(list2.getString(i)));
         }
         return data;
     }
 
     @Override
     public @NotNull CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
-        ListTag list = new ListTag();
-        for (ResourceLocation id : dimensions) {
-            list.add(StringTag.valueOf(id.toString()));
+        ListTag list1 = new ListTag();
+        ListTag list2 = new ListTag();
+        for (Map.Entry<ResourceLocation, DimensionRegistry.ParadiseType> pair : dimensions.entrySet()) {
+            list1.add(StringTag.valueOf(pair.getKey().toString()));
+            list2.add(StringTag.valueOf(pair.getValue().toString()));
         }
-        tag.put("dimensions", list);
+        tag.put("dimensionsIds", list1);
+        tag.put("dimensionsTypes", list2);
         return tag;
     }
 
-    public void addDimension(ResourceLocation id) {
-        if (!dimensions.contains(id)) {
-            dimensions.add(id);
+    public boolean containsDimension(ResourceLocation id) {
+        return dimensions.containsKey(id);
+    }
+
+    public void addDimension(ResourceLocation id, DimensionRegistry.ParadiseType type) {
+        if (!dimensions.containsKey(id)) {
+            dimensions.put(id, type);
             setDirty();
         }
     }
 
-    public List<ResourceLocation> getDimensions() {
-        return Collections.unmodifiableList(dimensions);
+    public void deleteDimension(ResourceLocation id) {
+        if (dimensions.containsKey(id)) {
+            dimensions.remove(id);
+            setDirty();
+        }
+    }
+
+    public Map<ResourceLocation, DimensionRegistry.ParadiseType> getDimensions() {
+        return Collections.unmodifiableMap(dimensions);
     }
 
 }

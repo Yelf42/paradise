@@ -42,6 +42,9 @@
 
   "item.paradise.access_disc": "Access Disc",
 
-  "gui.paradise.uploader.unavailable": "DOWNLOADER ACCESS DENIED"
+  "gui.paradise.uploader.unavailable": "DOWNLOADER ACCESS DENIED",
+  "gui.paradise.reader.unavailable": "INVALID ADDRESS",
+
+  "tag.item.paradise.digital_blocks": "Digital Blocks"
 
 }

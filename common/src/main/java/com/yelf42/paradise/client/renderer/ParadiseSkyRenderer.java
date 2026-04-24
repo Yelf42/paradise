@@ -3,38 +3,22 @@ package com.yelf42.paradise.client.renderer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.yelf42.paradise.Paradise;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec2;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
-
-import static com.yelf42.paradise.Paradise.PARADISE_SKY;
-import static com.yelf42.paradise.Paradise.PARADISE_SKY_REFLECTION;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 public class ParadiseSkyRenderer {
 
-    public static void renderSky(PoseStack poseStack, float partialTick, ClientLevel level) {
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-
-        RenderSystem.clearColor(PARADISE_SKY.x, PARADISE_SKY.y, PARADISE_SKY.z, 1.0f);
-        RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
-
+    public static void renderFadingTexture(PoseStack poseStack, float partialTick, ClientLevel level, float y, boolean flipWinding, float alpha, ResourceLocation texture, Vector2f direction) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        renderFadingClouds(poseStack, partialTick, level, 48, false, 1.0f);
 
-        RenderSystem.disableBlend();
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
-        RenderSystem.clearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    }
-
-    private static void renderFadingClouds(PoseStack poseStack, float partialTick, ClientLevel level, float y, boolean flipWinding, float alpha) {
         float gameTime = level.getGameTime() + partialTick;
         float scroll = (gameTime * 0.00005f) % 1.0f;
         float s = 480.0f;
@@ -42,7 +26,7 @@ public class ParadiseSkyRenderer {
         float step = (s * 2) / subdivisions;
 
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, Paradise.identifier("textures/environment/clouds.png"));
+        RenderSystem.setShaderTexture(0, texture);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         BufferBuilder buffer = Tesselator.getInstance().begin(
@@ -57,10 +41,10 @@ public class ParadiseSkyRenderer {
                 float z0 = -s + zi * step;
                 float z1 = z0 + step;
 
-                float u0 = (x0 / (s * 2) );
-                float u1 = (x1 / (s * 2) );
-                float v0 = (z0 / (s * 2) + scroll);
-                float v1 = (z1 / (s * 2) + scroll);
+                float u0 = (x0 / (s * 2) + direction.x * scroll);
+                float u1 = (x1 / (s * 2) + direction.x * scroll);
+                float v0 = (z0 / (s * 2) + direction.y * scroll);
+                float v1 = (z1 / (s * 2) + direction.y * scroll);
 
                 // Alpha per vertex based on distance from center
                 float a00 = edgeAlpha(x0, z0, s) * alpha;
@@ -85,13 +69,7 @@ public class ParadiseSkyRenderer {
         BufferUploader.drawWithShader(buffer.buildOrThrow());
     }
 
-    public static void renderGroundReflection(PoseStack poseStack, float partialTick,
-                                              ClientLevel level, float groundY) {
-        renderSolidQuad(poseStack, groundY);
-        renderFadingClouds(poseStack, partialTick, level, groundY, true, 0.7F);
-    }
-
-    private static void renderSolidQuad(PoseStack poseStack, float y) {
+    public static void renderSolidQuad(PoseStack poseStack, float y, Vector3f skyColor, Vector3f groundColor) {
         float s = 480.0f;
         int subdivisions = 16;
         float step = (s * 2) / subdivisions;
@@ -113,10 +91,10 @@ public class ParadiseSkyRenderer {
                 float z0 = -s + zi * step;
                 float z1 = z0 + step;
 
-                int c00 = lerpSkyColor(x0, z0, s);
-                int c10 = lerpSkyColor(x1, z0, s);
-                int c11 = lerpSkyColor(x1, z1, s);
-                int c01 = lerpSkyColor(x0, z1, s);
+                int c00 = lerpSkyColor(x0, z0, s, skyColor, groundColor);
+                int c10 = lerpSkyColor(x1, z0, s, skyColor, groundColor);
+                int c11 = lerpSkyColor(x1, z1, s, skyColor, groundColor);
+                int c01 = lerpSkyColor(x0, z1, s, skyColor, groundColor);
 
                 buffer.addVertex(pose, x0, y,  z0).setColor(c00);
                 buffer.addVertex(pose, x0, y,  z1).setColor(c01);
@@ -132,16 +110,16 @@ public class ParadiseSkyRenderer {
     }
 
     // Returns PARADISE_SKY_REFLECTION at center, blends to PARADISE_SKY at edges
-    private static int lerpSkyColor(float x, float z, float s) {
+    private static int lerpSkyColor(float x, float z, float s, Vector3f skyColor, Vector3f groundColor) {
         float dx = Math.abs(x) / s;
         float dz = Math.abs(z) / s;
         float d = Math.max(dx, dz);
         float fadeStart = 0.5f;
         float t = Math.max(0, Math.min(1, (d - fadeStart) / (1.0f - fadeStart)));
 
-        float r = Mth.lerp(t, PARADISE_SKY_REFLECTION.x, PARADISE_SKY.x);
-        float g = Mth.lerp(t, PARADISE_SKY_REFLECTION.y, PARADISE_SKY.y);
-        float b = Mth.lerp(t, PARADISE_SKY_REFLECTION.z, PARADISE_SKY.z);
+        float r = Mth.lerp(t, groundColor.x, skyColor.x);
+        float g = Mth.lerp(t, groundColor.y, skyColor.y);
+        float b = Mth.lerp(t, groundColor.z, skyColor.z);
 
         return FastColor.ARGB32.color(255, (int)(r * 255), (int)(g * 255), (int)(b * 255));
     }

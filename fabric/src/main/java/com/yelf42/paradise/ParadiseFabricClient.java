@@ -5,18 +5,20 @@ import com.yelf42.paradise.client.ModRenderTypes;
 import com.yelf42.paradise.client.renderer.blockentity.DataCoreBlockEntityRenderer;
 import com.yelf42.paradise.client.renderer.blockentity.DataReaderBlockEntityRenderer;
 import com.yelf42.paradise.client.renderer.blockentity.DigitalSymbolRenderer;
-import com.yelf42.paradise.registry.ModBlockEntities;
-import com.yelf42.paradise.registry.ModBlocks;
-import com.yelf42.paradise.registry.ModPackets;
-import com.yelf42.paradise.registry.RegistryUtil;
+import com.yelf42.paradise.client.renderer.entity.CrashBoltRenderer;
+import com.yelf42.paradise.registry.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -44,12 +46,26 @@ public class ParadiseFabricClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DATA_SHIELD, RenderType.solid());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DATA_READER, RenderType.solid());
 
+        ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) ->
+                world != null && pos != null
+                        ? BiomeColors.getAverageGrassColor(world, pos)
+                        : 0xB9E63D, ModBlocks.DIGITAL_GRASS_BLOCK, ModBlocks.DIGITAL_GRASS_BARRIER
+        );
+
+        ColorProviderRegistry.ITEM.register((stack, tintIndex) ->
+                        0xB9E63D,
+                ModBlocks.DIGITAL_GRASS_BLOCK.asItem(), ModBlocks.DIGITAL_GRASS_BARRIER.asItem()
+        );
+
         // Block Entities
         BlockEntityRenderers.register(ModBlockEntities.DATA_CORE, DataCoreBlockEntityRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.DATA_READER, DataReaderBlockEntityRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.EMERGENCY_EXIT, (context) -> new DigitalSymbolRenderer<>(context, Paradise.identifier("textures/entity/exit_symbol.png"), 1.5));
         BlockEntityRenderers.register(ModBlockEntities.DIGITAL_UPLOADER, (context) -> new DigitalSymbolRenderer<>(context, Paradise.identifier("textures/entity/upload_symbol.png"), 1.5));
         BlockEntityRenderers.register(ModBlockEntities.DATA_DOWNLOADER, (context) -> new DigitalSymbolRenderer<>(context, Paradise.identifier("textures/entity/download_symbol.png"), 2.0));
+
+        // Entities
+        EntityRendererRegistry.register(ModEntities.CRASH_BOLT, CrashBoltRenderer::new);
 
         // Packets
         ClientPlayNetworking.registerGlobalReceiver(ModPackets.CreateDimensionPayload.ID, (payload, context) -> {

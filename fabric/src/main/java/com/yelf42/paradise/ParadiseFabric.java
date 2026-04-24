@@ -5,6 +5,7 @@ import com.yelf42.paradise.dimensions.DimensionRemovedCallback;
 import com.yelf42.paradise.dimensions.ParadiseChunkGenerator;
 import com.yelf42.paradise.registry.*;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
@@ -60,6 +61,10 @@ public class ParadiseFabric implements ModInitializer {
 
         PayloadTypeRegistry.playS2C().register(ModPackets.CreateDimensionPayload.ID, ModPackets.CreateDimensionPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(ModPackets.RemoveDimensionPayload.ID, ModPackets.RemoveDimensionPayload.CODEC);
+
+        if (FabricLoader.getInstance().isModLoaded("fabric-command-api-v2")) {
+            CommandRegistrationCallback.EVENT.register(ModCommands::register);
+        }
 
         Paradise.init();
     }

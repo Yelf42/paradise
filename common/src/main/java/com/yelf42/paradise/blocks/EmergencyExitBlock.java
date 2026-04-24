@@ -10,6 +10,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -79,13 +80,19 @@ public class EmergencyExitBlock extends DigitalUploaderBlock {
         ResourceLocation dim = level.dimension().location();
 
         Pair<BlockPos, ResourceLocation> destination = dsl.get(dim);
-        if (destination == null) return null;
+        if (destination == null
+                || destination.getLeft() == null
+                || destination.getRight() == null
+                || level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION, destination.getRight())) == null) {
+
+            if (entity instanceof ServerPlayer serverplayer) {
+                return new DimensionTransition(serverplayer.server.overworld(), serverplayer, DimensionTransition.DO_NOTHING);
+            }
+            return null;
+        }
 
         BlockPos serverLocation = destination.getLeft();
-        if (serverLocation == null) return null;
-
         ServerLevel serverlevel = level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION, destination.getRight()));
-        if (serverlevel == null) return null;
 
         // Clear target location:
         ChunkPos chunkPos = new ChunkPos(serverLocation);

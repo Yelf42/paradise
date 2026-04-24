@@ -22,6 +22,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.border.WorldBorder;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,6 +38,8 @@ public class LevelRendererMixin {
 
     @Shadow
     private ClientLevel level;
+    @Shadow
+    private VertexBuffer starBuffer;
     @Final
     @Shadow
     private Minecraft minecraft;
@@ -55,27 +60,80 @@ public class LevelRendererMixin {
         if (gameTime2 != null) gameTime2.set(time);
     }
 
+    @Unique
+    private static final ResourceLocation CLOUDS_TEXTURE = Paradise.identifier("textures/environment/clouds.png");
+    @Unique
+    private static final Vector3f PARADISE_SKY = new Vector3f(60/ 255.0f, 119/ 255.0f, 239/ 255.0f);
+    @Unique
+    private static final Vector3f PARADISE_SKY_REFLECTION = new Vector3f(30/ 255.0f, 100/ 255.0f, 239/ 255.0f);
+    @Unique
+    private static final Vector2f SCROLL_DIRECTION_NORMAL = new Vector2f(0.0f, 1.0f);
 
+    @Unique
+    private static final ResourceLocation ERROR_TEXTURE = Paradise.identifier("textures/environment/error_sky.png");
+    @Unique
+    private static final Vector3f ERROR_SKY = new Vector3f(255/ 255.0f, 0/ 255.0f, 0/ 255.0f);
+    @Unique
+    private static final Vector3f ERROR_SKY_REFLECTION = new Vector3f(200/ 255.0f, 0/ 255.0f, 0/ 255.0f);
+    @Unique
+    private static final Vector2f SCROLL_DIRECTION_ERROR = new Vector2f(0.5f, 0.5f);
+
+
+    @Unique
+    private static final Vector3f PARADISE_SKY_NIGHT = new Vector3f(1.5f/ 255.0f, 3/ 255.0f, 6/ 255.0f);
+    @Unique
+    private static final Vector3f PARADISE_SKY_NIGHT_REFLECTION = new Vector3f(1/ 255.0f, 1/ 255.0f, 2/ 255.0f);
 
     @Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
     private void onRenderSky(Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick, Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci) {
-        if (this.level.dimensionTypeRegistration().is(
-                ResourceKey.create(Registries.DIMENSION_TYPE,
-                        Paradise.identifier("paradise_dimension")))) {
+        if (level.dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS)) {
+            ci.cancel();
+
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
 
             PoseStack poseStack = new PoseStack();
             poseStack.mulPose(camera.rotation().conjugate(new Quaternionf()));
 
-            ParadiseSkyRenderer.renderSky(poseStack, partialTick, this.level);
-            ci.cancel();
+            if (this.level.dimensionTypeRegistration().is(
+                    ResourceKey.create(Registries.DIMENSION_TYPE,
+                            Paradise.identifier("paradise_dimension")))) {
+
+                RenderSystem.clearColor(PARADISE_SKY.x, PARADISE_SKY.y, PARADISE_SKY.z, 1.0f);
+                RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
+                ParadiseSkyRenderer.renderFadingTexture(poseStack, partialTick, level, 48, false, 1.0f, CLOUDS_TEXTURE, SCROLL_DIRECTION_NORMAL);
+            } else if (this.level.dimensionTypeRegistration().is(
+                    ResourceKey.create(Registries.DIMENSION_TYPE,
+                            Paradise.identifier("paradise_dimension_night")))) {
+
+                RenderSystem.clearColor(PARADISE_SKY_NIGHT.x, PARADISE_SKY_NIGHT.y, PARADISE_SKY_NIGHT.z, 1.0f);
+                RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
+
+                RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+                this.starBuffer.bind();
+                this.starBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, GameRenderer.getPositionShader());
+                VertexBuffer.unbind();
+            } else if (this.level.dimensionTypeRegistration().is(
+                    ResourceKey.create(Registries.DIMENSION_TYPE,
+                            Paradise.identifier("paradise_dimension_error")))) {
+
+                RenderSystem.clearColor(ERROR_SKY.x, ERROR_SKY.y, ERROR_SKY.z, 1.0f);
+                RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
+                ParadiseSkyRenderer.renderFadingTexture(poseStack, partialTick, level, 48, false, 1.0f, ERROR_TEXTURE, SCROLL_DIRECTION_ERROR);
+            }
+
+            RenderSystem.disableBlend();
+            RenderSystem.depthMask(true);
+            RenderSystem.enableDepthTest();
+            RenderSystem.clearColor(0.0f, 0.0f, 0.0f, 1.0f);
         }
+
+
     }
 
     @Inject(method = "renderClouds", at = @At("HEAD"), cancellable = true)
     private void onRenderClouds(PoseStack poseStack, Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick, double camX, double camY, double camZ, CallbackInfo ci) {
-        if (this.level.dimensionTypeRegistration().is(
-                ResourceKey.create(Registries.DIMENSION_TYPE,
-                        Paradise.identifier("paradise_dimension")))) {
+        if (level.dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS)) {
             ci.cancel();
         }
     }
@@ -86,31 +144,72 @@ public class LevelRendererMixin {
     private void onAfterSolidChunks(DeltaTracker deltaTracker, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
 
         if (level == null) return;
-        if (!level.dimensionTypeRegistration().is(
-                ResourceKey.create(Registries.DIMENSION_TYPE,
-                        Paradise.identifier("paradise_dimension")))) return;
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableCull();
+        if (level.dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS)) {
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.disableCull();
 
-        PoseStack groundPose = new PoseStack();
-        // Apply camera rotation so it stays fixed in world space
-        groundPose.mulPose(camera.rotation().conjugate(new Quaternionf()));
+            PoseStack groundPose = new PoseStack();
+            // Apply camera rotation so it stays fixed in world space
+            groundPose.mulPose(camera.rotation().conjugate(new Quaternionf()));
+            float groundY = (float)(0.0 - camera.getPosition().y);
+            float partialTick = deltaTracker.getGameTimeDeltaPartialTick(false);
 
-        float groundY = (float)(0.0 - camera.getPosition().y);
-        ParadiseSkyRenderer.renderGroundReflection(groundPose, deltaTracker.getGameTimeDeltaPartialTick(false), level, groundY + 0.98F);
+            if (level.dimensionTypeRegistration().is(
+                    ResourceKey.create(Registries.DIMENSION_TYPE,
+                            Paradise.identifier("paradise_dimension")))) {
 
-        RenderSystem.enableCull();
-        RenderSystem.disableBlend();
+                ParadiseSkyRenderer.renderSolidQuad(groundPose, groundY + 0.98F, PARADISE_SKY, PARADISE_SKY_REFLECTION);
+                RenderSystem.disableDepthTest();
+                ParadiseSkyRenderer.renderFadingTexture(groundPose, partialTick, level, groundY, true, 0.7F, CLOUDS_TEXTURE, SCROLL_DIRECTION_NORMAL);
+                RenderSystem.enableDepthTest();
+
+            } else if (level.dimensionTypeRegistration().is(
+                    ResourceKey.create(Registries.DIMENSION_TYPE,
+                            Paradise.identifier("paradise_dimension_night")))) {
+
+                ParadiseSkyRenderer.renderSolidQuad(groundPose, groundY + 0.98F, PARADISE_SKY_NIGHT, PARADISE_SKY_NIGHT_REFLECTION);
+
+                RenderSystem.depthMask(false);
+                RenderSystem.depthFunc(GL11.GL_GEQUAL);
+                RenderSystem.setShaderColor(0.8f, 0.8f, 0.8f, 0.8f);
+                RenderSystem.enablePolygonOffset();
+                RenderSystem.polygonOffset(1.0f, 1_000_000.0f);
+
+                this.starBuffer.bind();
+                this.starBuffer.drawWithShader(
+                        new Matrix4f(groundPose.last().pose()).negateY(),
+                        projectionMatrix,
+                        GameRenderer.getPositionShader()
+                );
+                VertexBuffer.unbind();
+
+                RenderSystem.disablePolygonOffset();
+                RenderSystem.polygonOffset(0f, 0f);
+                RenderSystem.depthFunc(GL11.GL_LEQUAL);
+                RenderSystem.depthMask(true);
+
+            } else if (level.dimensionTypeRegistration().is(
+                    ResourceKey.create(Registries.DIMENSION_TYPE,
+                            Paradise.identifier("paradise_dimension_error")))) {
+
+                ParadiseSkyRenderer.renderSolidQuad(groundPose, groundY + 0.98F, ERROR_SKY, ERROR_SKY_REFLECTION);
+                RenderSystem.disableDepthTest();
+                ParadiseSkyRenderer.renderFadingTexture(groundPose, partialTick, level, groundY, true, 0.7F, ERROR_TEXTURE, SCROLL_DIRECTION_ERROR);
+                RenderSystem.enableDepthTest();
+
+            }
+
+            RenderSystem.enableCull();
+            RenderSystem.disableBlend();
+        }
     }
 
-    @Inject(method = "renderWorldBorder", at = @At("HEAD"), cancellable = true)
+        @Inject(method = "renderWorldBorder", at = @At("HEAD"), cancellable = true)
     private void onRenderWorldBorder(Camera camera, CallbackInfo ci) {
         if (level == null) return;
-        if (!level.dimensionTypeRegistration().is(
-                ResourceKey.create(Registries.DIMENSION_TYPE,
-                        Paradise.identifier("paradise_dimension")))) return;
+        if (!level.dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS)) return;
         ci.cancel();
 
         WorldBorder border = this.level.getWorldBorder();

@@ -28,10 +28,8 @@ import com.yelf42.paradise.mixin.*;
 import com.yelf42.paradise.registry.ModPackets;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
-import net.minecraft.network.protocol.game.ClientboundInitializeBorderPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -42,6 +40,7 @@ import net.minecraft.world.level.ForcedChunksSavedData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.border.WorldBorder;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.storage.DerivedLevelData;
@@ -52,11 +51,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 
 public class DimensionRegistry {
     private final @NotNull List<ResourceKey<Level>> dynamicDimensions;
     private final MinecraftServer server;
-    private final Holder<DimensionType> typeHolder;
+    private final Holder<DimensionType> typeHolderDay;
+    private final Holder<DimensionType> typeHolderNight;
+    private final Holder<DimensionType> typeHolderError;
 
     private ParadiseDimensionSavedData savedData;
 
@@ -64,9 +66,19 @@ public class DimensionRegistry {
         this.server = server;
         this.dynamicDimensions = ((PrimaryLevelDataAccessor) server.getWorldData()).getDynamicDimensions();
 
-        this.typeHolder = server.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).getHolderOrThrow(
+        this.typeHolderDay = server.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).getHolderOrThrow(
                 ResourceKey.create(Registries.DIMENSION_TYPE,
                         Paradise.identifier("paradise_dimension"))
+        );
+
+        this.typeHolderNight = server.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).getHolderOrThrow(
+                ResourceKey.create(Registries.DIMENSION_TYPE,
+                        Paradise.identifier("paradise_dimension_night"))
+        );
+
+        this.typeHolderError = server.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).getHolderOrThrow(
+                ResourceKey.create(Registries.DIMENSION_TYPE,
+                        Paradise.identifier("paradise_dimension_error"))
         );
 
     }
@@ -74,33 +86,31 @@ public class DimensionRegistry {
     public void loadDynamicDimensions() {
         this.savedData = ParadiseDimensionSavedData.getOrCreate(server.overworld());
 
-        for (ResourceLocation id : this.savedData.getDimensions()) {
-            Paradise.LOGGER.debug("Loading dynamic dimension {}", id);
-            ServerLevel level = this.createDynamicLevel(ResourceKey.create(Registries.DIMENSION, id));
+        for (Map.Entry<ResourceLocation, ParadiseType> pair : this.savedData.getDimensions().entrySet()) {
+            Paradise.LOGGER.debug("Loading dynamic dimension {}", pair.getKey());
+            ServerLevel level = this.createDynamicLevel(ResourceKey.create(Registries.DIMENSION, pair.getKey()), pair.getValue());
             applyWorldBorder(level);
         }
 
-        // Create new dimensions that don't exist yet
-        //createIfAbsent(Paradise.identifier("test_pocket"));
-        //createIfAbsent(Paradise.identifier("test_pocket2"));
+        // Static dimensions:
+        ServerLevel level = this.createDynamicLevel(ResourceKey.create(Registries.DIMENSION, Paradise.identifier("nullspace")), ParadiseType.ERROR);
+        applyWorldBorder(level);
 
         Paradise.LOGGER.info("Loaded {} dynamic dimensions", this.dynamicDimensions.size());
     }
 
-    public void createIfAbsent(ResourceLocation id) {
-        if (!this.savedData.getDimensions().contains(id)) {
-            ServerLevel level = this.createDynamicLevel(id, false);
+    public void createIfAbsent(ResourceLocation id, ParadiseType type) {
+        if (!this.savedData.containsDimension(id)) {
+            ServerLevel level = this.createDynamicLevel(id, false, type);
             applyWorldBorder(level);
-            this.savedData.addDimension(id);
+            this.savedData.addDimension(id, type);
             Paradise.LOGGER.debug("Created new dimension {}", id);
         }
     }
 
-
     public boolean dynamicDimensionExists(@NotNull ResourceKey<Level> key) {
         return this.dynamicDimensions.contains(key) || ((DimensionProvider) this.server).paradise$isIdPendingCreation(key);
     }
-
 
     public boolean anyDimensionExists(@NotNull ResourceLocation id) {
         return this.server.levelKeys().contains(ResourceKey.create(Registries.DIMENSION, id));
@@ -123,21 +133,22 @@ public class DimensionRegistry {
         if (!this.canDeleteDimension(key)) return false;
 
         ((DimensionProvider) this.server).paradise$removeLevel(key, remover, true);
+        this.savedData.deleteDimension(id);
 
         return true;
     }
 
-    public @Nullable ServerLevel createDynamicLevel(@NotNull ResourceLocation id, boolean deleteData) {
+    public @Nullable ServerLevel createDynamicLevel(@NotNull ResourceLocation id, boolean deleteData,  ParadiseType type) {
         ResourceKey<Level> key = ResourceKey.create(Registries.DIMENSION, id);
         if (!this.canCreateDimension(id)) return null;
         Paradise.LOGGER.debug("Attempting to create Paradise dimension '{}'", id);
 
         if (deleteData) ((DimensionProvider) this.server).paradise$deleteLevelData(key);
-        return this.createDynamicLevel(key);
+        return this.createDynamicLevel(key, type);
     }
 
-    private @NotNull ServerLevel createDynamicLevel(ResourceKey<Level> key) {
-        LevelStem stem = new LevelStem(this.typeHolder,  new ParadiseChunkGenerator(server.registryAccess(), key));
+    private @NotNull ServerLevel createDynamicLevel(ResourceKey<Level> key, ParadiseType type) {
+        LevelStem stem = new LevelStem(getTypeHolder(type),  getChunkGenerator(type, key));
         return this.createDynamicLevel(key, this.server.getWorldData(), stem, this.server.overworld());
     }
 
@@ -215,8 +226,29 @@ public class DimensionRegistry {
         ((ServerLevelData) level.getLevelData()).setWorldBorder(border.createSettings());
     }
 
-//    @Contract(value = "_ -> param1", pure = true)
-//    public static @NotNull DimensionRegistry from(@NotNull MinecraftServer server) {
-//        return ((DimensionProvider) server).paradise$registry();
-//    }
+    @Contract(value = "_ -> param1", pure = true)
+    public static @NotNull DimensionRegistry from(@NotNull MinecraftServer server) {
+        return ((DimensionProvider) server).paradise$registry();
+    }
+
+    public enum ParadiseType {
+        DAY,
+        NIGHT,
+        ERROR
+    }
+
+    private Holder<DimensionType> getTypeHolder(ParadiseType type) {
+        return switch (type) {
+            case DAY -> this.typeHolderDay;
+            case NIGHT -> this.typeHolderNight;
+            default -> this.typeHolderError;
+        };
+    }
+
+    private ChunkGenerator getChunkGenerator(ParadiseType type, ResourceKey<Level> key) {
+        return switch (type) {
+            case ERROR -> new ErrorChunkGenerator(server.registryAccess(), key);
+            default -> new ParadiseChunkGenerator(server.registryAccess(), key);
+        };
+    }
 }

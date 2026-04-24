@@ -29,11 +29,16 @@ public class ServerPlayerMixin {
         ServerPlayer player = (ServerPlayer) (Object) this;
         ServerLevel level = (ServerLevel) player.level();
 
-        if (level.dimensionTypeRegistration().is(
-                ResourceKey.create(Registries.DIMENSION_TYPE,
-                        Paradise.identifier("paradise_dimension")))) {
+        if (level.dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS)) {
 
-            BlockPos spawnPos = new BlockPos(56, 5, 0);
+            // Respawn normally if died in nullspace
+            if (level.dimensionTypeRegistration().is(
+                    ResourceKey.create(Registries.DIMENSION_TYPE,
+                            Paradise.identifier("paradise_dimension_error")))) {
+                return;
+            }
+
+            BlockPos spawnPos = new BlockPos(56, 6, 0);
 
             cir.setReturnValue(new DimensionTransition(
                     level,

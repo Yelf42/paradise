@@ -1,7 +1,11 @@
 package com.yelf42.paradise.blocks;
 
 import com.mojang.serialization.MapCodec;
+import com.yelf42.paradise.Paradise;
+import com.yelf42.paradise.dimensions.DataServerLocations;
+import com.yelf42.paradise.dimensions.DimensionRegistry;
 import com.yelf42.paradise.registry.ModBlockEntities;
+import com.yelf42.paradise.registry.ModBlocks;
 import com.yelf42.paradise.registry.ModComponents;
 import com.yelf42.paradise.registry.ModItems;
 import net.minecraft.core.BlockPos;
@@ -17,6 +21,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -30,6 +35,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.ticks.TickPriority;
 import org.jetbrains.annotations.Nullable;
 
+// TODO ability to choose which DataServer is nullspace for specific structure
 public class DataServerBlock extends BaseEntityBlock {
 
     public static final MapCodec<DataServerBlock> CODEC = simpleCodec(DataServerBlock::new);
@@ -69,6 +75,8 @@ public class DataServerBlock extends BaseEntityBlock {
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (hitResult.getDirection() != Direction.NORTH) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+
         ItemStack itemstack = player.getItemInHand(hand);
         if (itemstack.is(Items.MUSIC_DISC_OTHERSIDE) || itemstack.is(ModItems.ACCESS_DISC)) {
             DataSeverBlockEntity dsbe = level.getBlockEntity(pos, ModBlockEntities.DATA_SERVER).orElse(null);
@@ -117,5 +125,17 @@ public class DataServerBlock extends BaseEntityBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(BURNING);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!newState.is(ModBlocks.DATA_SERVER) && !level.isClientSide()) {
+            level.getBlockEntity(pos, ModBlockEntities.DATA_SERVER).ifPresent(dsbe -> {
+                //Paradise.LOGGER.info("Trying to remove DataServer");
+                DataServerLocations dsl = DataServerLocations.getOrCreate(level.getServer().overworld());
+                dsl.remove(dsbe.getDimension(), null, null);
+            });
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 }
