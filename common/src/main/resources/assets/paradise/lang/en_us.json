@@ -41,10 +41,13 @@
   "item.paradise.emergency_exit": "Emergency Exit",
 
   "item.paradise.access_disc": "Access Disc",
+  "item.paradise.server_locator": "Data Server Detector",
 
   "gui.paradise.uploader.unavailable": "DOWNLOADER ACCESS DENIED",
   "gui.paradise.reader.unavailable": "INVALID ADDRESS",
 
-  "tag.item.paradise.digital_blocks": "Digital Blocks"
+  "tag.item.paradise.digital_blocks": "Digital Blocks",
+
+  "subtitles.item.server_locator_ping": "Server Detector Ping"
 
 }

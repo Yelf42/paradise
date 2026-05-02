@@ -2,6 +2,7 @@ package com.yelf42.paradise.registry;
 
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.items.AccessDiscItem;
+import com.yelf42.paradise.items.ServerLocatorItem;
 import com.yelf42.paradise.platform.Services;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -24,6 +25,8 @@ public class ModItems {
     public static final LinkedHashMap<String, Item> REGISTERED_CREATIVE_ITEMS = new LinkedHashMap<>();
 
     public static final Item ACCESS_DISC = registerItem("access_disc", AccessDiscItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1).component(ModComponents.DIMENSION_ADDRESS, new ModComponents.DimensionAddressComponent(Paradise.identifier(""))));
+    public static final Item SERVER_LOCATOR = registerItem("server_locator", ServerLocatorItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1).component(ModComponents.SERVER_LOCATION, new ModComponents.ServerLocatorComponent(null)));
+
 
     private static ResourceKey<Item> vanillaItemId(String name) {
         return ResourceKey.create(Registries.ITEM, Paradise.identifier(name));

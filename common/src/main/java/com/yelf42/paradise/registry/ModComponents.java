@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yelf42.paradise.Paradise;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -35,8 +36,23 @@ public class ModComponents {
         }
     }
 
+    public static final DataComponentType<ServerLocatorComponent> SERVER_LOCATION = DataComponentType.<ServerLocatorComponent>builder().persistent(ServerLocatorComponent.CODEC).build();
+    public record ServerLocatorComponent(BlockPos location) implements TooltipProvider {
+        public static final Codec<ServerLocatorComponent> CODEC = RecordCodecBuilder.create(builder -> {
+            return builder.group(
+                    BlockPos.CODEC.fieldOf("location").forGetter(ServerLocatorComponent::location)
+            ).apply(builder, ServerLocatorComponent::new);
+        });
+        @Override
+        public void addToTooltip(Item.TooltipContext tooltipContext, Consumer<Component> tooltip, TooltipFlag tooltipFlag) {
+            String print = (location == null) ? "IDLE" : "ACTIVE";
+            tooltip.accept(Component.literal(print).withStyle(ChatFormatting.GRAY));
+        }
+    }
+
     /// BINDER
     public static void register(BiConsumer<DataComponentType<?>, ResourceLocation> consumer) {
         consumer.accept(DIMENSION_ADDRESS, Paradise.identifier("dimension_address"));
+        consumer.accept(SERVER_LOCATION, Paradise.identifier("server_location"));
     }
 }

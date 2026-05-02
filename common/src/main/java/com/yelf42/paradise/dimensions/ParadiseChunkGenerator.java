@@ -147,7 +147,6 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
 
     @Override
     public void spawnOriginalMobs(WorldGenRegion worldGenRegion) {
-
     }
 
     @Override

@@ -172,7 +172,7 @@ public class DigitalUploaderBlock extends BaseEntityBlock implements Portal {
 
         float f = downloader.getOptionalValue(DataDownloaderBlock.FACING).orElse(Direction.NORTH).toYRot();
         Vec3 vec3 = serverLocation.above().getBottomCenter();
-        return new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
+        return new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND);
     }
 
     @Override

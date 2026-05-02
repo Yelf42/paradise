@@ -11,6 +11,7 @@ import java.util.function.BiConsumer;
 public class ModSounds {
     public static final LinkedHashMap<String, SoundEvent> REGISTERED_SOUNDS = new LinkedHashMap<>();
 
+    public static final SoundEvent SERVER_LOCATOR_PING = register("item.server_locator_ping");
 
     private static SoundEvent register(String name) {
         var soundEvent = SoundEvent.createVariableRangeEvent(Paradise.identifier(name));

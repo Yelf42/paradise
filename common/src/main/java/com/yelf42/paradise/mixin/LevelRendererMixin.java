@@ -51,13 +51,16 @@ public class LevelRendererMixin {
     private void shaderUniforms(DeltaTracker deltaTracker, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
         float time = (float) level.getGameTime() / 20.0f;
 
-        if (ModRenderTypes.hologramShader == null) return;
-        Uniform gameTime = ModRenderTypes.hologramShader.getUniform("GameTime");
-        if (gameTime != null) gameTime.set(time);
+        if (ModRenderTypes.hologramShader != null) {
+            Uniform gameTime = ModRenderTypes.hologramShader.getUniform("GameTime");
+            if (gameTime != null) gameTime.set(time);
+        }
 
-        if (ModRenderTypes.digitalTeleportShader == null) return;
-        Uniform gameTime2 = ModRenderTypes.digitalTeleportShader.getUniform("GameTime");
-        if (gameTime2 != null) gameTime2.set(time);
+        if (ModRenderTypes.digitalTeleportShader != null) {
+            Uniform gameTime2 = ModRenderTypes.digitalTeleportShader.getUniform("GameTime");
+            if (gameTime2 != null) gameTime2.set(time);
+        }
+
     }
 
     @Unique

@@ -1,9 +1,7 @@
 package com.yelf42.paradise.blocks;
 
 import com.mojang.serialization.MapCodec;
-import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.dimensions.DataServerLocations;
-import com.yelf42.paradise.dimensions.DimensionRegistry;
 import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModBlocks;
 import com.yelf42.paradise.registry.ModComponents;
@@ -13,7 +11,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -35,16 +32,16 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.ticks.TickPriority;
 import org.jetbrains.annotations.Nullable;
 
-// TODO ability to choose which DataServer is nullspace for specific structure
 public class DataServerBlock extends BaseEntityBlock {
 
     public static final MapCodec<DataServerBlock> CODEC = simpleCodec(DataServerBlock::new);
 
     private static final BooleanProperty BURNING = BooleanProperty.create("burning");
+    private static final BooleanProperty CORRUPT = BooleanProperty.create("corrupt");
 
     public DataServerBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(BURNING, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(BURNING, false).setValue(CORRUPT, false));
     }
 
     @Override
@@ -58,8 +55,13 @@ public class DataServerBlock extends BaseEntityBlock {
     }
 
     @Override
+    public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+        return super.getStateForPlacement(context).setValue(CORRUPT, context.getPlayer().isCrouching());
+    }
+
+    @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new DataSeverBlockEntity(blockPos, blockState);
+        return new DataSeverBlockEntity(blockPos, blockState, blockState.getOptionalValue(DataServerBlock.CORRUPT).orElse(false));
     }
 
     @Override
@@ -124,7 +126,7 @@ public class DataServerBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(BURNING);
+        builder.add(BURNING, CORRUPT);
     }
 
     @Override

@@ -49,6 +49,36 @@ public class ModRenderTypes extends RenderType {
         }
     }
 
+    public static void setShimmerShader(ShaderInstance shader) {
+        shimmerShader = shader;
+    }
+    public static ShaderInstance shimmerShader;
+    private static final ShaderStateShard RENDERTYPE_SHIMMER_SHADER = new ShaderStateShard(() -> shimmerShader);
+    public static Function<ResourceLocation, RenderType> SHIMMER = Util.memoize(ModRenderTypes::createShimmer);
+    private static RenderType createShimmer(ResourceLocation texture) {
+        try {
+            Method create = RenderType.class.getDeclaredMethod("create", String.class, VertexFormat.class,
+                    VertexFormat.Mode.class, int.class, boolean.class, boolean.class,
+                    RenderType.CompositeState.class);
+            create.setAccessible(true);
+
+            RenderType.CompositeState state = RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_SHIMMER_SHADER)
+                    .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setLightmapState(NO_LIGHTMAP)
+                    .setOverlayState(NO_OVERLAY)
+                    .setCullState(NO_CULL)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .createCompositeState(true);
+
+            return (RenderType) create.invoke(null, "paradise_shimmer", DefaultVertexFormat.NEW_ENTITY,
+                    VertexFormat.Mode.QUADS, 1536, true, false, state);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create shimmer render type", e);
+        }
+    }
+
 
     public static void setDigitalTeleportShader(ShaderInstance shader) {
         digitalTeleportShader = shader;

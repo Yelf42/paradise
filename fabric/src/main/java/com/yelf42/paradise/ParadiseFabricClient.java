@@ -6,6 +6,7 @@ import com.yelf42.paradise.client.renderer.blockentity.DataCoreBlockEntityRender
 import com.yelf42.paradise.client.renderer.blockentity.DataReaderBlockEntityRenderer;
 import com.yelf42.paradise.client.renderer.blockentity.DigitalSymbolRenderer;
 import com.yelf42.paradise.client.renderer.entity.CrashBoltRenderer;
+import com.yelf42.paradise.client.renderer.entity.DigitalFishRenderer;
 import com.yelf42.paradise.registry.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -66,6 +67,7 @@ public class ParadiseFabricClient implements ClientModInitializer {
 
         // Entities
         EntityRendererRegistry.register(ModEntities.CRASH_BOLT, CrashBoltRenderer::new);
+        EntityRendererRegistry.register(ModEntities.DIGITAL_FISH, DigitalFishRenderer::new);
 
         // Packets
         ClientPlayNetworking.registerGlobalReceiver(ModPackets.CreateDimensionPayload.ID, (payload, context) -> {
@@ -99,6 +101,12 @@ public class ParadiseFabricClient implements ClientModInitializer {
                     Paradise.identifier("hologram"),
                     DefaultVertexFormat.NEW_ENTITY,
                     ModRenderTypes::setHologramShader
+            );
+
+            context.register(
+                    Paradise.identifier("shimmer"),
+                    DefaultVertexFormat.NEW_ENTITY,
+                    ModRenderTypes::setShimmerShader
             );
 
             context.register(

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.00,
+  "ingredient": {
+    "item": "paradise:access_disc"
+  },
+  "result": {
+    "id": "paradise:access_disc",
+    "components": {
+      "paradise:dimension_address": {
+        "address": "paradise:nullspace"
+      }
+    }
+  }
+}

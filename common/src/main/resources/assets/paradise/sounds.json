@@ -1,0 +1,8 @@
+{
+  "item.server_locator_ping": {
+    "sounds": [
+      "paradise:item/click"
+    ],
+    "subtitle": "subtitles.item.server_locator_ping"
+  }
+}

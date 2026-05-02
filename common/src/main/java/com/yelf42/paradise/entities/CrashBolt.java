@@ -106,7 +106,7 @@ public class CrashBolt extends Entity {
 
         Vec3 vec3 = serverLocation.north().getBottomCenter();
         float f = Direction.NORTH.toYRot();
-        entity.changeDimension(new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET)));
+        entity.changeDimension(new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND));
     }
 
     private void teleportToSpawn(Entity entity, ServerLevel serverLevel) {
@@ -114,10 +114,10 @@ public class CrashBolt extends Entity {
         BlockPos pos = overworld.getSharedSpawnPos();
         float f = entity.getYRot();
         Vec3 vec3 = entity.adjustSpawnLocation(overworld, pos).getBottomCenter();
-        DimensionTransition transition = new DimensionTransition(overworld, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.DO_NOTHING);
+        DimensionTransition transition = new DimensionTransition(overworld, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND);
 
         if (entity instanceof ServerPlayer serverplayer) {
-            transition =  serverplayer.findRespawnPositionAndUseSpawnBlock(false, DimensionTransition.DO_NOTHING);
+            transition =  serverplayer.findRespawnPositionAndUseSpawnBlock(false, DimensionTransition.PLAY_PORTAL_SOUND);
         }
 
         entity.changeDimension(transition);

@@ -23,6 +23,11 @@ public class DataSeverBlockEntity extends BlockEntity {
         this.dimension = Paradise.identifier("");
     }
 
+    public DataSeverBlockEntity(BlockPos pos, BlockState blockState, boolean corrupt) {
+        super(ModBlockEntities.DATA_SERVER, pos, blockState);
+        this.dimension = Paradise.identifier(corrupt ? "nullspace" : "");
+    }
+
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         this.dimension = ResourceLocation.tryParse(tag.getString("dimension"));
@@ -42,15 +47,16 @@ public class DataSeverBlockEntity extends BlockEntity {
         if (!level.isClientSide) {
             DimensionRegistry.ParadiseType type = DimensionRegistry.ParadiseType.DAY;
             if (level.getRandom().nextInt(4)  == 0) type = DimensionRegistry.ParadiseType.NIGHT;
-            if (level.getRandom().nextInt(20) == 0) type = DimensionRegistry.ParadiseType.ERROR;
 
             if (this.dimension.getPath().isEmpty()) {
                 this.dimension = ((DimensionProvider) level.getServer()).paradise$createIfAbsent(type);
                 //Paradise.LOGGER.info("Created dimension: " + dimension + ", at: " + this.worldPosition);
             }
 
-            DataServerLocations dsl = DataServerLocations.getOrCreate(level.getServer().overworld());
-            dsl.add((type == DimensionRegistry.ParadiseType.ERROR) ? Paradise.identifier("nullspace") : this.dimension, this.getBlockPos(), level.dimension().location());
+            if (!this.dimension.getPath().equals("nullspace")) {
+                DataServerLocations dsl = DataServerLocations.getOrCreate(level.getServer().overworld());
+                dsl.add(this.dimension, this.getBlockPos(), level.dimension().location());
+            }
         }
     }
 

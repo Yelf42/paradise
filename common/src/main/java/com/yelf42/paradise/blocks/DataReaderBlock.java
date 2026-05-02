@@ -189,7 +189,7 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
 
             spawnPoint = spawnPos.getBottomCenter();
 
-            return new DimensionTransition(serverlevel, spawnPoint, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
+            return new DimensionTransition(serverlevel, spawnPoint, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND);
         }
 
         // Clear target location:

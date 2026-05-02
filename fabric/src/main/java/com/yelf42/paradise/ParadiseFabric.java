@@ -3,6 +3,7 @@ package com.yelf42.paradise;
 import com.yelf42.paradise.dimensions.DimensionAddedCallback;
 import com.yelf42.paradise.dimensions.DimensionRemovedCallback;
 import com.yelf42.paradise.dimensions.ParadiseChunkGenerator;
+import com.yelf42.paradise.entities.DigitalFish;
 import com.yelf42.paradise.registry.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -10,10 +11,14 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.level.levelgen.Heightmap;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -79,6 +84,6 @@ public class ParadiseFabric implements ModInitializer {
     }
 
     private void registerEntityAttributes() {
-        // TODO this is how I did entity attributes, might be an easier way in common?
+        FabricDefaultAttributeRegistry.register(ModEntities.DIGITAL_FISH, DigitalFish.createAttributes());
     }
 }

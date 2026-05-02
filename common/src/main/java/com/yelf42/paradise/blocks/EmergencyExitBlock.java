@@ -107,7 +107,7 @@ public class EmergencyExitBlock extends DigitalUploaderBlock {
 
         Vec3 vec3 = serverLocation.north().getBottomCenter();
         float f = Direction.NORTH.toYRot();
-        return new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
+        return new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND);
     }
 
     @Override

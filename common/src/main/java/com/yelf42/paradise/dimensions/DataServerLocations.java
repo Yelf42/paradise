@@ -41,7 +41,7 @@ public class DataServerLocations extends SavedData {
             BlockPos pos = NbtUtils.readBlockPos(entry, "pos").orElseThrow();
             ResourceLocation dim = ResourceLocation.parse(entry.getString("dim"));
             data.servers.put(id, Pair.of(pos, dim));
-            Paradise.LOGGER.info("DataServerLocation: {} {} {}", id, pos, dim);
+            //Paradise.LOGGER.info("DataServerLocation: {} {} {}", id, pos, dim);
         }
         return data;
     }
