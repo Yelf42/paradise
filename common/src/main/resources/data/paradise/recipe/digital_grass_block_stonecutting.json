@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "paradise:digital_volume"
+  },
+  "result": {
+    "count": 1,
+    "id": "paradise:digital_grass_block"
+  }
+}

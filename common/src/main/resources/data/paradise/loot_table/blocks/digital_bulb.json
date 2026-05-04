@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "paradise:digital_bulb",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "bulb": "true"
+              }
+            }
+          ],
+          "name": "paradise:digital_bulb"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "paradise:blocks/digital_bulb"
+}

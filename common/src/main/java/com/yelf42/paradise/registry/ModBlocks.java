@@ -211,6 +211,22 @@ public class ModBlocks {
             new Item.Properties().rarity(Rarity.RARE)
     );
 
+    public static final Block DIGITAL_BULB = register(
+            "digital_bulb",
+            DigitalBulb::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_GRAY)
+                    .strength(0.0F)
+                    .noTerrainParticles()
+                    .noOcclusion()
+                    .noCollission()
+                    .offsetType(BlockBehaviour.OffsetType.XZ)
+                    .lightLevel((state) -> 15)
+                    .sound(SoundType.METAL)
+                    .pushReaction(PushReaction.DESTROY),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+
     public static Block register(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties settings, Item.Properties itemSettings) {
         Block block = factory.apply(settings);
         REGISTERED_BLOCKS.put(name, block);

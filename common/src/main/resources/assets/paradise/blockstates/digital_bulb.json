@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "bulb=true,chained=false": {
+      "model": "paradise:block/digital_bulb"
+    },
+    "bulb=true,chained=true": {
+      "model": "paradise:block/digital_bulb_chained"
+    },
+    "bulb=false": {
+      "model": "paradise:block/digital_bulb_rope"
+    }
+  }
+}

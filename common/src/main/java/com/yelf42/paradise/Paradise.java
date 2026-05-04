@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 // TODO Verify all 48 bunkers within 16000 blocks
 // TODO way to lock servers/readers
+
 // TODO giant digital asparagus
 public class Paradise {
 

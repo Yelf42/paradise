@@ -35,6 +35,8 @@ public class ParadiseFabricClient implements ClientModInitializer {
 
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DIGITAL_PILLAR, RenderType.solid());
 
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DIGITAL_BULB, RenderType.translucent());
+
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.EMERGENCY_EXIT, RenderType.cutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DIGITAL_UPLOADER, RenderType.cutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DATA_DOWNLOADER, RenderType.cutout());
