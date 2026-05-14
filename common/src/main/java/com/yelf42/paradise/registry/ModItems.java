@@ -1,8 +1,7 @@
 package com.yelf42.paradise.registry;
 
 import com.yelf42.paradise.Paradise;
-import com.yelf42.paradise.items.AccessDiscItem;
-import com.yelf42.paradise.items.ServerLocatorItem;
+import com.yelf42.paradise.items.*;
 import com.yelf42.paradise.platform.Services;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -26,6 +25,9 @@ public class ModItems {
 
     public static final Item ACCESS_DISC = registerItem("access_disc", AccessDiscItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1).component(ModComponents.DIMENSION_ADDRESS, new ModComponents.DimensionAddressComponent(Paradise.identifier(""))));
     public static final Item SERVER_LOCATOR = registerItem("server_locator", ServerLocatorItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1).component(ModComponents.SERVER_LOCATION, new ModComponents.ServerLocatorComponent(null)));
+    public static final Item ADMIN_TOOL = registerItem("admin_tool", AdminToolItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
+    public static final Item BUCKET_HAT = registerItem("bucket_hat", BucketHatItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
+    public static final Item EGG_HAT = registerItem("egg_hat", EggHatItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
 
 
     private static ResourceKey<Item> vanillaItemId(String name) {
@@ -34,6 +36,11 @@ public class ModItems {
 
     public static Item registerItem(String name, Function<Item.Properties, Item> factory, Item.Properties properties) {
         return registerItem(vanillaItemId(name), factory, properties);
+    }
+
+    public static Item registerItemDirect(String name, Item item) {
+        REGISTERED_ITEMS.put(name, item);
+        return item;
     }
 
     public static Item registerSpawnEgg(String name, EntityType<? extends Mob> entityType) {

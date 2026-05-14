@@ -2,6 +2,7 @@ package com.yelf42.paradise;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.yelf42.paradise.client.ModRenderTypes;
+import com.yelf42.paradise.client.particle.RippleParticle;
 import com.yelf42.paradise.client.renderer.blockentity.DataCoreBlockEntityRenderer;
 import com.yelf42.paradise.client.renderer.blockentity.DataReaderBlockEntityRenderer;
 import com.yelf42.paradise.client.renderer.blockentity.DigitalSymbolRenderer;
@@ -11,15 +12,13 @@ import com.yelf42.paradise.registry.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -71,6 +70,11 @@ public class ParadiseFabricClient implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.CRASH_BOLT, CrashBoltRenderer::new);
         EntityRendererRegistry.register(ModEntities.DIGITAL_FISH, DigitalFishRenderer::new);
 
+        // Particles
+        ParticleFactoryRegistry.getInstance().register(ModParticles.DAY_RIPPLE, RippleParticle.DayFactory::new);
+        ParticleFactoryRegistry.getInstance().register(ModParticles.NIGHT_RIPPLE, RippleParticle.NightFactory::new);
+        ParticleFactoryRegistry.getInstance().register(ModParticles.ERROR_RIPPLE, RippleParticle.ErrorFactory::new);
+
         // Packets
         ClientPlayNetworking.registerGlobalReceiver(ModPackets.CreateDimensionPayload.ID, (payload, context) -> {
             ResourceLocation id = payload.id();
@@ -116,7 +120,14 @@ public class ParadiseFabricClient implements ClientModInitializer {
                     DefaultVertexFormat.NEW_ENTITY,
                     ModRenderTypes::setDigitalTeleportShader
             );
+
+            context.register(
+                    Paradise.identifier("pixelize"),
+                    DefaultVertexFormat.NEW_ENTITY,
+                    ModRenderTypes::setPixelizeShader
+            );
         });
+
     }
 
 }

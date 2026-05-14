@@ -45,6 +45,9 @@
 
   "item.paradise.access_disc": "Access Disc",
   "item.paradise.server_locator": "Data Server Detector",
+  "item.paradise.admin_tool": "Gardening Stick",
+  "item.paradise.bucket_hat": "Bucket Hat",
+  "item.paradise.egg_hat": "Fried Egg",
 
   "gui.paradise.uploader.unavailable": "DOWNLOADER ACCESS DENIED",
   "gui.paradise.reader.unavailable": "INVALID ADDRESS",

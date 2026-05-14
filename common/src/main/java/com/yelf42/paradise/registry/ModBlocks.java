@@ -57,6 +57,7 @@ public class ModBlocks {
                     .noOcclusion()
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
                     .noTerrainParticles()
+                    .sound(SoundType.WET_GRASS) // TODO more liquidy sfx?
                     .pushReaction(PushReaction.BLOCK),
             new Item.Properties().rarity(Rarity.UNCOMMON)
     );

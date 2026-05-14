@@ -1,0 +1,6 @@
+{
+  "parent": "paradise:item/handheld",
+  "textures": {
+    "layer0": "paradise:item/admin_tool"
+  }
+}

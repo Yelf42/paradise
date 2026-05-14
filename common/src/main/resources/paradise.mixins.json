@@ -8,6 +8,8 @@
     "BedBlockMixin",
     "ChunkMapAccessor",
     "DistanceManagerAccessor",
+    "EntityMixin",
+    "FishingHookMixin",
     "HolderSetNamedAccessor",
     "MappedRegistryAccessor",
     "MinecraftServerAccessor",
@@ -23,6 +25,7 @@
   ],
   "client": [
     "ClientPacketListenerMixin",
+    "LivingEntityRendererMixin",
     "GuiMixin",
     "LevelRendererMixin",
     "LocalPlayerMixin"

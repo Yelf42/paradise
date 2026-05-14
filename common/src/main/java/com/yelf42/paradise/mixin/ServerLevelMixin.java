@@ -89,7 +89,7 @@ public abstract class ServerLevelMixin {
     private BlockPos paradise$findBoltTargetAround(BlockPos pos, ServerLevel level) {
         BlockPos blockpos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos);
         Player player = level.getNearestPlayer(0.0, 0.0, 0.0, 256, false);
-        if (player != null && level.getRandom().nextInt(40) == 0) {
+        if (player != null && level.getRandom().nextInt(160) == 0) {
             blockpos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, player.blockPosition());
         }
 

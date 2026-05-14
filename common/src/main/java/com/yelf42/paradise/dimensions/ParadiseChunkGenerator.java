@@ -87,9 +87,9 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
         // No carvers in a pocket dimension
     }
 
+    // Spawn platform generation
     @Override
     public void applyBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager) {
-        // Leave empty unless you want decoration/structures
         ChunkPos chunkPos = chunk.getPos();
         if (chunkPos.x == 3) {
             if (chunkPos.z == 0) {
@@ -100,7 +100,11 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
                             int worldZ = chunkPos.getMinBlockZ() + z;
                             BlockPos pos = new BlockPos(worldX, y, worldZ);
                             if (y < 6) {
-                                chunk.setBlockState(pos, ModBlocks.DIGITAL_PILLAR_BARRIER.defaultBlockState(), false);
+                                if (y == 5 || y <= 1) {
+                                    chunk.setBlockState(pos, ModBlocks.DIGITAL_PILLAR_BARRIER.defaultBlockState(), false);
+                                } else {
+                                    chunk.setBlockState(pos, ModBlocks.DIGITAL_PILLAR.defaultBlockState(), false);
+                                }
                             } else {
                                 chunk.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
                             }
@@ -127,7 +131,11 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
                         int worldZ = chunkPos.getMinBlockZ() + 15;
                         BlockPos pos = new BlockPos(worldX, y, worldZ);
                         if (y < 6) {
-                            chunk.setBlockState(pos, ModBlocks.DIGITAL_PILLAR_BARRIER.defaultBlockState(), false);
+                            if (y == 5 || y <= 1) {
+                                chunk.setBlockState(pos, ModBlocks.DIGITAL_PILLAR_BARRIER.defaultBlockState(), false);
+                            } else {
+                                chunk.setBlockState(pos, ModBlocks.DIGITAL_PILLAR.defaultBlockState(), false);
+                            }
                         } else {
                             chunk.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
                         }

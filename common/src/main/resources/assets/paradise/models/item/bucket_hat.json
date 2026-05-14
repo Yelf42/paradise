@@ -1,0 +1,79 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "paradise:item/bucket_hat"
+	},
+	"elements": [
+		{
+			"from": [4, 6, 4],
+			"to": [12, 9, 12],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 6, 4]},
+			"faces": {
+				"north": {"uv": [9, 7, 16, 10], "texture": "#0"},
+				"east": {"uv": [9, 7, 16, 10], "texture": "#0"},
+				"south": {"uv": [9, 7, 16, 10], "texture": "#0"},
+				"west": {"uv": [9, 7, 16, 10], "texture": "#0"},
+				"up": {"uv": [9, 0, 16, 7], "texture": "#0"}
+			}
+		},
+		{
+			"from": [3.5, 5, 3.5],
+			"to": [12.5, 6, 12.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [3, 5, 3]},
+			"faces": {
+				"north": {"uv": [0, 9, 9, 10], "texture": "#0"},
+				"east": {"uv": [0, 9, 9, 10], "texture": "#0"},
+				"south": {"uv": [0, 9, 9, 10], "texture": "#0"},
+				"west": {"uv": [0, 9, 9, 10], "texture": "#0"},
+				"up": {"uv": [0, 0, 9, 9], "texture": "#0"},
+				"down": {"uv": [0, 0, 9, 9], "texture": "#0"}
+			}
+		},
+		{
+			"from": [2.5, 6.75, 7],
+			"to": [13.5, 10.75, 7],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [2, 7, 7]},
+			"faces": {
+				"north": {"uv": [4, 12, 15, 16], "texture": "#0"},
+				"south": {"uv": [4, 12, 15, 16], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [72, 45, 0],
+			"translation": [0, 2.75, 1.5],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [72, 45, 0],
+			"translation": [0, 2.75, 1.5],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"firstperson_righthand": {
+			"rotation": [10, 22, -1],
+			"translation": [1.25, 1.25, 0],
+			"scale": [0.7, 0.7, 0.7]
+		},
+		"firstperson_lefthand": {
+			"rotation": [10, 22, -1],
+			"translation": [1.25, 1.25, 0],
+			"scale": [0.7, 0.7, 0.7]
+		},
+		"ground": {
+			"scale": [0.6, 0.6, 0.6]
+		},
+		"gui": {
+			"rotation": [22, -141, 0]
+		},
+		"head": {
+			"rotation": [4, 0, 0],
+			"translation": [0, 5.5, 0.5],
+			"scale": [1.8, 1.8, 1.8]
+		},
+		"on_shelf": {
+			"rotation": [0, 180, 0]
+		}
+	}
+}

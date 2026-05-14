@@ -12,18 +12,22 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.border.WorldBorder;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import org.joml.*;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,6 +36,10 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.lang.Math;
+import java.util.ArrayList;
+import java.util.List;
 
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
@@ -46,6 +54,12 @@ public class LevelRendererMixin {
     @Final
     @Shadow
     private static ResourceLocation FORCEFIELD_LOCATION;
+
+    @Final
+    @Shadow
+    private RenderBuffers renderBuffers;
+    @Shadow
+    private Frustum cullingFrustum;
 
     @Inject(method = "renderLevel", at = @At("HEAD"))
     private void shaderUniforms(DeltaTracker deltaTracker, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
@@ -62,6 +76,164 @@ public class LevelRendererMixin {
         }
 
     }
+
+    @Unique
+    private static final ResourceLocation PIXELIZE_TEXTURE_STAND_IN = Paradise.identifier("textures/environment/white.png");
+    @Unique
+    private static final List<Vector4f> CLIP_BUFFER = new ArrayList<>(16);
+    @Unique
+    private static final Vector4f[] CORNER_BUFFER = {
+            new Vector4f(),new Vector4f(), new Vector4f(),new Vector4f(),
+            new Vector4f(),new Vector4f(), new Vector4f(),new Vector4f()
+    };
+    @Unique
+    private static final int[][] AABB_FACES = {
+            {0,1,3,2},{4,5,7,6},{0,1,5,4},{2,3,7,6},{0,2,6,4},{1,3,7,5}
+    };
+    @Unique
+    private static final float[][] CLIP_PLANES = {
+            { 1,  0,  0,  1},
+            {-1,  0,  0,  1},
+            { 0,  1,  0,  1},
+            { 0, -1,  0,  1},
+            { 0,  0,  1,  1},
+            { 0,  0, -1,  1},
+    };
+
+    @Inject(method = "renderLevel", at = @At("TAIL"))
+    private void renderPixelizeQuads(DeltaTracker deltaTracker, boolean renderBlockOutline,
+                                     Camera camera, GameRenderer gameRenderer, LightTexture lightTexture,
+                                     Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
+
+        if (!level.dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS)) return;
+        if (ModRenderTypes.pixelizeShader == null) return;
+
+        MultiBufferSource.BufferSource bufferSource = this.renderBuffers.bufferSource();
+        Matrix4f viewProj = new Matrix4f(projectionMatrix).mul(frustumMatrix);
+        Minecraft mc = Minecraft.getInstance();
+        Vec3 camPos = camera.getPosition();
+        float partialTick = deltaTracker.getGameTimeDeltaPartialTick(false);
+        RenderType renderType = ModRenderTypes.PIXELIZE.apply(PIXELIZE_TEXTURE_STAND_IN);
+
+        for (Entity entity : this.level.entitiesForRendering()) {
+            if (!cullingFrustum.isVisible(entity.getBoundingBox())) continue;
+            if (entity == mc.player && mc.options.getCameraType().isFirstPerson()) continue;
+            if (!(entity instanceof LivingEntity living)) continue;
+
+            ItemStack offhand = living.getItemBySlot(EquipmentSlot.OFFHAND);
+            ItemStack mainhand = living.getItemBySlot(EquipmentSlot.MAINHAND);
+            if (!mainhand.is(Items.STICK) && !offhand.is(Items.STICK)) continue;
+
+            AABB box = entity.getBoundingBox().inflate(0.3, 0.3, 0.3);
+            double dx = Mth.lerp(partialTick, entity.xOld, entity.getX()) - entity.getX();
+            double dy = Mth.lerp(partialTick, entity.yOld, entity.getY()) - entity.getY();
+            double dz = Mth.lerp(partialTick, entity.zOld, entity.getZ()) - entity.getZ();
+
+            CORNER_BUFFER[0].set((float)(box.minX+dx-camPos.x), (float)(box.minY+dy-camPos.y), (float)(box.minZ+dz-camPos.z), 1f);
+            CORNER_BUFFER[1].set((float)(box.maxX+dx-camPos.x), (float)(box.minY+dy-camPos.y), (float)(box.minZ+dz-camPos.z), 1f);
+            CORNER_BUFFER[2].set((float)(box.minX+dx-camPos.x), (float)(box.maxY+dy-camPos.y), (float)(box.minZ+dz-camPos.z), 1f);
+            CORNER_BUFFER[3].set((float)(box.maxX+dx-camPos.x), (float)(box.maxY+dy-camPos.y), (float)(box.minZ+dz-camPos.z), 1f);
+            CORNER_BUFFER[4].set((float)(box.minX+dx-camPos.x), (float)(box.minY+dy-camPos.y), (float)(box.maxZ+dz-camPos.z), 1f);
+            CORNER_BUFFER[5].set((float)(box.maxX+dx-camPos.x), (float)(box.minY+dy-camPos.y), (float)(box.maxZ+dz-camPos.z), 1f);
+            CORNER_BUFFER[6].set((float)(box.minX+dx-camPos.x), (float)(box.maxY+dy-camPos.y), (float)(box.maxZ+dz-camPos.z), 1f);
+            CORNER_BUFFER[7].set((float)(box.maxX+dx-camPos.x), (float)(box.maxY+dy-camPos.y), (float)(box.maxZ+dz-camPos.z), 1f);
+
+            for (Vector4f v : CORNER_BUFFER) viewProj.transform(v);
+
+            float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE;
+            float maxX = -Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
+            boolean anyValid = false;
+
+            for (int[] face : AABB_FACES) {
+                CLIP_BUFFER.clear();
+                for (int idx : face) CLIP_BUFFER.add(CORNER_BUFFER[idx]);
+
+                List<Vector4f> clipped = paradise$clipPolygon(CLIP_BUFFER);
+
+                for (Vector4f v : clipped) {
+                    if (v.w <= 0) continue;
+                    float sx = v.x / v.w;
+                    float sy = v.y / v.w;
+
+                    minX = Math.min(minX, Math.max(-1f, sx));
+                    minY = Math.min(minY, Math.max(-1f, sy));
+                    maxX = Math.max(maxX, Math.min(1f, sx));
+                    maxY = Math.max(maxY, Math.min(1f, sy));
+                    anyValid = true;
+                }
+            }
+
+            if (!anyValid) continue;
+            if (minX > maxX || minY > maxY) continue;
+
+            PoseStack poseStack = new PoseStack();
+            PoseStack.Pose lastPose = poseStack.last();
+            Matrix4f mat = lastPose.pose();
+
+            double distance = camPos.distanceTo(entity.position());
+            int pixelScale = (int) Mth.clamp(Math.round(255 * Mth.clamp(1.0 / (distance * 0.5), 0.05, 0.5) / 0.05) * 0.05, 255 * 0.05, 255 * 0.5);
+
+            float quadWidth  = maxX - minX;
+            float quadHeight = maxY - minY;
+            int encodedWidth  = (int)((quadWidth  / 2f) * 255);
+            int encodedHeight = (int)((quadHeight / 2f) * 255);
+
+            float threshold = 0.001f;
+            int edgeMask = (minX > -1f + threshold ? 1 : 0)
+                    | (maxX <  1f - threshold ? 2 : 0)
+                    | (minY > -1f + threshold ? 4 : 0)
+                    | (maxY <  1f - threshold ? 8 : 0);
+
+            //Paradise.LOGGER.info("minX: {}, maxX: {}, minY: {}, maxY: {}, edgeMask: {}", minX, maxX, minY, maxY, edgeMask);
+            //Paradise.LOGGER.info("quadW: {}, quadH: {}, encodedW: {}, encodedH: {}", quadWidth, quadHeight, encodedWidth, encodedHeight);
+
+            VertexConsumer consumer = bufferSource.getBuffer(renderType);
+            consumer.addVertex(mat, minX, minY, 0.0f).setColor(encodedWidth, encodedHeight, edgeMask, pixelScale).setUv(0f, 1f).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(lastPose, 0, 1, 0);
+            consumer.addVertex(mat, minX, maxY, 0.0f).setColor(encodedWidth, encodedHeight, edgeMask, pixelScale).setUv(0f, 0f).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(lastPose, 0, 1, 0);
+            consumer.addVertex(mat, maxX, maxY, 0.0f).setColor(encodedWidth, encodedHeight, edgeMask, pixelScale).setUv(1f, 0f).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(lastPose, 0, 1, 0);
+            consumer.addVertex(mat, maxX, minY, 0.0f).setColor(encodedWidth, encodedHeight, edgeMask, pixelScale).setUv(1f, 1f).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(lastPose, 0, 1, 0);
+
+            bufferSource.endBatch(renderType);
+        }
+    }
+
+    @Unique
+    private static List<Vector4f> paradise$clipPolygon(List<Vector4f> verts) {
+        List<Vector4f> current = verts;
+        for (float[] plane : CLIP_PLANES) {
+            current = paradise$clipAgainstPlane(current, plane);
+            if (current.isEmpty()) return current;
+        }
+        return current;
+    }
+
+    @Unique
+    private static List<Vector4f> paradise$clipAgainstPlane(List<Vector4f> verts, float[] plane) {
+        if (verts.isEmpty()) return verts;
+        List<Vector4f> result = new ArrayList<>();
+
+        for (int i = 0; i < verts.size(); i++) {
+            Vector4f a = verts.get(i);
+            Vector4f b = verts.get((i + 1) % verts.size());
+
+            float da = plane[0]*a.x + plane[1]*a.y + plane[2]*a.z + plane[3]*a.w;
+            float db = plane[0]*b.x + plane[1]*b.y + plane[2]*b.z + plane[3]*b.w;
+
+            if (da >= 0) result.add(a);
+
+            if ((da >= 0) != (db >= 0)) {
+                float t = da / (da - db);
+                result.add(new Vector4f(
+                        a.x + t * (b.x - a.x),
+                        a.y + t * (b.y - a.y),
+                        a.z + t * (b.z - a.z),
+                        a.w + t * (b.w - a.w)
+                ));
+            }
+        }
+        return result;
+    }
+
 
     @Unique
     private static final ResourceLocation CLOUDS_TEXTURE = Paradise.identifier("textures/environment/clouds.png");
@@ -116,6 +288,8 @@ public class LevelRendererMixin {
                 this.starBuffer.bind();
                 this.starBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, GameRenderer.getPositionShader());
                 VertexBuffer.unbind();
+
+                RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
             } else if (this.level.dimensionTypeRegistration().is(
                     ResourceKey.create(Registries.DIMENSION_TYPE,
                             Paradise.identifier("paradise_dimension_error")))) {
@@ -187,6 +361,8 @@ public class LevelRendererMixin {
                         GameRenderer.getPositionShader()
                 );
                 VertexBuffer.unbind();
+
+                RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
                 RenderSystem.disablePolygonOffset();
                 RenderSystem.polygonOffset(0f, 0f);
