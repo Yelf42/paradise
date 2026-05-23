@@ -1,0 +1,46 @@
+{
+    "parent": "block/block",
+    "ambientocclusion": false,
+	"textures": {
+        "frame": "paradise:block/digital_uploader_top_edge",
+		"text": "paradise:block/red",
+		"particle": "#frame"
+	},
+	"elements": [
+		{
+			"from": [16, 16, 16],
+			"to": [0, 0, 0],
+            "shade": false,
+			"rotation": {"angle": 0, "axis": "y", "origin": [16, 16, 16]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#text"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#text"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#text"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#text"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#text"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#text"}
+			},
+            "light_emission": 15
+        },
+      {
+        "from": [
+          0,
+          0,
+          0
+        ],
+        "to": [
+          16,
+          16,
+          16
+        ],
+        "faces": {
+          "down": {"texture": "#frame"},
+          "up": {"texture": "#frame"},
+          "north": {"texture": "#frame"},
+          "south": {"texture": "#frame"},
+          "west": {"texture": "#frame"},
+          "east": {"texture": "#frame"}
+        }
+      }
+	]
+}

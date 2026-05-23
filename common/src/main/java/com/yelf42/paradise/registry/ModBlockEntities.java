@@ -22,8 +22,11 @@ public class ModBlockEntities {
     public static BlockEntityType<DataReaderBlockEntity> DATA_READER = register("data_reader", DataReaderBlockEntity::new, ModBlocks.DATA_READER);
 
     public static BlockEntityType<DigitalUploaderBlockEntity> DIGITAL_UPLOADER = register("digital_uploader", DigitalUploaderBlockEntity::new, ModBlocks.DIGITAL_UPLOADER);
-    public static BlockEntityType<EmergencyExitBlockEntity> EMERGENCY_EXIT = register("emergency_exit", EmergencyExitBlockEntity::new, ModBlocks.EMERGENCY_EXIT);
+    public static BlockEntityType<DigitalEmergencyExitBlockEntity> EMERGENCY_EXIT = register("emergency_exit", DigitalEmergencyExitBlockEntity::new, ModBlocks.EMERGENCY_EXIT);
     public static BlockEntityType<DataDownloaderBlockEntity> DATA_DOWNLOADER = register("data_downloader", DataDownloaderBlockEntity::new, ModBlocks.DATA_DOWNLOADER);
+    public static BlockEntityType<DigitalWhitelistControllerBlockEntity> WHITELIST_CONTROLLER = register("whitelist_controller", DigitalWhitelistControllerBlockEntity::new, ModBlocks.WHITELIST_CONTROLLER);
+    public static BlockEntityType<DigitalWhitelisterBlockEntity> DIGITAL_WHITELISTER = register("digital_whitelister", DigitalWhitelisterBlockEntity::new, ModBlocks.DIGITAL_WHITELISTER);
+    public static BlockEntityType<DigitalIntruderDetectorBlockEntity> DIGITAL_INTRUDER_DETECTOR = register("digital_intruder_detector", DigitalIntruderDetectorBlockEntity::new, ModBlocks.DIGITAL_INTRUDER_DETECTOR);
 
 
     public static <T extends BlockEntity> BlockEntityType<T> register(String name, BiFunction<BlockPos, BlockState, T> function, Block block) {

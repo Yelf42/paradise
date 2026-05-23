@@ -1,9 +1,7 @@
 package com.yelf42.paradise.blocks;
 
 import com.mojang.serialization.MapCodec;
-import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.dimensions.DataServerLocations;
-import com.yelf42.paradise.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -12,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -34,10 +31,10 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-public class EmergencyExitBlock extends DigitalUploaderBlock {
-    public static final MapCodec<EmergencyExitBlock> CODEC = simpleCodec(EmergencyExitBlock::new);
+public class DigitalEmergencyExitBlock extends DigitalUploaderBlock {
+    public static final MapCodec<DigitalEmergencyExitBlock> CODEC = simpleCodec(DigitalEmergencyExitBlock::new);
 
-    public EmergencyExitBlock(Properties properties) {
+    public DigitalEmergencyExitBlock(Properties properties) {
         super(properties);
     }
 
@@ -52,7 +49,7 @@ public class EmergencyExitBlock extends DigitalUploaderBlock {
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new EmergencyExitBlockEntity(blockPos, blockState);
+        return new DigitalEmergencyExitBlockEntity(blockPos, blockState);
     }
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {return null;}

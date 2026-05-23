@@ -57,7 +57,7 @@ public class ModBlocks {
                     .noOcclusion()
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
                     .noTerrainParticles()
-                    .sound(SoundType.WET_GRASS) // TODO more liquidy sfx?
+                    .sound(SoundType.WET_GRASS) // TODO more watery sfx?
                     .pushReaction(PushReaction.BLOCK),
             new Item.Properties().rarity(Rarity.UNCOMMON)
     );
@@ -129,6 +129,70 @@ public class ModBlocks {
             new Item.Properties().rarity(Rarity.UNCOMMON)
     );
 
+    public static final Block EMERGENCY_EXIT = registerCreative("emergency_exit",
+            DigitalEmergencyExitBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_RED)
+                    .noOcclusion()
+                    .noLootTable()
+                    .strength(-1.0F, 3600000.8F)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
+                    .noTerrainParticles()
+                    .pushReaction(PushReaction.BLOCK),
+            new Item.Properties().rarity(Rarity.RARE)
+    );
+
+    public static final Block DIGITAL_BULB = register(
+            "digital_bulb",
+            DigitalBulb::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_GRAY)
+                    .strength(0.0F)
+                    .noTerrainParticles()
+                    .noOcclusion()
+                    .noCollission()
+                    .offsetType(BlockBehaviour.OffsetType.XZ)
+                    .lightLevel((state) -> 15)
+                    .sound(SoundType.METAL)
+                    .pushReaction(PushReaction.DESTROY),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+
+    public static final Block DIGITAL_WHITELISTER = register(
+            "digital_whitelister",
+            DigitalWhitelister::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.QUARTZ)
+                    .strength(0.0F)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+
+    public static final Block DIGITAL_INTRUDER_DETECTOR = register(
+            "digital_intruder_detector",
+            DigitalIntruderDetector::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.QUARTZ)
+                    .strength(0.1F)
+                    .lightLevel((state) -> state.getValue(DigitalIntruderDetector.DETECTED) ? 15 : 0)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+
+
+    public static final Block WHITELIST_CONTROLLER = registerCreative("whitelist_controller",
+            DigitalWhitelistController::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.QUARTZ)
+                    .noOcclusion()
+                    .noLootTable()
+                    .strength(-1.0F, 3600000.8F)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
+                    .noTerrainParticles()
+                    .pushReaction(PushReaction.BLOCK),
+            new Item.Properties().rarity(Rarity.RARE)
+    );
+
     public static final Block DATA_DOWNLOADER = register(
             "data_downloader",
             DataDownloaderBlock::new,
@@ -197,35 +261,6 @@ public class ModBlocks {
                     .sound(SoundType.METAL)
                     .pushReaction(PushReaction.BLOCK),
             new Item.Properties().rarity(Rarity.RARE)
-    );
-
-    public static final Block EMERGENCY_EXIT = registerCreative("emergency_exit",
-            EmergencyExitBlock::new,
-            BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.COLOR_RED)
-                    .noOcclusion()
-                    .noLootTable()
-                    .strength(-1.0F, 3600000.8F)
-                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
-                    .noTerrainParticles()
-                    .pushReaction(PushReaction.BLOCK),
-            new Item.Properties().rarity(Rarity.RARE)
-    );
-
-    public static final Block DIGITAL_BULB = register(
-            "digital_bulb",
-            DigitalBulb::new,
-            BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.COLOR_GRAY)
-                    .strength(0.0F)
-                    .noTerrainParticles()
-                    .noOcclusion()
-                    .noCollission()
-                    .offsetType(BlockBehaviour.OffsetType.XZ)
-                    .lightLevel((state) -> 15)
-                    .sound(SoundType.METAL)
-                    .pushReaction(PushReaction.DESTROY),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
     );
 
     public static Block register(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties settings, Item.Properties itemSettings) {

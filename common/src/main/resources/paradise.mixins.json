@@ -11,6 +11,7 @@
     "EntityMixin",
     "FishingHookMixin",
     "HolderSetNamedAccessor",
+    "LivingEntityMixin",
     "MappedRegistryAccessor",
     "MinecraftServerAccessor",
     "MinecraftServerMixin",
@@ -25,9 +26,9 @@
   ],
   "client": [
     "ClientPacketListenerMixin",
-    "LivingEntityRendererMixin",
     "GuiMixin",
     "LevelRendererMixin",
+    "LivingEntityRendererMixin",
     "LocalPlayerMixin"
   ],
   "server": [],

@@ -1,0 +1,8 @@
+{
+  "parent": "paradise:block/inverted_block",
+  "textures": {
+    "frame": "paradise:block/digital_uploader_top_edge",
+    "text": "paradise:block/dark_red",
+    "particle": "#frame"
+  }
+}

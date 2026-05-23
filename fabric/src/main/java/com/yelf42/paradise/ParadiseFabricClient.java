@@ -2,10 +2,12 @@ package com.yelf42.paradise;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.yelf42.paradise.client.ModRenderTypes;
+import com.yelf42.paradise.client.gui.screens.WhitelistScreen;
 import com.yelf42.paradise.client.particle.RippleParticle;
 import com.yelf42.paradise.client.renderer.blockentity.DataCoreBlockEntityRenderer;
 import com.yelf42.paradise.client.renderer.blockentity.DataReaderBlockEntityRenderer;
 import com.yelf42.paradise.client.renderer.blockentity.DigitalSymbolRenderer;
+import com.yelf42.paradise.client.renderer.blockentity.DigitalWhitelisterRenderer;
 import com.yelf42.paradise.client.renderer.entity.CrashBoltRenderer;
 import com.yelf42.paradise.client.renderer.entity.DigitalFishRenderer;
 import com.yelf42.paradise.registry.*;
@@ -19,10 +21,14 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.dimension.DimensionType;
+
+import java.util.Map;
+import java.util.Set;
 
 public class ParadiseFabricClient implements ClientModInitializer {
 
@@ -42,6 +48,7 @@ public class ParadiseFabricClient implements ClientModInitializer {
 
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DIGITAL_VOLUME, RenderType.solid());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DIGITAL_VOLUME_BARRIER, RenderType.solid());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DIGITAL_INTRUDER_DETECTOR, RenderType.cutout());
 
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DATA_CORE, RenderType.cutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DATA_SERVER, RenderType.solid());
@@ -65,6 +72,8 @@ public class ParadiseFabricClient implements ClientModInitializer {
         BlockEntityRenderers.register(ModBlockEntities.EMERGENCY_EXIT, (context) -> new DigitalSymbolRenderer<>(context, Paradise.identifier("textures/entity/exit_symbol.png"), 1.5));
         BlockEntityRenderers.register(ModBlockEntities.DIGITAL_UPLOADER, (context) -> new DigitalSymbolRenderer<>(context, Paradise.identifier("textures/entity/upload_symbol.png"), 1.5));
         BlockEntityRenderers.register(ModBlockEntities.DATA_DOWNLOADER, (context) -> new DigitalSymbolRenderer<>(context, Paradise.identifier("textures/entity/download_symbol.png"), 2.0));
+        BlockEntityRenderers.register(ModBlockEntities.DIGITAL_INTRUDER_DETECTOR, (context) -> new DigitalSymbolRenderer<>(context, Paradise.identifier("textures/entity/exclamation_symbol.png"), 0.5));
+        BlockEntityRenderers.register(ModBlockEntities.DIGITAL_WHITELISTER, DigitalWhitelisterRenderer::new);
 
         // Entities
         EntityRendererRegistry.register(ModEntities.CRASH_BOLT, CrashBoltRenderer::new);
@@ -98,6 +107,22 @@ public class ParadiseFabricClient implements ClientModInitializer {
             client.execute(() -> {
                 RegistryUtil.unregister(handler.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE), id);
                 handler.levels().remove(ResourceKey.create(Registries.DIMENSION, id));
+            });
+        });
+
+        // Whitelisting handlers
+        ClientPlayNetworking.registerGlobalReceiver(ModPackets.OpenWhitelistPayload.ID, (payload, context) -> {
+            ResourceLocation dimId = payload.dimensionId();
+            Map<String, Long> active = payload.active();
+            Set<String> history = payload.history();
+            BlockPos pos = payload.pos();
+            context.client().execute(() -> {
+                Minecraft.getInstance().setScreen(new WhitelistScreen(
+                        dimId,
+                        active,
+                        history,
+                        pos
+                ));
             });
         });
 

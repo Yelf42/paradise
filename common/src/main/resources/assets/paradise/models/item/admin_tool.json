@@ -1,5 +1,5 @@
 {
-  "parent": "paradise:item/handheld",
+  "parent": "minecraft:item/handheld",
   "textures": {
     "layer0": "paradise:item/admin_tool"
   }

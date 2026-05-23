@@ -29,6 +29,8 @@ public class ModItems {
     public static final Item BUCKET_HAT = registerItem("bucket_hat", BucketHatItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
     public static final Item EGG_HAT = registerItem("egg_hat", EggHatItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
 
+    public static final Item SCRAMBLER = registerItem("scrambler", ScramblerItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
+
 
     private static ResourceKey<Item> vanillaItemId(String name) {
         return ResourceKey.create(Registries.ITEM, Paradise.identifier(name));

@@ -1,9 +1,8 @@
 package com.yelf42.paradise.mixin;
 
-import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.blocks.DataReaderBlock;
 import com.yelf42.paradise.blocks.DigitalUploaderBlock;
-import com.yelf42.paradise.blocks.EmergencyExitBlock;
+import com.yelf42.paradise.blocks.DigitalEmergencyExitBlock;
 import com.yelf42.paradise.dimensions.DigitalOverlay;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -36,7 +35,7 @@ public abstract class LocalPlayerMixin implements DigitalOverlay {
         }
 
         Portal portal = ((PortalProcessorAccessor)player.portalProcess).paradise$getPortal();
-        boolean inPortal = (portal instanceof DigitalUploaderBlock) || (portal instanceof DataReaderBlock) || (portal instanceof EmergencyExitBlock);
+        boolean inPortal = (portal instanceof DigitalUploaderBlock) || (portal instanceof DataReaderBlock) || (portal instanceof DigitalEmergencyExitBlock);
         if (inPortal && player.portalProcess.isInsidePortalThisTick()) {
             this.paradise$portalOverlayTime = (Math.min(this.paradise$portalOverlayTime + 0.025f, 1.0f));
         } else {

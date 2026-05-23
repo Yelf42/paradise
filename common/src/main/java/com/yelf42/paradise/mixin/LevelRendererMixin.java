@@ -1,12 +1,14 @@
 package com.yelf42.paradise.mixin;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.client.ModRenderTypes;
 import com.yelf42.paradise.client.renderer.ParadiseSkyRenderer;
+import com.yelf42.paradise.registry.ModItems;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -122,7 +124,7 @@ public class LevelRendererMixin {
 
             ItemStack offhand = living.getItemBySlot(EquipmentSlot.OFFHAND);
             ItemStack mainhand = living.getItemBySlot(EquipmentSlot.MAINHAND);
-            if (!mainhand.is(Items.STICK) && !offhand.is(Items.STICK)) continue;
+            if (!mainhand.is(ModItems.SCRAMBLER) && !offhand.is(ModItems.SCRAMBLER)) continue;
 
             AABB box = entity.getBoundingBox().inflate(0.3, 0.3, 0.3);
             double dx = Mth.lerp(partialTick, entity.xOld, entity.getX()) - entity.getX();
@@ -170,9 +172,6 @@ public class LevelRendererMixin {
             PoseStack.Pose lastPose = poseStack.last();
             Matrix4f mat = lastPose.pose();
 
-            double distance = camPos.distanceTo(entity.position());
-            int pixelScale = (int) Mth.clamp(Math.round(255 * Mth.clamp(1.0 / (distance * 0.5), 0.05, 0.5) / 0.05) * 0.05, 255 * 0.05, 255 * 0.5);
-
             float quadWidth  = maxX - minX;
             float quadHeight = maxY - minY;
             int encodedWidth  = (int)((quadWidth  / 2f) * 255);
@@ -184,14 +183,20 @@ public class LevelRendererMixin {
                     | (minY > -1f + threshold ? 4 : 0)
                     | (maxY <  1f - threshold ? 8 : 0);
 
+            Window window = Minecraft.getInstance().getWindow();
+            int screenMinX = (int)((minX * 0.5f + 0.5f) * window.getWidth());
+            int screenMinY = (int)((minY * 0.5f + 0.5f) * window.getHeight());
+            int screenMaxX = (int)((maxX * 0.5f + 0.5f) * window.getWidth());
+            int screenMaxY = (int)((maxY * 0.5f + 0.5f) * window.getHeight());
+
             //Paradise.LOGGER.info("minX: {}, maxX: {}, minY: {}, maxY: {}, edgeMask: {}", minX, maxX, minY, maxY, edgeMask);
             //Paradise.LOGGER.info("quadW: {}, quadH: {}, encodedW: {}, encodedH: {}", quadWidth, quadHeight, encodedWidth, encodedHeight);
 
             VertexConsumer consumer = bufferSource.getBuffer(renderType);
-            consumer.addVertex(mat, minX, minY, 0.0f).setColor(encodedWidth, encodedHeight, edgeMask, pixelScale).setUv(0f, 1f).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(lastPose, 0, 1, 0);
-            consumer.addVertex(mat, minX, maxY, 0.0f).setColor(encodedWidth, encodedHeight, edgeMask, pixelScale).setUv(0f, 0f).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(lastPose, 0, 1, 0);
-            consumer.addVertex(mat, maxX, maxY, 0.0f).setColor(encodedWidth, encodedHeight, edgeMask, pixelScale).setUv(1f, 0f).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(lastPose, 0, 1, 0);
-            consumer.addVertex(mat, maxX, minY, 0.0f).setColor(encodedWidth, encodedHeight, edgeMask, pixelScale).setUv(1f, 1f).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(lastPose, 0, 1, 0);
+            consumer.addVertex(mat, minX, minY, 0.0f).setColor(encodedWidth, encodedHeight, edgeMask, 0).setUv(0f, 1f).setUv1(screenMinX, screenMinY).setUv2(screenMaxX, screenMaxY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(lastPose, 0, 1, 0);
+            consumer.addVertex(mat, minX, maxY, 0.0f).setColor(encodedWidth, encodedHeight, edgeMask, 0).setUv(0f, 0f).setUv1(screenMinX, screenMinY).setUv2(screenMaxX, screenMaxY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(lastPose, 0, 1, 0);
+            consumer.addVertex(mat, maxX, maxY, 0.0f).setColor(encodedWidth, encodedHeight, edgeMask, 0).setUv(1f, 0f).setUv1(screenMinX, screenMinY).setUv2(screenMaxX, screenMaxY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(lastPose, 0, 1, 0);
+            consumer.addVertex(mat, maxX, minY, 0.0f).setColor(encodedWidth, encodedHeight, edgeMask, 0).setUv(1f, 1f).setUv1(screenMinX, screenMinY).setUv2(screenMaxX, screenMaxY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(lastPose, 0, 1, 0);
 
             bufferSource.endBatch(renderType);
         }

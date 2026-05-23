@@ -1,8 +1,7 @@
 package com.yelf42.paradise;
 
-import com.yelf42.paradise.dimensions.DimensionAddedCallback;
-import com.yelf42.paradise.dimensions.DimensionRemovedCallback;
-import com.yelf42.paradise.dimensions.ParadiseChunkGenerator;
+import com.yelf42.paradise.blocks.DigitalWhitelistControllerBlockEntity;
+import com.yelf42.paradise.dimensions.*;
 import com.yelf42.paradise.entities.DigitalFish;
 import com.yelf42.paradise.registry.*;
 import net.fabricmc.api.ModInitializer;
@@ -11,14 +10,18 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.SpawnPlacementTypes;
-import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -60,12 +63,19 @@ public class ParadiseFabric implements ModInitializer {
                 Paradise.identifier("paradise_generator"),
                 ParadiseChunkGenerator.CODEC);
 
+        ModEffects.init();
+
         if (FabricLoader.getInstance().isModLoaded("fabric-lifecycle-events-v1")) {
             registerFabricEventListeners();
         }
 
         PayloadTypeRegistry.playS2C().register(ModPackets.CreateDimensionPayload.ID, ModPackets.CreateDimensionPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(ModPackets.RemoveDimensionPayload.ID, ModPackets.RemoveDimensionPayload.CODEC);
+
+        PayloadTypeRegistry.playS2C().register(ModPackets.OpenWhitelistPayload.ID, ModPackets.OpenWhitelistPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(ModPackets.MutateWhitelistPayload.ID, ModPackets.MutateWhitelistPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(ModPackets.CloseWhitelistPayload.ID, ModPackets.CloseWhitelistPayload.CODEC);
+        registerC2SPackets();
 
         if (FabricLoader.getInstance().isModLoaded("fabric-command-api-v2")) {
             CommandRegistrationCallback.EVENT.register(ModCommands::register);
@@ -85,5 +95,52 @@ public class ParadiseFabric implements ModInitializer {
 
     private void registerEntityAttributes() {
         FabricDefaultAttributeRegistry.register(ModEntities.DIGITAL_FISH, DigitalFish.createAttributes());
+    }
+
+    private void registerC2SPackets() {
+        ServerPlayNetworking.registerGlobalReceiver(ModPackets.MutateWhitelistPayload.ID, (payload, context) -> {
+            ResourceLocation dimId = payload.dimensionId();
+            ModPackets.MutateWhitelistPayload.Action mutation = payload.action();
+            String playerName = payload.playerName();
+            context.server().execute(() -> {
+                WhitelistsSavedData whitelistsSavedData = WhitelistsSavedData.getOrCreate(context.server().overworld());
+                switch(mutation) {
+                    case ADD:
+                        whitelistsSavedData.addPlayer(dimId, playerName);
+                        removeIntruderIfPresent(context.server(), dimId, playerName);
+                        break;
+                    case REMOVE:
+                        whitelistsSavedData.removePlayer(dimId, playerName);
+                        break;
+                    case FLIP:
+                        if (whitelistsSavedData.flipPlayer(dimId, playerName)) {
+                            removeIntruderIfPresent(context.server(), dimId, playerName);
+                        }
+                        break;
+                    default:
+                        Paradise.LOGGER.warn("Illegal MutateWhitelist Action");
+                }
+            });
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(ModPackets.CloseWhitelistPayload.ID, (payload, context) -> {
+            BlockPos pos = payload.pos();
+            context.server().execute(() -> {
+                BlockEntity blockEntity = context.player().serverLevel().getBlockEntity(pos);
+                if (blockEntity instanceof DigitalWhitelistControllerBlockEntity controller) {
+                    controller.setAllowedPlayerEditor(null);
+                }
+            });
+        });
+    }
+
+    private static void removeIntruderIfPresent(MinecraftServer server, ResourceLocation dimId, String playerName) {
+        ServerLevel level = server.getLevel(ResourceKey.create(Registries.DIMENSION, dimId));
+        if (level == null) return;
+        IntrudersSavedData intruders = IntrudersSavedData.getOrCreate(level);
+        server.getPlayerList().getPlayers().stream()
+                .filter(p -> p.getName().getString().equals(playerName))
+                .findFirst()
+                .ifPresent(p -> intruders.remove(p.getUUID()));
     }
 }

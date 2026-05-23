@@ -100,7 +100,7 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
                             int worldZ = chunkPos.getMinBlockZ() + z;
                             BlockPos pos = new BlockPos(worldX, y, worldZ);
                             if (y < 6) {
-                                if (y == 5 || y <= 1) {
+                                if (y == 5 || y == 0) {
                                     chunk.setBlockState(pos, ModBlocks.DIGITAL_PILLAR_BARRIER.defaultBlockState(), false);
                                 } else {
                                     chunk.setBlockState(pos, ModBlocks.DIGITAL_PILLAR.defaultBlockState(), false);
@@ -113,9 +113,14 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
                 }
                 BlockPos exitSignPos = new BlockPos(chunkPos.getMinBlockX() + 8, 2, chunkPos.getMinBlockZ());
                 chunk.setBlockState(exitSignPos, ModBlocks.EMERGENCY_EXIT.defaultBlockState(), false);
-                BlockEntity blockEntity = ModBlockEntities.EMERGENCY_EXIT.create(exitSignPos, ModBlocks.EMERGENCY_EXIT.defaultBlockState());
-                if (blockEntity != null) {
-                    chunk.setBlockEntity(blockEntity);
+                BlockEntity emergencyExitBlockEntity = ModBlockEntities.EMERGENCY_EXIT.create(exitSignPos, ModBlocks.EMERGENCY_EXIT.defaultBlockState());
+                if (emergencyExitBlockEntity != null) {
+                    chunk.setBlockEntity(emergencyExitBlockEntity);
+                }
+                chunk.setBlockState(exitSignPos.below(), ModBlocks.WHITELIST_CONTROLLER.defaultBlockState(), false);
+                BlockEntity whitelistControllerBlockEntity = ModBlockEntities.WHITELIST_CONTROLLER.create(exitSignPos.below(), ModBlocks.WHITELIST_CONTROLLER.defaultBlockState());
+                if (whitelistControllerBlockEntity != null) {
+                    chunk.setBlockEntity(whitelistControllerBlockEntity);
                 }
                 chunk.setBlockState(exitSignPos.above(1), Blocks.AIR.defaultBlockState(), false);
                 chunk.setBlockState(exitSignPos.above(2), Blocks.AIR.defaultBlockState(), false);
@@ -131,7 +136,7 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
                         int worldZ = chunkPos.getMinBlockZ() + 15;
                         BlockPos pos = new BlockPos(worldX, y, worldZ);
                         if (y < 6) {
-                            if (y == 5 || y <= 1) {
+                            if (y == 5 || y == 0) {
                                 chunk.setBlockState(pos, ModBlocks.DIGITAL_PILLAR_BARRIER.defaultBlockState(), false);
                             } else {
                                 chunk.setBlockState(pos, ModBlocks.DIGITAL_PILLAR.defaultBlockState(), false);

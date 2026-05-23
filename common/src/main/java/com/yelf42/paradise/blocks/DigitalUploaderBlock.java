@@ -3,8 +3,10 @@ package com.yelf42.paradise.blocks;
 import com.mojang.serialization.MapCodec;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.dimensions.DownloaderLocations;
+import com.yelf42.paradise.dimensions.WhitelistsSavedData;
 import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModBlocks;
+import com.yelf42.paradise.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -160,6 +163,19 @@ public class DigitalUploaderBlock extends BaseEntityBlock implements Portal {
                 player.displayClientMessage(Component.translatable("gui.paradise.uploader.unavailable").withStyle(ChatFormatting.RED), true);
             }
             return null;
+        }
+
+        // Whitelist check
+        if (entity instanceof Player player && !player.isCreative() && !player.isSpectator()) {
+            WhitelistsSavedData whitelistsSavedData = WhitelistsSavedData.getOrCreate(serverLevel.getServer().overworld());
+            if (!whitelistsSavedData.isWhitelisted(destination.getRight(), player.getName().getString())) {
+                ItemStack offhand = player.getItemBySlot(EquipmentSlot.OFFHAND);
+                ItemStack mainhand = player.getItemBySlot(EquipmentSlot.MAINHAND);
+                if (!mainhand.is(ModItems.SCRAMBLER) && !offhand.is(ModItems.SCRAMBLER)) {
+                    player.displayClientMessage(Component.translatable("gui.paradise.teleport.not_whitelisted").withStyle(ChatFormatting.RED), true);
+                    return null;
+                }
+            }
         }
 
         // Clear target location:

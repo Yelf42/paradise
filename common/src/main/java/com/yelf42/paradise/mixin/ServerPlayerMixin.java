@@ -1,6 +1,7 @@
 package com.yelf42.paradise.mixin;
 
 import com.yelf42.paradise.Paradise;
+import com.yelf42.paradise.dimensions.IntrudersSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -38,8 +39,11 @@ public class ServerPlayerMixin {
                 return;
             }
 
-            BlockPos spawnPos = new BlockPos(56, 6, 0);
+            // Respawn normally if died as intruder
+            IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(level);
+            if (intrudersSavedData.isIntruder(player.getUUID())) return;
 
+            BlockPos spawnPos = new BlockPos(56, 6, 0);
             cir.setReturnValue(new DimensionTransition(
                     level,
                     Vec3.atBottomCenterOf(spawnPos),

@@ -11,9 +11,14 @@ out vec4 vertexColor;
 out vec2 texCoord0;
 out vec4 clipPos;
 
+flat out ivec2 quadMin;
+flat out ivec2 quadMax;
+
 void main() {
     gl_Position = vec4(Position.xyz, 1.0);
     clipPos = gl_Position;
     vertexColor = Color;
     texCoord0 = UV0;
+    quadMin = UV1;
+    quadMax = UV2;
 }

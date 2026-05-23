@@ -6,14 +6,14 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.suggestion.Suggestions;
 import com.yelf42.paradise.blocks.DataSeverBlockEntity;
-import com.yelf42.paradise.dimensions.DataServerLocations;
-import com.yelf42.paradise.dimensions.DimensionProvider;
-import com.yelf42.paradise.dimensions.DimensionRegistry;
+import com.yelf42.paradise.dimensions.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
@@ -28,13 +28,21 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class ModCommands {
 
@@ -51,6 +59,156 @@ public class ModCommands {
 
 
     public static void register(@NotNull CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registryAccess, Commands.CommandSelection environment) {
+
+        dispatcher.register(Commands.literal("paradiseIntruders")
+                        .requires(s -> s.hasPermission(2))
+                .then(Commands.argument("dimension", ResourceLocationArgument.id()).suggests(DIMENSION_SUGGESTIONS)
+                        .executes((context) -> {
+                            CommandSourceStack source = context.getSource();
+
+                            if (!source.isPlayer()) {
+                                source.sendFailure(Component.literal("Only players can use this command").withStyle(ChatFormatting.RED));
+                                return Command.SINGLE_SUCCESS;
+                            }
+
+                            MinecraftServer server = source.getServer();
+                            ResourceLocation dimensionId = ResourceLocationArgument.getId(context, "dimension");
+                            ServerLevel level = server.getLevel(ResourceKey.create(Registries.DIMENSION, dimensionId));
+
+                            if (level == null) {
+                                source.sendFailure(Component.literal("Unknown dimension: " + dimensionId).withStyle(ChatFormatting.RED));
+                                return Command.SINGLE_SUCCESS;
+                            }
+                            IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(level);
+                            if (intrudersSavedData.intrudersPresent(level)) {
+                                source.sendSystemMessage(Component.literal("There are currently intruders in " + dimensionId + ": "));
+                                for (UUID id : intrudersSavedData.getIntruders()) {
+                                    Entity entity = level.getEntity(id);
+                                    if (entity instanceof Player player) {
+                                        source.sendSystemMessage(Component.literal(" - " + player.getName()).withStyle(ChatFormatting.YELLOW));
+                                    }
+                                }
+                            } else {
+                                source.sendSystemMessage(Component.literal("There are no intruders in " + dimensionId));
+                                if (intrudersSavedData.totalIntruders() > 0) {
+                                    source.sendSystemMessage(Component.literal("These are the UUID's of offline intruders: "));
+                                    for (UUID id : intrudersSavedData.getIntruders()) {
+                                        source.sendSystemMessage(Component.literal(" - " + id).withStyle(ChatFormatting.YELLOW));
+                                    }
+                                }
+                            }
+                            return Command.SINGLE_SUCCESS;
+                        })));
+
+        dispatcher.register(Commands.literal("paradiseWhitelists")
+                        .requires(s -> s.hasPermission(2))
+                        .then(Commands.argument("operation", StringArgumentType.word()).suggests((ctx, builder) -> {
+                            builder.suggest("list");
+                            builder.suggest("add");
+                            builder.suggest("remove");
+                            builder.suggest("flip");
+                            builder.suggest("check");
+                            return builder.buildFuture();
+                        })
+                            .then(Commands.argument("dimension", ResourceLocationArgument.id()).suggests(DIMENSION_SUGGESTIONS)
+                                    .executes((context) -> {
+                                        // List whitelist data
+                                        CommandSourceStack source = context.getSource();
+
+                                        if (!source.isPlayer()) {
+                                            source.sendFailure(Component.literal("Only players can use this command").withStyle(ChatFormatting.RED));
+                                            return Command.SINGLE_SUCCESS;
+                                        }
+
+                                        String operation = StringArgumentType.getString(context, "operation");
+                                        if (!operation.equals("list")) {
+                                            source.sendFailure(Component.literal("Non-list operations require a target player").withStyle(ChatFormatting.RED));
+                                            return Command.SINGLE_SUCCESS;
+                                        }
+
+                                        MinecraftServer server = source.getServer();
+                                        ResourceLocation dimensionId = ResourceLocationArgument.getId(context, "dimension");
+
+                                        WhitelistsSavedData whitelistsSavedData = WhitelistsSavedData.getOrCreate(server.overworld());
+                                        Map<String, Long> activeWhitelist = whitelistsSavedData.getActive(dimensionId);
+                                        if (!activeWhitelist.isEmpty()) {
+                                            source.sendSystemMessage(Component.literal("Active members of " + dimensionId + "'s whitelist:"));
+                                            for (Map.Entry<String, Long> entry : activeWhitelist.entrySet()) {
+                                                Date date = new Date(entry.getValue());
+                                                source.sendSystemMessage(Component.literal(" - " + entry.getKey() + ", " + date).withStyle(ChatFormatting.YELLOW));
+                                            }
+                                        }
+
+                                        Set<String> inactiveWhitelist = whitelistsSavedData.getHistory(dimensionId);
+                                        if (!inactiveWhitelist.isEmpty()) {
+                                            source.sendSystemMessage(Component.literal("Inactive members of " + dimensionId + "'s whitelist:"));
+                                            for (String entry : inactiveWhitelist) {
+                                                source.sendSystemMessage(Component.literal(" - " + entry).withStyle(ChatFormatting.YELLOW));
+                                            }
+                                        }
+
+                                        return Command.SINGLE_SUCCESS;
+                                    })
+                                    .then(Commands.argument("player", StringArgumentType.word())
+                                            .suggests((context, builder) -> {
+                                                        context.getSource().getServer().getPlayerList().getPlayers()
+                                                                .forEach(p -> builder.suggest(p.getName().getString()));
+                                                        return builder.buildFuture();
+                                                    })
+                                            .executes((context) -> {
+                                                // Other operations
+                                                CommandSourceStack source = context.getSource();
+                                                MinecraftServer server = source.getServer();
+
+                                                if (!source.isPlayer()) {
+                                                    source.sendFailure(Component.literal("Only players can use this command").withStyle(ChatFormatting.RED));
+                                                    return Command.SINGLE_SUCCESS;
+                                                }
+
+                                                String operation = StringArgumentType.getString(context, "operation");
+                                                String playerName = StringArgumentType.getString(context, "player");
+                                                ResourceLocation dimensionId = ResourceLocationArgument.getId(context, "dimension");
+
+                                                ServerLevel level = server.getLevel(ResourceKey.create(Registries.DIMENSION, dimensionId));
+
+                                                ServerPlayer player = level.players().stream()
+                                                        .filter(p -> p.getName().getString().equals(playerName))
+                                                        .findFirst().orElse(null);
+
+                                                WhitelistsSavedData whitelistsSavedData = WhitelistsSavedData.getOrCreate(server.overworld());
+                                                IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(level);
+
+                                                switch(operation) {
+                                                    case "add":
+                                                        source.sendSystemMessage(Component.literal("Added " + playerName + " to active list in " + dimensionId));
+                                                        whitelistsSavedData.addPlayer(dimensionId, playerName);
+                                                        if (player != null) intrudersSavedData.remove(player.getUUID());
+                                                        break;
+                                                    case "remove":
+                                                        source.sendSystemMessage(Component.literal("Removed " + playerName + " from either list if they were present in " + dimensionId));
+                                                        whitelistsSavedData.removePlayer(dimensionId, playerName);
+                                                        break;
+                                                    case "flip":
+                                                        if (whitelistsSavedData.flipPlayer(dimensionId, playerName)) {
+                                                            if (player != null) intrudersSavedData.remove(player.getUUID());
+                                                        }
+                                                        source.sendSystemMessage(Component.literal("Moved " + playerName + " to the opposite list in " + dimensionId));
+                                                        break;
+                                                    case "check":
+                                                        source.sendSystemMessage(Component.literal(playerName + ((whitelistsSavedData.isWhitelisted(dimensionId, playerName)) ? " is " : " isn't ") + "whitelisted in " + dimensionId));
+                                                        break;
+                                                    default:
+                                                        source.sendFailure(Component.literal("Invalid operation, or called list with a target").withStyle(ChatFormatting.RED));
+                                                        break;
+                                                }
+
+                                                return Command.SINGLE_SUCCESS;
+                                            })
+                                    )
+                            )
+                        )
+        );
+
 
         // Remove dimension
         dispatcher.register(Commands.literal("paradiseRemoveDimension")
@@ -106,6 +264,11 @@ public class ModCommands {
                                 if (!DimensionRegistry.from(context.getSource().getServer()).canDeleteDimension(dimensionKey)) {
                                     throw CANNOT_REMOVE.create();
                                 }
+
+                                // Remove whitelist
+                                WhitelistsSavedData whitelistsSavedData = WhitelistsSavedData.getOrCreate(server.overworld());
+                                whitelistsSavedData.deleteWhitelist(id);
+
                                 DimensionRegistry.from(context.getSource().getServer()).deleteDynamicDimension(id, null);
                                 return Command.SINGLE_SUCCESS;
                             }))));

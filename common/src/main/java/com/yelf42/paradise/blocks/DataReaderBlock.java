@@ -2,6 +2,7 @@ package com.yelf42.paradise.blocks;
 
 import com.mojang.serialization.MapCodec;
 import com.yelf42.paradise.Paradise;
+import com.yelf42.paradise.dimensions.WhitelistsSavedData;
 import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModItems;
 import net.minecraft.ChatFormatting;
@@ -10,11 +11,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -173,23 +177,23 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
 
         ServerLevel serverlevel = level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION, drbe.getDimension()));
         if (serverlevel == null) {
-            serverlevel = level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Paradise.identifier("nullspace")));
-            if (serverlevel == null) {
-                if (entity instanceof Player player) {
-                    player.displayClientMessage(Component.translatable("gui.paradise.reader.unavailable").withStyle(ChatFormatting.RED), true);
+            return getRandomDestination(level, entity, Paradise.identifier("nullspace"));
+        }
+
+        // Whitelist check
+        if (entity instanceof Player player && !player.isCreative() && !player.isSpectator()) {
+            WhitelistsSavedData whitelistsSavedData = WhitelistsSavedData.getOrCreate(level.getServer().overworld());
+            if (!whitelistsSavedData.isWhitelisted(drbe.getDimension(), player.getName().getString())) {
+                ItemStack offhand = player.getItemBySlot(EquipmentSlot.OFFHAND);
+                ItemStack mainhand = player.getItemBySlot(EquipmentSlot.MAINHAND);
+                if (mainhand.is(ModItems.SCRAMBLER) || offhand.is(ModItems.SCRAMBLER)) {
+                    // Hack into paradise
+                    return getRandomDestination(level, entity, drbe.getDimension());
                 }
+
+                player.displayClientMessage(Component.translatable("gui.paradise.teleport.not_whitelisted").withStyle(ChatFormatting.RED), true);
                 return null;
             }
-
-            BlockPos spawnPos = new BlockPos(serverlevel.getRandom().nextInt(200) - 100, 0, serverlevel.getRandom().nextInt(200) - 100);
-            ChunkPos chunkPos = new ChunkPos(spawnPos);
-            serverlevel.setChunkForced(chunkPos.x, chunkPos.z, true);
-            spawnPos = serverlevel.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, spawnPos);
-            serverlevel.setChunkForced(chunkPos.x, chunkPos.z, false);
-
-            spawnPoint = spawnPos.getBottomCenter();
-
-            return new DimensionTransition(serverlevel, spawnPoint, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND);
         }
 
         // Clear target location:
@@ -209,5 +213,27 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
     @Override
     public Transition getLocalTransition() {
         return Transition.CONFUSION;
+    }
+
+    private @Nullable DimensionTransition getRandomDestination(ServerLevel level, Entity entity, ResourceLocation location) {
+        ServerLevel serverlevel = level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION, location));
+
+        if (serverlevel == null) {
+            if (entity instanceof Player player) {
+                player.displayClientMessage(Component.translatable("gui.paradise.reader.unavailable").withStyle(ChatFormatting.RED), true);
+            }
+            return null;
+        }
+
+        BlockPos spawnPos = new BlockPos(serverlevel.getRandom().nextInt(200) - 100, 0, serverlevel.getRandom().nextInt(200) - 100);
+        ChunkPos chunkPos = new ChunkPos(spawnPos);
+        serverlevel.setChunkForced(chunkPos.x, chunkPos.z, true);
+        spawnPos = serverlevel.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, spawnPos);
+        serverlevel.setChunkForced(chunkPos.x, chunkPos.z, false);
+
+        Vec3 spawnPoint = spawnPos.getBottomCenter();
+        float f = Direction.WEST.toYRot();
+
+        return new DimensionTransition(serverlevel, spawnPoint, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND);
     }
 }

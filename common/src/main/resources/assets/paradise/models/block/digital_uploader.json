@@ -96,10 +96,10 @@
       "faces": {
         "up": {
           "uv": [
-            2,
-            2,
-            14,
-            14
+            0,
+            0,
+            16,
+            16
           ],
           "texture": "#portal",
           "cullface": "up"

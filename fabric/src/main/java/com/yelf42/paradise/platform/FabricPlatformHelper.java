@@ -8,9 +8,14 @@ import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -55,7 +60,10 @@ public class FabricPlatformHelper implements IPlatformHelper {
         return FabricParticleTypes.simple();
     }
 
-
+    @Override
+    public Holder<MobEffect> registerEffectForHolder(ResourceLocation id, MobEffect t) {
+        return Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, id, t);
+    }
 
     @Override
     public void registerAddedEvent(DimensionAddedCallback callback) {

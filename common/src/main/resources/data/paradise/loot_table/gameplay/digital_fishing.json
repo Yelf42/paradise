@@ -1,0 +1,42 @@
+{
+  "type": "minecraft:fishing",
+  "pools": [
+    {
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "paradise:digital_volume",
+          "weight": 35
+        },
+        {
+          "type": "minecraft:item",
+          "name": "paradise:digital_pillar",
+          "weight": 29
+        },
+        {
+          "type": "minecraft:item",
+          "name": "paradise:digital_bulb",
+          "weight": 29
+        },
+        {
+          "type": "minecraft:item",
+          "name": "paradise:egg_hat",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "paradise:bucket_hat",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "paradise:admin_tool",
+          "weight": 5
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "paradise:gameplay/digital_fishing"
+}

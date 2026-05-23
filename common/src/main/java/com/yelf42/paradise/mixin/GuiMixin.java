@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.blocks.DataReaderBlock;
 import com.yelf42.paradise.blocks.DigitalUploaderBlock;
-import com.yelf42.paradise.blocks.EmergencyExitBlock;
+import com.yelf42.paradise.blocks.DigitalEmergencyExitBlock;
 import com.yelf42.paradise.client.ModRenderTypes;
 import com.yelf42.paradise.dimensions.DigitalOverlay;
 import net.minecraft.client.DeltaTracker;
@@ -51,7 +51,7 @@ public abstract class GuiMixin {
 
         // Back up
         Portal portal = ((PortalProcessorAccessor)minecraft.player.portalProcess).paradise$getPortal();
-        boolean inPortal = (portal instanceof DigitalUploaderBlock) || (portal instanceof DataReaderBlock) || (portal instanceof EmergencyExitBlock);
+        boolean inPortal = (portal instanceof DigitalUploaderBlock) || (portal instanceof DataReaderBlock) || (portal instanceof DigitalEmergencyExitBlock);
         if (inPortal) ci.cancel();
     }
 

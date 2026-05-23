@@ -1,6 +1,7 @@
 package com.yelf42.paradise.mixin;
 
 import com.yelf42.paradise.Paradise;
+import com.yelf42.paradise.registry.ModItems;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,7 +22,7 @@ public abstract class LivingEntityRendererMixin {
 
         ItemStack offhand = entity.getItemBySlot(EquipmentSlot.OFFHAND);
         ItemStack mainhand = entity.getItemBySlot(EquipmentSlot.MAINHAND);
-        if (mainhand.is(Items.STICK) || offhand.is(Items.STICK)) {
+        if (mainhand.is(ModItems.SCRAMBLER) || offhand.is(ModItems.SCRAMBLER)) {
             cir.cancel();
             cir.setReturnValue(false);
         }

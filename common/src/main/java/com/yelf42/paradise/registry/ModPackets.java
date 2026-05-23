@@ -1,12 +1,17 @@
 package com.yelf42.paradise.registry;
 
 import com.yelf42.paradise.Paradise;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.dimension.DimensionType;
+
+import java.util.*;
 
 public class ModPackets {
 
@@ -39,5 +44,58 @@ public class ModPackets {
             return ID;
         }
     }
+
+
+    // Server -> Client: whitelist data response
+    public static final ResourceLocation OPEN_WHITELIST_PACKET = Paradise.identifier("open_whitelist");
+    public record OpenWhitelistPayload(ResourceLocation dimensionId, Map<String, Long> active, Set<String> history, BlockPos pos) implements CustomPacketPayload {
+        public static final CustomPacketPayload.Type<OpenWhitelistPayload> ID = new CustomPacketPayload.Type<>(OPEN_WHITELIST_PACKET);
+        public static final StreamCodec<RegistryFriendlyByteBuf, OpenWhitelistPayload> CODEC = StreamCodec.composite(
+                ResourceLocation.STREAM_CODEC, OpenWhitelistPayload::dimensionId,
+                ByteBufCodecs.map(LinkedHashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.VAR_LONG), OpenWhitelistPayload::active,
+                ByteBufCodecs.collection(HashSet::new, ByteBufCodecs.STRING_UTF8), OpenWhitelistPayload::history,
+                BlockPos.STREAM_CODEC, OpenWhitelistPayload::pos,
+                OpenWhitelistPayload::new
+        );
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() { return ID; }
+    }
+
+    // Client -> Server: close whitelist screen
+    public static final ResourceLocation CLOSE_WHITELIST_PACKET = Paradise.identifier("close_whitelist");
+    public record CloseWhitelistPayload(BlockPos pos) implements CustomPacketPayload {
+        public static final CustomPacketPayload.Type<CloseWhitelistPayload> ID = new CustomPacketPayload.Type<>(CLOSE_WHITELIST_PACKET);
+        public static final StreamCodec<RegistryFriendlyByteBuf, CloseWhitelistPayload> CODEC = StreamCodec.composite(
+                BlockPos.STREAM_CODEC, CloseWhitelistPayload::pos,
+                CloseWhitelistPayload::new
+        );
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() { return ID; }
+    }
+
+    // Client -> Server: whitelist mutation (add, remove active, remove history)
+    public static final ResourceLocation MUTATE_WHITELIST_PACKET = Paradise.identifier("mutate_whitelist");
+    public record MutateWhitelistPayload(ResourceLocation dimensionId, String playerName, MutateWhitelistPayload.Action action) implements CustomPacketPayload {
+        public enum Action { ADD, REMOVE, FLIP }
+
+        public static final StreamCodec<ByteBuf, Action> ACTION_CODEC = StreamCodec.<ByteBuf, Action>of(
+                (buf, action) -> buf.writeInt(action.ordinal()),
+                buf -> Action.values()[buf.readInt()]
+        );
+
+        public static final CustomPacketPayload.Type<MutateWhitelistPayload> ID = new CustomPacketPayload.Type<>(MUTATE_WHITELIST_PACKET);
+        public static final StreamCodec<RegistryFriendlyByteBuf, MutateWhitelistPayload> CODEC = StreamCodec.composite(
+                ResourceLocation.STREAM_CODEC, MutateWhitelistPayload::dimensionId,
+                ByteBufCodecs.STRING_UTF8, MutateWhitelistPayload::playerName,
+                ACTION_CODEC.cast(), MutateWhitelistPayload::action,
+                MutateWhitelistPayload::new
+        );
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() { return ID; }
+    }
+
 
 }

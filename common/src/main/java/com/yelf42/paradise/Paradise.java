@@ -18,13 +18,9 @@ import org.slf4j.LoggerFactory;
 // TODO Verify all 48 bunkers within 16000 blocks
 
 // TODO whitelist system
-//  Set which players are whitelisted per paradise dimension (- nullspace)
-//  Whitelist decays over time, needs to be maintained (configurable)
-//  Can use a Reader or Downloader to paradise you aren't whitelisted in
-//    - exception to this is if you hold a scrambler
-//    - breaking in like this results in random teleport
-//    - triggers intruder detection and firewall
-//    - big penalty if intruder lets go of scrambler (long stun lock, teleport out after?)
+//  Intruder detection/response
+//  Testing
+//  Config options for expiring whitelists, disabling intrusions
 
 // TODO whole dimension effects (maybe same place that whitelist is configured?)
 
@@ -33,7 +29,8 @@ import org.slf4j.LoggerFactory;
 // TODO giant digital asparagus
 
 // TODO circle tool, creates weird stuff
-// TODO scrambler device
+
+// TODO backup totem (saves some stuff and itself)
 public class Paradise {
 
     public static final String MOD_ID = "paradise";

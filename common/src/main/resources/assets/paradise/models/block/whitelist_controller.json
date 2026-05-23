@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "paradise:block/digital_pillar_surface",
+    "east": "paradise:block/digital_pillar_side",
+    "north": "paradise:block/digital_pillar_side",
+    "particle": "paradise:block/digital_pillar_side",
+    "south": "paradise:block/digital_pillar_side",
+    "up": "paradise:block/digital_pillar_surface",
+    "west": "paradise:block/whitelist_controller_front"
+  }
+}

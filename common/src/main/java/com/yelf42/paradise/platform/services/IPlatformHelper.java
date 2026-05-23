@@ -3,9 +3,12 @@ package com.yelf42.paradise.platform.services;
 import com.yelf42.paradise.dimensions.DimensionAddedCallback;
 import com.yelf42.paradise.dimensions.DimensionRemovedCallback;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -53,6 +56,8 @@ public interface IPlatformHelper {
     CreativeModeTab.Builder tabBuilder();
     <T extends BlockEntity> BlockEntityType<T> blockEntityType(BiFunction<BlockPos, BlockState, T> function, Block... validBlocks);
     SimpleParticleType simpleParticleType();
+
+    Holder<MobEffect> registerEffectForHolder(ResourceLocation id, MobEffect t);
 
     void registerAddedEvent(DimensionAddedCallback listener);
 

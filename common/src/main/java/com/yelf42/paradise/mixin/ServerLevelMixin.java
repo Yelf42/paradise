@@ -1,13 +1,19 @@
 package com.yelf42.paradise.mixin;
 
 import com.yelf42.paradise.Paradise;
+import com.yelf42.paradise.dimensions.IntrudersSavedData;
+import com.yelf42.paradise.dimensions.WhitelistsSavedData;
 import com.yelf42.paradise.entities.CrashBolt;
 import com.yelf42.paradise.entities.DigitalFish;
 import com.yelf42.paradise.registry.ModBlocks;
 import com.yelf42.paradise.registry.ModEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
@@ -15,7 +21,9 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,6 +31,47 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerLevel.class)
 public abstract class ServerLevelMixin {
+
+    @Final
+    @Shadow
+    private MinecraftServer server;
+
+    @Inject(method = "addDuringTeleport", at = @At("HEAD"))
+    public void verifyIntruderOnTeleport(Entity entity, CallbackInfo ci) {
+        ServerLevel self = (ServerLevel) (Object) this;
+        if (!self.dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS)) return;
+
+        if (entity instanceof ServerPlayer serverplayer && !(serverplayer.isCreative() || serverplayer.isSpectator())) {
+            WhitelistsSavedData whitelistsSavedData = WhitelistsSavedData.getOrCreate(server.overworld());
+
+            if (!whitelistsSavedData.isWhitelisted(self.dimension().location(), serverplayer.getName().getString())) {
+                IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(self);
+                intrudersSavedData.add(serverplayer.getUUID());
+            }
+        }
+    }
+
+    @Inject(method = "removePlayerImmediately", at = @At("HEAD"))
+    private void removeIntruderOnLeavingDimension(ServerPlayer player, Entity.RemovalReason reason, CallbackInfo ci) {
+        if (reason == Entity.RemovalReason.CHANGED_DIMENSION) {
+            IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(player.serverLevel());
+            intrudersSavedData.remove(player.getUUID());
+        }
+    }
+
+    @Inject(method = "addNewPlayer", at = @At("HEAD"))
+    public void verifyIntruderOnLogin(ServerPlayer player, CallbackInfo ci) {
+        ServerLevel self = (ServerLevel) (Object) this;
+        if (!self.dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS)) return;
+
+        ResourceLocation dimId = self.dimension().location();
+        IntrudersSavedData intruders = IntrudersSavedData.getOrCreate(self);
+        WhitelistsSavedData whitelists = WhitelistsSavedData.getOrCreate(server.overworld());
+        if (intruders.isIntruder(player.getUUID()) && whitelists.isWhitelisted(dimId, player.getName().getString())) {
+            intruders.remove(player.getUUID());
+        }
+    }
+
 
     @Unique
     private static final AABB DIGITAL_WORLD_AABB = new AABB(-132, 0, -132, 132, 112, 132);
@@ -88,7 +137,7 @@ public abstract class ServerLevelMixin {
     @Unique
     private BlockPos paradise$findBoltTargetAround(BlockPos pos, ServerLevel level) {
         BlockPos blockpos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos);
-        Player player = level.getNearestPlayer(0.0, 0.0, 0.0, 256, false);
+        Player player = level.players().get(level.getRandom().nextInt(level.players().size()));
         if (player != null && level.getRandom().nextInt(160) == 0) {
             blockpos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, player.blockPosition());
         }

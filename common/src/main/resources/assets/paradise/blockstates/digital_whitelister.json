@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=true": {
+      "model": "paradise:block/digital_whitelister_on"
+    },
+    "powered=false": {
+      "model": "paradise:block/digital_whitelister_off"
+    }
+  }
+}

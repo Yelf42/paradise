@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "paradise:block/digital_uploader"
+      "model": "paradise:block/emergency_exit"
     }
   }
 }

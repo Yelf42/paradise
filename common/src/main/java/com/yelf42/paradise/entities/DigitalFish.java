@@ -19,7 +19,9 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.EnumSet;
 import java.util.UUID;
@@ -185,7 +187,8 @@ public class DigitalFish extends Mob {
         private boolean collisionCheck(BlockPos pos) {
             BlockState toCheck = fish.level().getBlockState(pos);
             if (toCheck.isAir()) return false;
-            return !(toCheck.getCollisionShape(fish.level(), pos).bounds().getSize() < 0.5);
+            VoxelShape shape = toCheck.getCollisionShape(fish.level(), pos);
+            return !(shape.isEmpty()) && !(shape.bounds().getSize() < 0.75);
         }
 
         @Override

@@ -20,6 +20,15 @@
   "block.paradise.data_downloader": "Data Downloader",
   "item.paradise.data_downloader": "Data Downloader",
 
+  "block.paradise.whitelist_controller": "Whitelist Controller",
+  "item.paradise.whitelist_controller": "Whitelist Controller",
+
+  "block.paradise.digital_whitelister": "Digital Whitelister",
+  "item.paradise.digital_whitelister": "Digital Whitelister",
+
+  "block.paradise.digital_intruder_detector": "Digital Intruder Detector",
+  "item.paradise.digital_intruder_detector": "Digital Intruder Detector",
+
   "block.paradise.digital_barrier": "Digital Barrier",
   "item.paradise.digital_barrier": "Digital Barrier",
 
@@ -45,15 +54,22 @@
 
   "item.paradise.access_disc": "Access Disc",
   "item.paradise.server_locator": "Data Server Detector",
-  "item.paradise.admin_tool": "Gardening Stick",
+  "item.paradise.admin_tool": "Gardening Staff",
   "item.paradise.bucket_hat": "Bucket Hat",
   "item.paradise.egg_hat": "Fried Egg",
+  "item.paradise.scrambler": "Data Scrambler",
 
-  "gui.paradise.uploader.unavailable": "DOWNLOADER ACCESS DENIED",
+  "gui.paradise.uploader.unavailable": "DOWNLOADER DISABLED",
   "gui.paradise.reader.unavailable": "INVALID ADDRESS",
+  "gui.paradise.teleport.not_whitelisted": "ACCESS DENIED, NOT WHITELISTED",
+
+  "gui.paradise.whitelist.title": "Whitelist Control",
+  "gui.paradise.whitelist.active": "Active",
+  "gui.paradise.whitelist.history": "History",
 
   "tag.item.paradise.digital_blocks": "Digital Blocks",
 
-  "subtitles.item.server_locator_ping": "Server Detector Ping"
+  "subtitles.item.server_locator_ping": "Server Detector Ping",
 
+  "effect.paradise.eject": "EJECTION"
 }

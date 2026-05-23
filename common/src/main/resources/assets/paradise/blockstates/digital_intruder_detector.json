@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "detected=true": {
+      "model": "paradise:block/digital_intruder_detector_on"
+    },
+    "detected=false": {
+      "model": "paradise:block/digital_intruder_detector_off"
+    }
+  }
+}
