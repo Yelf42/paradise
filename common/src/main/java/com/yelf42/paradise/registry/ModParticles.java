@@ -21,6 +21,8 @@ public class ModParticles {
     public static final SimpleParticleType NIGHT_RIPPLE = registerSimple("night_ripple");
     public static final SimpleParticleType ERROR_RIPPLE = registerSimple("error_ripple");
 
+    public static final SimpleParticleType BITS = registerSimple("bits");
+
     private static SimpleParticleType registerSimple(String name) {
         var simpleParticleType = Services.PLATFORM.simpleParticleType();
         REGISTERED_PARTICLES.put(name, simpleParticleType);

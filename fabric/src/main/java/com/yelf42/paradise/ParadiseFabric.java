@@ -5,6 +5,7 @@ import com.yelf42.paradise.dimensions.*;
 import com.yelf42.paradise.entities.DigitalFish;
 import com.yelf42.paradise.registry.*;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
@@ -13,6 +14,7 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -64,6 +66,8 @@ public class ParadiseFabric implements ModInitializer {
                 ParadiseChunkGenerator.CODEC);
 
         ModEffects.init();
+
+        ModDispenserBehaviours.registerDispenserBehavior();
 
         if (FabricLoader.getInstance().isModLoaded("fabric-lifecycle-events-v1")) {
             registerFabricEventListeners();

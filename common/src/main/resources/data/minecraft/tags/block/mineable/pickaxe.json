@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "paradise:data_reader"
+    "paradise:data_reader",
+    "paradise:data_downloader"
   ]
 }

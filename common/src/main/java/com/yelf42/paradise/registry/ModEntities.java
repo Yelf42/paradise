@@ -2,6 +2,7 @@ package com.yelf42.paradise.registry;
 
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.entities.CrashBolt;
+import com.yelf42.paradise.entities.DigitalArrow;
 import com.yelf42.paradise.entities.DigitalFish;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -17,6 +18,8 @@ public class ModEntities {
     public static final EntityType<CrashBolt> CRASH_BOLT = registerBolt("crash_bolt", CrashBolt::new);
 
     public static final EntityType<DigitalFish> DIGITAL_FISH = registerMob("digital_fish", DigitalFish::new, 0.8f, 0.6f, 0.4f);
+
+    public static final EntityType<DigitalArrow> DIGITAL_ARROW = registerProjectile("digital_arrow", DigitalArrow::new);
 
     public static <T extends Entity> EntityType<T> registerProjectile(String name, EntityType.EntityFactory<T> factory) {
         var entity = EntityType.Builder.of(factory, MobCategory.MISC)

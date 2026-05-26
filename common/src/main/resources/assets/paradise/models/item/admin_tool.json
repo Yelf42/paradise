@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/handheld",
+  "parent": "paradise:item/in_hand",
   "textures": {
-    "layer0": "paradise:item/admin_tool"
+    "layer0": "paradise:item/egg_hat"
   }
 }

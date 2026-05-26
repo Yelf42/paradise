@@ -3,12 +3,14 @@ package com.yelf42.paradise;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.yelf42.paradise.client.ModRenderTypes;
 import com.yelf42.paradise.client.gui.screens.WhitelistScreen;
+import com.yelf42.paradise.client.particle.DigitalParticle;
 import com.yelf42.paradise.client.particle.RippleParticle;
 import com.yelf42.paradise.client.renderer.blockentity.DataCoreBlockEntityRenderer;
 import com.yelf42.paradise.client.renderer.blockentity.DataReaderBlockEntityRenderer;
 import com.yelf42.paradise.client.renderer.blockentity.DigitalSymbolRenderer;
 import com.yelf42.paradise.client.renderer.blockentity.DigitalWhitelisterRenderer;
 import com.yelf42.paradise.client.renderer.entity.CrashBoltRenderer;
+import com.yelf42.paradise.client.renderer.entity.DigitalArrowRenderer;
 import com.yelf42.paradise.client.renderer.entity.DigitalFishRenderer;
 import com.yelf42.paradise.registry.*;
 import net.fabricmc.api.ClientModInitializer;
@@ -78,11 +80,13 @@ public class ParadiseFabricClient implements ClientModInitializer {
         // Entities
         EntityRendererRegistry.register(ModEntities.CRASH_BOLT, CrashBoltRenderer::new);
         EntityRendererRegistry.register(ModEntities.DIGITAL_FISH, DigitalFishRenderer::new);
+        EntityRendererRegistry.register(ModEntities.DIGITAL_ARROW, DigitalArrowRenderer::new);
 
         // Particles
         ParticleFactoryRegistry.getInstance().register(ModParticles.DAY_RIPPLE, RippleParticle.DayFactory::new);
         ParticleFactoryRegistry.getInstance().register(ModParticles.NIGHT_RIPPLE, RippleParticle.NightFactory::new);
         ParticleFactoryRegistry.getInstance().register(ModParticles.ERROR_RIPPLE, RippleParticle.ErrorFactory::new);
+        ParticleFactoryRegistry.getInstance().register(ModParticles.BITS, DigitalParticle.BitFactory::new);
 
         // Packets
         ClientPlayNetworking.registerGlobalReceiver(ModPackets.CreateDimensionPayload.ID, (payload, context) -> {

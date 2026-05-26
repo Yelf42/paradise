@@ -27,9 +27,11 @@
   "client": [
     "ClientPacketListenerMixin",
     "GuiMixin",
+    "ItemRendererMixin",
     "LevelRendererMixin",
     "LivingEntityRendererMixin",
-    "LocalPlayerMixin"
+    "LocalPlayerMixin",
+    "ModelBakeryMixin"
   ],
   "server": [],
   "injectors": {

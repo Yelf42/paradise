@@ -18,13 +18,11 @@ import org.slf4j.LoggerFactory;
 // TODO Verify all 48 bunkers within 16000 blocks
 
 // TODO whitelist system
-//  Intruder detection/response
+//  Intruder response
 //  Testing
 //  Config options for expiring whitelists, disabling intrusions
 
 // TODO whole dimension effects (maybe same place that whitelist is configured?)
-
-// TODO infinite punch-through arrow/weapon?
 
 // TODO giant digital asparagus
 
@@ -42,7 +40,6 @@ public class Paradise {
 
     public static final TagKey<Item> DIGITAL_BLOCK_ITEMS = TagKey.create(Registries.ITEM, identifier( "digital_blocks"));
     public static final TagKey<Block> DIGITAL_BLOCKS = TagKey.create(Registries.BLOCK, identifier( "digital_blocks"));
-
 
     public static final TagKey<DimensionType> PARADISE_DIMENSIONS = TagKey.create(
             Registries.DIMENSION_TYPE,
