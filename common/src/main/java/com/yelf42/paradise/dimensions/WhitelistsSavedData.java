@@ -1,5 +1,6 @@
 package com.yelf42.paradise.dimensions;
 
+import com.yelf42.paradise.Paradise;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -16,9 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WhitelistsSavedData extends SavedData {
     private static final String ID = "paradise_whitelists";
 
-    // TODO replace with config value
-    private static final long MAX_AGE = 1000L * 60 * 60 * 24 * 3;
-
     private final Map<ResourceLocation, Whitelist> whitelists = new ConcurrentHashMap<>();
 
     public static class Whitelist {
@@ -29,7 +27,7 @@ public class WhitelistsSavedData extends SavedData {
         }
 
         private boolean isExpired(long timestamp) {
-            return System.currentTimeMillis() - timestamp > MAX_AGE;
+            return System.currentTimeMillis() - timestamp > (1000L * 60 * 60 * 24 * Paradise.CONFIG.whitelistDuration);
         }
 
         private void purgeExpired(Runnable markDirty) {

@@ -12,7 +12,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -186,7 +185,7 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
             if (!whitelistsSavedData.isWhitelisted(drbe.getDimension(), player.getName().getString())) {
                 ItemStack offhand = player.getItemBySlot(EquipmentSlot.OFFHAND);
                 ItemStack mainhand = player.getItemBySlot(EquipmentSlot.MAINHAND);
-                if (mainhand.is(ModItems.SCRAMBLER) || offhand.is(ModItems.SCRAMBLER)) {
+                if (Paradise.CONFIG.intrusionsAllowed && (mainhand.is(ModItems.SCRAMBLER) || offhand.is(ModItems.SCRAMBLER))) {
                     // Hack into paradise
                     return getRandomDestination(level, entity, drbe.getDimension());
                 }

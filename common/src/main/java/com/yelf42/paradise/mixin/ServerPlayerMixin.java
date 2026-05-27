@@ -30,7 +30,7 @@ public class ServerPlayerMixin {
         ServerPlayer player = (ServerPlayer) (Object) this;
         ServerLevel level = (ServerLevel) player.level();
 
-        if (level.dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS)) {
+        if (Paradise.CONFIG.safeRespawn && level.dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS)) {
 
             // Respawn normally if died in nullspace
             if (level.dimensionTypeRegistration().is(

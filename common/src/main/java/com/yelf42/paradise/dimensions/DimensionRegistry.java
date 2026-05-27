@@ -216,8 +216,8 @@ public class DimensionRegistry {
 
         WorldBorder border = level.getWorldBorder();
         border.setCenter(0, 0);
-        border.setSize(256);
-        border.setAbsoluteMaxSize(256);
+        border.setSize(Paradise.CONFIG.borderSize);
+        border.setAbsoluteMaxSize(Paradise.CONFIG.borderSize);
         border.setWarningBlocks(0);
         border.setWarningTime(0);
         border.setDamageSafeZone(0);

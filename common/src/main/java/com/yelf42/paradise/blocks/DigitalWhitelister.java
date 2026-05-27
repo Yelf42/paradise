@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.dimensions.IntrudersSavedData;
 import com.yelf42.paradise.dimensions.WhitelistsSavedData;
+import com.yelf42.paradise.registry.ModParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
@@ -105,7 +106,7 @@ public class DigitalWhitelister extends BaseEntityBlock {
         for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, AABB.move(pos))) {
             if (whitelistsSavedData.reactivatePlayer(dimId, player.getName().getString())) {
                 intrudersSavedData.remove(player.getUUID());
-                addParticlesAroundPlayer(ParticleTypes.HAPPY_VILLAGER, level, player);
+                addParticlesAroundPlayer(ModParticles.BITS, level, player);
             }
         }
     }

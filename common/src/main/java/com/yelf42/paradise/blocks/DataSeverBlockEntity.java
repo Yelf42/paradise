@@ -46,7 +46,7 @@ public class DataSeverBlockEntity extends BlockEntity {
 
         if (!level.isClientSide) {
             DimensionRegistry.ParadiseType type = DimensionRegistry.ParadiseType.DAY;
-            if (level.getRandom().nextInt(4)  == 0) type = DimensionRegistry.ParadiseType.NIGHT;
+            if (level.getRandom().nextInt(100) < Paradise.CONFIG.nightChance) type = DimensionRegistry.ParadiseType.NIGHT;
 
             if (this.dimension.getPath().isEmpty()) {
                 this.dimension = ((DimensionProvider) level.getServer()).paradise$createIfAbsent(type);

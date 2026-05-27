@@ -1,6 +1,7 @@
 package com.yelf42.paradise;
 
 import com.google.common.collect.ImmutableList;
+import com.yelf42.paradise.config.ParadiseConfig;
 import com.yelf42.paradise.platform.Services;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -14,13 +15,9 @@ import net.minecraft.world.level.levelgen.synth.PerlinSimplexNoise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO custom structure placer code that can be configured for number of bunkers?
-// TODO Verify all 48 bunkers within 16000 blocks
-
 // TODO whitelist system
 //  Intruder response
 //  Testing
-//  Config options for expiring whitelists, disabling intrusions
 
 // TODO whole dimension effects (maybe same place that whitelist is configured?)
 
@@ -29,11 +26,15 @@ import org.slf4j.LoggerFactory;
 // TODO circle tool, creates weird stuff
 
 // TODO backup totem (saves some stuff and itself)
+
+// TODO get neoforge working
 public class Paradise {
 
     public static final String MOD_ID = "paradise";
     public static final String MOD_NAME = "Paradise";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
+    public static ParadiseConfig CONFIG;
+
     public static final String[] INT_TO_ROMAN = {" ", " I", " II", " III", " IV", " V", " VI", " VII", " VIII", " IX", " X"}; // Nice for components
 
     public static final PerlinSimplexNoise PERLIN = new PerlinSimplexNoise(new WorldgenRandom(new LegacyRandomSource(765341L)), ImmutableList.of(0));
@@ -48,6 +49,7 @@ public class Paradise {
 
     public static void init() {
         LOGGER.info("Common init on {}! we are currently in a {} environment!", Services.PLATFORM.getPlatformName(), Services.PLATFORM.getEnvironmentName());
+        CONFIG = ParadiseConfig.createToml(Services.PLATFORM.getConfigPath(), "", "paradise", ParadiseConfig.class);
     }
 
     public static ResourceLocation identifier(String path) {

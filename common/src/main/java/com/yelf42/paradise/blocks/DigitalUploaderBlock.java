@@ -171,7 +171,7 @@ public class DigitalUploaderBlock extends BaseEntityBlock implements Portal {
             if (!whitelistsSavedData.isWhitelisted(destination.getRight(), player.getName().getString())) {
                 ItemStack offhand = player.getItemBySlot(EquipmentSlot.OFFHAND);
                 ItemStack mainhand = player.getItemBySlot(EquipmentSlot.MAINHAND);
-                if (!mainhand.is(ModItems.SCRAMBLER) && !offhand.is(ModItems.SCRAMBLER)) {
+                if (!Paradise.CONFIG.intrusionsAllowed || !(mainhand.is(ModItems.SCRAMBLER) || offhand.is(ModItems.SCRAMBLER))) {
                     player.displayClientMessage(Component.translatable("gui.paradise.teleport.not_whitelisted").withStyle(ChatFormatting.RED), true);
                     return null;
                 }

@@ -10,6 +10,9 @@ dependencies {
     }
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+
+    modImplementation 'folk.sisby:kaleido-config:0.3.3+1.3.2'
+    include 'folk.sisby:kaleido-config:0.3.3+1.3.2'
 }
 
 loom {
