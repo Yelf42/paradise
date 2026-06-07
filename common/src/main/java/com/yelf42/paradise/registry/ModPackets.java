@@ -97,5 +97,18 @@ public class ModPackets {
         public Type<? extends CustomPacketPayload> type() { return ID; }
     }
 
+    // Server -> Client: Open screen to see TransitLog
+    public static final ResourceLocation OPEN_TRANSIT_LOG_PACKET = Paradise.identifier("open_transit_log");
+    public record OpenTransitLogPayload(ResourceLocation dimensionId, List<String> transitLog) implements CustomPacketPayload {
+        public static final CustomPacketPayload.Type<OpenTransitLogPayload> ID = new CustomPacketPayload.Type<>(OPEN_TRANSIT_LOG_PACKET);
+        public static final StreamCodec<RegistryFriendlyByteBuf, OpenTransitLogPayload> CODEC = StreamCodec.composite(
+                ResourceLocation.STREAM_CODEC, OpenTransitLogPayload::dimensionId,
+                ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.STRING_UTF8), OpenTransitLogPayload::transitLog,
+                OpenTransitLogPayload::new
+        );
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() { return ID; }
+    }
 
 }

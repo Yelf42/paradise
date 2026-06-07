@@ -7,6 +7,13 @@ import folk.sisby.kaleido.lib.quiltconfig.api.annotations.IntegerRange;
 
 public class ParadiseConfig extends WrappedConfig {
 
+    @Comment("How many extra items should BackupRecord's save?")
+    @IntegerRange(min=0, max=64)
+    public int backupSaves = 9;
+
+    @Comment("")
+    @Comment("-------------------------------")
+    @Comment("")
     @Comment("Are intrusions via Scramblers allowed?")
     @Comment("Note this only affects future intrusions")
     public boolean intrusionsAllowed = true;
@@ -18,6 +25,14 @@ public class ParadiseConfig extends WrappedConfig {
     @Comment("-1 will effectively disable whitelisting")
     @IntegerRange(min=-1, max=Integer.MAX_VALUE)
     public int whitelistDuration = 3;
+
+    @Comment("")
+    @Comment("-------------------------------")
+    @Comment("")
+    @Comment("How many entries should the TransitLog remember?")
+    @Comment("0 will effectively disable logging")
+    @IntegerRange(min=0, max=64)
+    public int transitLogMaxSize = 24;
 
     @Comment("")
     @Comment("-------------------------------")

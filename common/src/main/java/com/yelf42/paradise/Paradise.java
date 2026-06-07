@@ -23,11 +23,10 @@ import org.slf4j.LoggerFactory;
 
 // TODO giant digital asparagus
 
-// TODO circle tool, creates weird stuff
-
-// TODO backup totem (saves some stuff and itself)
-
 // TODO get neoforge working
+
+// TODO more binary particles
+
 public class Paradise {
 
     public static final String MOD_ID = "paradise";

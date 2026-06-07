@@ -78,9 +78,12 @@ public class ParadiseFabric implements ModInitializer {
         PayloadTypeRegistry.playS2C().register(ModPackets.CreateDimensionPayload.ID, ModPackets.CreateDimensionPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(ModPackets.RemoveDimensionPayload.ID, ModPackets.RemoveDimensionPayload.CODEC);
 
+        PayloadTypeRegistry.playS2C().register(ModPackets.OpenTransitLogPayload.ID, ModPackets.OpenTransitLogPayload.CODEC);
+
         PayloadTypeRegistry.playS2C().register(ModPackets.OpenWhitelistPayload.ID, ModPackets.OpenWhitelistPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(ModPackets.MutateWhitelistPayload.ID, ModPackets.MutateWhitelistPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(ModPackets.CloseWhitelistPayload.ID, ModPackets.CloseWhitelistPayload.CODEC);
+
         registerC2SPackets();
 
         if (FabricLoader.getInstance().isModLoaded("fabric-command-api-v2")) {
@@ -117,6 +120,12 @@ public class ParadiseFabric implements ModInitializer {
                         break;
                     case REMOVE:
                         whitelistsSavedData.removePlayer(dimId, playerName);
+                        if (whitelistsSavedData.getActive(dimId).isEmpty()) {
+                            ServerLevel level = context.server().getLevel(ResourceKey.create(Registries.DIMENSION, dimId));
+                            if (level == null) return;
+                            IntrudersSavedData intruders = IntrudersSavedData.getOrCreate(level);
+                            intruders.clear();
+                        }
                         break;
                     case FLIP:
                         if (whitelistsSavedData.flipPlayer(dimId, playerName)) {

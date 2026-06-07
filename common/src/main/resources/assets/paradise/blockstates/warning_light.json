@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "paradise:block/warning_light",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "paradise:block/warning_light",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "paradise:block/warning_light",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "paradise:block/warning_light",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "paradise:block/warning_light"
+    },
+    "facing=west": {
+      "model": "paradise:block/warning_light",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

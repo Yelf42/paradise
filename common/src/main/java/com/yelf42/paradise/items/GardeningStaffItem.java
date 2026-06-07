@@ -1,6 +1,8 @@
 package com.yelf42.paradise.items;
 
 import com.yelf42.paradise.Paradise;
+import com.yelf42.paradise.blocks.DigitalSculpture;
+import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -20,11 +22,11 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
-// TODO add more functionality
+// TODO add sheep / collars?
 // TODO placeholder texture
-public class AdminToolItem extends Item {
+public class GardeningStaffItem extends Item {
 
-    private static class CyclicOrderedSet<T> {
+    public static class CyclicOrderedSet<T> {
         private final List<T> list;
         private final java.util.Map<T, Integer> indexMap;
 
@@ -74,7 +76,7 @@ public class AdminToolItem extends Item {
             ModBlocks.DIGITAL_PILLAR_BARRIER
     ));
 
-    public AdminToolItem(Properties properties) {
+    public GardeningStaffItem(Properties properties) {
         super(properties);
     }
 
@@ -86,7 +88,7 @@ public class AdminToolItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
-        boolean clientSide = level.isClientSide;
+        boolean clientSide = level.isClientSide();
 
         if (!level.dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS)) {
             return InteractionResult.PASS;
@@ -141,6 +143,13 @@ public class AdminToolItem extends Item {
             if (newBlock == null) return InteractionResult.PASS;
             if (level instanceof ServerLevel serverLevel) {
                 serverLevel.setBlock(pos, newBlock.withPropertiesOf(state), 2);
+            }
+            return InteractionResult.sidedSuccess(clientSide);
+
+        // Rotate digital sculpture
+        } else if (state.getBlock() instanceof DigitalSculpture) {
+            if (level instanceof ServerLevel serverLevel) {
+                serverLevel.setBlock(pos, state.setValue(DigitalSculpture.ROTATION, (state.getValue(DigitalSculpture.ROTATION) + 1) % 8), 2);
             }
             return InteractionResult.sidedSuccess(clientSide);
         }

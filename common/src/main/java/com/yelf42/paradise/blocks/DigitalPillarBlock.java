@@ -26,10 +26,6 @@ public class DigitalPillarBlock extends Block {
         return CODEC;
     }
 
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
-        return true;
-    }
-
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
         boolean digital = context.getLevel().dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS);

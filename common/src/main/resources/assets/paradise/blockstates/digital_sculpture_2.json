@@ -1,0 +1,31 @@
+{
+  "variants": {
+    "rotation=0": {
+      "model": "paradise:block/sculptures/digital_sculpture_2_0"
+    },
+    "rotation=7": {
+      "model": "paradise:block/sculptures/digital_sculpture_2_1"
+    },
+    "rotation=6": {
+      "model": "paradise:block/sculptures/digital_sculpture_2_2"
+    },
+    "rotation=5": {
+      "model": "paradise:block/sculptures/digital_sculpture_2_3",
+      "y": 90
+    },
+    "rotation=4": {
+      "model": "paradise:block/sculptures/digital_sculpture_2_0",
+      "y": 90
+    },
+    "rotation=3": {
+      "model": "paradise:block/sculptures/digital_sculpture_2_1",
+      "y": 90
+    },
+    "rotation=2": {
+      "model": "paradise:block/sculptures/digital_sculpture_2_-2"
+    },
+    "rotation=1": {
+      "model": "paradise:block/sculptures/digital_sculpture_2_3"
+    }
+  }
+}

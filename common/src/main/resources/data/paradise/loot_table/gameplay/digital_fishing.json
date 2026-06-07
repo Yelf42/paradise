@@ -31,7 +31,7 @@
         },
         {
           "type": "minecraft:item",
-          "name": "paradise:admin_tool",
+          "name": "paradise:gardening_staff",
           "weight": 5
         }
       ],

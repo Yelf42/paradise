@@ -2,6 +2,7 @@ package com.yelf42.paradise.blocks;
 
 import com.mojang.serialization.MapCodec;
 import com.yelf42.paradise.Paradise;
+import com.yelf42.paradise.dimensions.TransitLogSavedData;
 import com.yelf42.paradise.dimensions.WhitelistsSavedData;
 import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModItems;
@@ -14,6 +15,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -73,6 +75,17 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
     }
 
     @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof DataReaderBlockEntity readerBlockEntity) {
+                readerBlockEntity.popDisc(state, false);
+            }
+        }
+        super.onRemove(state, level, pos, newState, isMoving);
+    }
+
+    @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
@@ -119,7 +132,7 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
                 // Pop disc
                 level.setBlock(pos, state.setValue(HAS_DISC, 0), 3);
                 drbe.setCooldown(false);
-                drbe.popDisc();
+                drbe.popDisc(state);
                 level.scheduleTick(pos, state.getBlock(), 100, TickPriority.NORMAL);
                 return ItemInteractionResult.sidedSuccess(level.isClientSide);
             }
@@ -190,6 +203,8 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
                     return getRandomDestination(level, entity, drbe.getDimension());
                 }
 
+                TransitLogSavedData transitLogSavedData = TransitLogSavedData.getOrCreate(serverlevel);
+                transitLogSavedData.addLog(TransitLogSavedData.createLogEntry(false, "READER", "DENIED ENTRY"));
                 player.displayClientMessage(Component.translatable("gui.paradise.teleport.not_whitelisted").withStyle(ChatFormatting.RED), true);
                 return null;
             }

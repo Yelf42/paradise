@@ -77,6 +77,11 @@ public class LevelRendererMixin {
             if (gameTime2 != null) gameTime2.set(time);
         }
 
+        if (ModRenderTypes.watcherShader != null) {
+            Uniform gameTime3 = ModRenderTypes.watcherShader.getUniform("GameTime");
+            if (gameTime3 != null) gameTime3.set(time);
+        }
+
     }
 
     @Unique

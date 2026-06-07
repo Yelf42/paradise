@@ -7,6 +7,7 @@
     "paradise:digital_uploader",
     "paradise:digital_whitelister",
     "paradise:digital_bulb",
-    "paradise:digital_intruder_detector"
+    "paradise:digital_intruder_detector",
+    "paradise:digital_transit_record"
   ]
 }

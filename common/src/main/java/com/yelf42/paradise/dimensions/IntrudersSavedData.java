@@ -6,10 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /// Cases
 /// 1. Unwhitelisted player enters dimension                        -> add
@@ -83,6 +80,10 @@ public class IntrudersSavedData extends SavedData {
         return Collections.unmodifiableSet(intruders);
     }
 
+    public List<UUID> getPresentIntruders(ServerLevel level) {
+        return intruders.stream().filter((uuid) -> (level.getEntity(uuid) != null)).toList();
+    }
+
     public int totalIntruders() {
         return intruders.size();
     }
@@ -97,5 +98,10 @@ public class IntrudersSavedData extends SavedData {
         if (intruders.remove(uuid)) {
             setDirty();
         }
+    }
+
+    public void clear() {
+        intruders.clear();
+        setDirty();
     }
 }

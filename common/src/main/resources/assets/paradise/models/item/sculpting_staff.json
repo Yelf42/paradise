@@ -1,0 +1,6 @@
+{
+  "parent": "paradise:item/in_hand",
+  "textures": {
+    "layer0": "paradise:item/sculpting_staff"
+  }
+}

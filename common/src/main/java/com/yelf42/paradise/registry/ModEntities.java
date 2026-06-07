@@ -1,9 +1,7 @@
 package com.yelf42.paradise.registry;
 
 import com.yelf42.paradise.Paradise;
-import com.yelf42.paradise.entities.CrashBolt;
-import com.yelf42.paradise.entities.DigitalArrow;
-import com.yelf42.paradise.entities.DigitalFish;
+import com.yelf42.paradise.entities.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -18,6 +16,9 @@ public class ModEntities {
     public static final EntityType<CrashBolt> CRASH_BOLT = registerBolt("crash_bolt", CrashBolt::new);
 
     public static final EntityType<DigitalFish> DIGITAL_FISH = registerMob("digital_fish", DigitalFish::new, 0.8f, 0.6f, 0.4f);
+
+    public static final EntityType<DigitalWatcher> DIGITAL_WATCHER = registerMob("digital_watcher", DigitalWatcher::new, 1.0f, 1.0f, 0.5f);
+    public static final EntityType<DigitalWatcherBeam> DIGITAL_WATCHER_BEAM = registerMob("digital_watcher_beam", DigitalWatcherBeam::new, 0.3f, 128.0f, 0.0f);
 
     public static final EntityType<DigitalArrow> DIGITAL_ARROW = registerProjectile("digital_arrow", DigitalArrow::new);
 

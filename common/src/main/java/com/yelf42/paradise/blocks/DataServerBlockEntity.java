@@ -13,17 +13,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class DataSeverBlockEntity extends BlockEntity {
+public class DataServerBlockEntity extends BlockEntity {
 
     private ResourceLocation dimension;
     private boolean cooldown = false;
 
-    public DataSeverBlockEntity(BlockPos pos, BlockState blockState) {
+    public DataServerBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlockEntities.DATA_SERVER, pos, blockState);
         this.dimension = Paradise.identifier("");
     }
 
-    public DataSeverBlockEntity(BlockPos pos, BlockState blockState, boolean corrupt) {
+    public DataServerBlockEntity(BlockPos pos, BlockState blockState, boolean corrupt) {
         super(ModBlockEntities.DATA_SERVER, pos, blockState);
         this.dimension = Paradise.identifier(corrupt ? "nullspace" : "");
     }

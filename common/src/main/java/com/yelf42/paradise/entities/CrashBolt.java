@@ -66,7 +66,7 @@ public class CrashBolt extends Entity {
             if (!(this.level() instanceof ServerLevel serverLevel)) {
                 this.level().setSkyFlashTime(2);
             } else {
-                List<Entity> list1 = this.level().getEntities(this, new AABB(this.getX() - (double)3.0F, this.getY() - (double)3.0F, this.getZ() - (double)3.0F, this.getX() + (double)3.0F, this.getY() + (double)6.0F + (double)3.0F, this.getZ() + (double)3.0F), Entity::isAlive);
+                List<Entity> list1 = this.level().getEntities(this, new AABB(this.getX() - (double)3.0F, this.getY() - 0.5f, this.getZ() - (double)3.0F, this.getX() + (double)3.0F, this.getY() + 1.0f, this.getZ() + (double)3.0F), Entity::isAlive);
 
                 for(Entity entity : list1) {
                     teleportOut(entity, serverLevel);

@@ -86,6 +86,64 @@ public class ModRenderTypes extends RenderType {
         }
     }
 
+    public static void setWatcherShader(ShaderInstance shader) {
+        watcherShader = shader;
+    }
+    public static ShaderInstance watcherShader;
+    private static final ShaderStateShard RENDERTYPE_WATCHER_SHADER = new ShaderStateShard(() -> watcherShader);
+    public static Function<ResourceLocation, RenderType> WATCHER = Util.memoize(ModRenderTypes::createWatcher);
+    private static RenderType createWatcher(ResourceLocation texture) {
+        try {
+            Method create = RenderType.class.getDeclaredMethod("create", String.class, VertexFormat.class,
+                    VertexFormat.Mode.class, int.class, boolean.class, boolean.class,
+                    RenderType.CompositeState.class);
+            create.setAccessible(true);
+
+            RenderType.CompositeState state = RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_WATCHER_SHADER)
+                    .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setLightmapState(NO_LIGHTMAP)
+                    .setOverlayState(NO_OVERLAY)
+                    .setCullState(NO_CULL)
+                    .setDepthTestState(RenderStateShard.NO_DEPTH_TEST)
+                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                    .createCompositeState(true);
+
+            return (RenderType) create.invoke(null, "paradise_watcher", DefaultVertexFormat.NEW_ENTITY,
+                    VertexFormat.Mode.QUADS, 1536, true, false, state);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create watcher render type", e);
+        }
+    }
+
+    public static void setUnshadedColorShader(ShaderInstance shader) {unshadedColorShader = shader;}
+    public static ShaderInstance unshadedColorShader;
+    private static final ShaderStateShard RENDERTYPE_UNSHADED_COLOR_SHADER = new ShaderStateShard(() -> unshadedColorShader);
+    public static RenderType UNSHADED_COLOR;
+    public static void initUnshadedColor() {
+        try {
+            Method create = RenderType.class.getDeclaredMethod("create", String.class, VertexFormat.class,
+                    VertexFormat.Mode.class, int.class, boolean.class, boolean.class,
+                    RenderType.CompositeState.class);
+            create.setAccessible(true);
+
+            RenderType.CompositeState state = RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_UNSHADED_COLOR_SHADER)
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setLightmapState(NO_LIGHTMAP)
+                    .setOverlayState(NO_OVERLAY)
+                    .setCullState(NO_CULL)
+                    .setDepthTestState(LEQUAL_DEPTH_TEST)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .createCompositeState(true);
+
+            UNSHADED_COLOR = (RenderType) create.invoke(null, "paradise_unshaded_color", DefaultVertexFormat.NEW_ENTITY,
+                    VertexFormat.Mode.QUADS, 1536, false, false, state);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create unshaded color render type", e);
+        }
+    }
 
     public static void setDigitalTeleportShader(ShaderInstance shader) {
         digitalTeleportShader = shader;

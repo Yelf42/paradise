@@ -1,6 +1,5 @@
 package com.yelf42.paradise.entities;
 
-import com.yelf42.paradise.Paradise;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -8,6 +7,8 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -16,10 +17,10 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -29,7 +30,7 @@ import java.util.UUID;
 public class DigitalFish extends Mob {
 
     private static final int FADE_LIFESPAN = 200;
-    protected static final EntityDataAccessor<Integer> LIFESPAN = SynchedEntityData.defineId(DigitalFish.class, EntityDataSerializers.INT);;
+    protected static final EntityDataAccessor<Integer> LIFESPAN = SynchedEntityData.defineId(DigitalFish.class, EntityDataSerializers.INT);
 
     private UUID attacker;
 
@@ -110,6 +111,16 @@ public class DigitalFish extends Mob {
         return super.isPushable(); // TODO false if lured by pylon
     }
 
+    @Override
+    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+        return InteractionResult.PASS;
+    }
+
+    @Override
+    public boolean canBeLeashed() {
+        return false;
+    }
+
     public float getLifespanFade() {
         return Math.clamp(Math.min((2400 - (float) this.getLifespan()) / FADE_LIFESPAN, (float) this.getLifespan() / FADE_LIFESPAN), 0.f, 1.f);
     }
@@ -126,7 +137,6 @@ public class DigitalFish extends Mob {
                 this.remove(RemovalReason.DISCARDED);
             }
         }
-
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.yelf42.paradise.blocks;
 import com.mojang.serialization.MapCodec;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.dimensions.DownloaderLocations;
+import com.yelf42.paradise.dimensions.TransitLogSavedData;
 import com.yelf42.paradise.dimensions.WhitelistsSavedData;
 import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModBlocks;
@@ -65,10 +66,6 @@ public class DigitalUploaderBlock extends BaseEntityBlock implements Portal {
 
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return AABB;
-    }
-
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
-        return true;
     }
 
     @Override
@@ -172,6 +169,8 @@ public class DigitalUploaderBlock extends BaseEntityBlock implements Portal {
                 ItemStack offhand = player.getItemBySlot(EquipmentSlot.OFFHAND);
                 ItemStack mainhand = player.getItemBySlot(EquipmentSlot.MAINHAND);
                 if (!Paradise.CONFIG.intrusionsAllowed || !(mainhand.is(ModItems.SCRAMBLER) || offhand.is(ModItems.SCRAMBLER))) {
+                    TransitLogSavedData transitLogSavedData = TransitLogSavedData.getOrCreate(serverlevel);
+                    transitLogSavedData.addLog(TransitLogSavedData.createLogEntry(false, "UPLOADER", "DENIED ENTRY"));
                     player.displayClientMessage(Component.translatable("gui.paradise.teleport.not_whitelisted").withStyle(ChatFormatting.RED), true);
                     return null;
                 }

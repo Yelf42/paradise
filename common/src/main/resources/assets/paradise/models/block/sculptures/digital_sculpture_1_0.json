@@ -1,0 +1,26 @@
+{
+  "parent": "block/block",
+  "ambientocclusion": false,
+  "format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "paradise:block/digital_pillar_surface",
+		"particle": "paradise:block/digital_pillar_surface"
+	},
+	"elements": [
+		{
+          "shade": false,
+			"from": [1, 0, 5],
+			"to": [15, 16, 11],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [1, 0, 15, 16], "texture": "#0"},
+				"east": {"uv": [10, 0, 16, 16], "texture": "#0"},
+				"south": {"uv": [1, 0, 15, 16], "texture": "#0"},
+				"west": {"uv": [10, 0, 16, 16], "texture": "#0"},
+				"up": {"uv": [1, 5, 15, 11], "texture": "#0"},
+				"down": {"uv": [1, 5, 15, 11], "texture": "#0"}
+			}
+		}
+	]
+}

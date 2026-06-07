@@ -53,7 +53,6 @@ public class DigitalIntruderDetector extends BaseEntityBlock {
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        Paradise.LOGGER.info("getTicker: {}", blockEntityType.toString());
         return createTickerHelper(blockEntityType, ModBlockEntities.DIGITAL_INTRUDER_DETECTOR, DigitalIntruderDetectorBlockEntity::tick);
     }
 

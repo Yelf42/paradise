@@ -2,19 +2,26 @@ package com.yelf42.paradise.mixin;
 
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.dimensions.IntrudersSavedData;
+import com.yelf42.paradise.dimensions.TransitLogSavedData;
 import com.yelf42.paradise.dimensions.WhitelistsSavedData;
 import com.yelf42.paradise.entities.CrashBolt;
 import com.yelf42.paradise.entities.DigitalFish;
 import com.yelf42.paradise.registry.ModBlocks;
+import com.yelf42.paradise.registry.ModEffects;
 import com.yelf42.paradise.registry.ModEntities;
+import com.yelf42.paradise.registry.ModItems;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -28,6 +35,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.UUID;
 
 @Mixin(ServerLevel.class)
 public abstract class ServerLevelMixin {
@@ -43,20 +52,37 @@ public abstract class ServerLevelMixin {
 
         if (entity instanceof ServerPlayer serverplayer && !(serverplayer.isCreative() || serverplayer.isSpectator())) {
             WhitelistsSavedData whitelistsSavedData = WhitelistsSavedData.getOrCreate(server.overworld());
+            IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(self);
+            TransitLogSavedData transitLogSavedData = TransitLogSavedData.getOrCreate(self);
 
             if (!whitelistsSavedData.isWhitelisted(self.dimension().location(), serverplayer.getName().getString())) {
-                IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(self);
                 intrudersSavedData.add(serverplayer.getUUID());
+                paradise$extraEjectTest(serverplayer, true);
             }
+            transitLogSavedData.addLog(TransitLogSavedData.createLogEntry(intrudersSavedData.isIntruder(serverplayer.getUUID()), serverplayer.getName().getString(), "TELEPORTED IN"));
         }
     }
 
     @Inject(method = "removePlayerImmediately", at = @At("HEAD"))
     private void removeIntruderOnLeavingDimension(ServerPlayer player, Entity.RemovalReason reason, CallbackInfo ci) {
+        ServerLevel self = (ServerLevel) (Object) this;
+        if (!self.dimensionTypeRegistration().is(Paradise.PARADISE_DIMENSIONS)) return;
+
+        UUID playerUUID = player.getUUID();
+        IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(player.serverLevel());
+        TransitLogSavedData transitLogSavedData = TransitLogSavedData.getOrCreate(self);
+
+        boolean shouldLog = (!(player.isCreative() || player.isSpectator()));
+
         if (reason == Entity.RemovalReason.CHANGED_DIMENSION) {
-            IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(player.serverLevel());
-            intrudersSavedData.remove(player.getUUID());
+            if (shouldLog) transitLogSavedData.addLog(TransitLogSavedData.createLogEntry(intrudersSavedData.isIntruder(playerUUID), player.getName().getString(), "TELEPORTED OUT"));
+            intrudersSavedData.remove(playerUUID);
+        } else if (reason == Entity.RemovalReason.KILLED) {
+            if (shouldLog) transitLogSavedData.addLog(TransitLogSavedData.createLogEntry(intrudersSavedData.isIntruder(playerUUID), player.getName().getString(), "KILLED"));
+        } else if (reason == Entity.RemovalReason.UNLOADED_WITH_PLAYER) {
+            if (shouldLog) transitLogSavedData.addLog(TransitLogSavedData.createLogEntry(intrudersSavedData.isIntruder(playerUUID), player.getName().getString(), "LOGGED OFF"));
         }
+
     }
 
     @Inject(method = "addNewPlayer", at = @At("HEAD"))
@@ -67,11 +93,30 @@ public abstract class ServerLevelMixin {
         ResourceLocation dimId = self.dimension().location();
         IntrudersSavedData intruders = IntrudersSavedData.getOrCreate(self);
         WhitelistsSavedData whitelists = WhitelistsSavedData.getOrCreate(server.overworld());
-        if (intruders.isIntruder(player.getUUID()) && whitelists.isWhitelisted(dimId, player.getName().getString())) {
-            intruders.remove(player.getUUID());
+        UUID playerUUID = player.getUUID();
+        if (intruders.isIntruder(playerUUID) && whitelists.isWhitelisted(dimId, player.getName().getString())) {
+            intruders.remove(playerUUID);
+        }
+
+        paradise$extraEjectTest(player, intruders.isIntruder(playerUUID));
+
+        if (!(player.isCreative() || player.isSpectator())) {
+            TransitLogSavedData transitLogSavedData = TransitLogSavedData.getOrCreate(self);
+            transitLogSavedData.addLog(TransitLogSavedData.createLogEntry(intruders.isIntruder(playerUUID), player.getName().getString(), "LOGGED ON"));
         }
     }
 
+    @Unique
+    private void paradise$extraEjectTest(ServerPlayer player, boolean intruder) {
+        if (!intruder) return;
+
+        ItemStack offhand = player.getItemBySlot(EquipmentSlot.OFFHAND);
+        ItemStack mainhand = player.getItemBySlot(EquipmentSlot.MAINHAND);
+        if (!mainhand.is(ModItems.SCRAMBLER) && !offhand.is(ModItems.SCRAMBLER) && !player.hasEffect(ModEffects.EJECT)) {
+            player.displayClientMessage(Component.translatable("gui.paradise.scrambler.ejection").withStyle(ChatFormatting.RED), true);
+            player.addEffect(ModEffects.ejectInstance());
+        }
+    }
 
     @Unique
     private static final AABB DIGITAL_WORLD_AABB = new AABB(-132, 0, -132, 132, 112, 132);

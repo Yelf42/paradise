@@ -1,15 +1,19 @@
 package com.yelf42.paradise.blocks;
 
 import com.mojang.serialization.MapCodec;
+import com.yelf42.paradise.dimensions.IntrudersSavedData;
 import com.yelf42.paradise.dimensions.WhitelistsSavedData;
 import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModPackets;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -85,7 +89,10 @@ public class DigitalWhitelistController extends BaseEntityBlock {
         ResourceLocation dimId = serverPlayer.serverLevel().dimension().location();
 
         if (data.hasWhitelist(dimId) && (data.isWhitelisted(dimId, serverPlayer.getName().getString()) || serverPlayer.isCreative())) {
-            if (!serverPlayer.isCreative()) data.addPlayer(dimId, serverPlayer.getName().getString());
+            if (!serverPlayer.isCreative()) {
+                data.addPlayer(dimId, serverPlayer.getName().getString());
+                removeIntruderIfPresent(level.getServer(), dimId, serverPlayer.getUUID());
+            }
             ClientboundCustomPayloadPacket packet = new ClientboundCustomPayloadPacket(new ModPackets.OpenWhitelistPayload(
                     dimId,
                     data.getActive(dimId),
@@ -101,5 +108,15 @@ public class DigitalWhitelistController extends BaseEntityBlock {
     private boolean otherPlayerIsEditingSign(Player player, DigitalWhitelistControllerBlockEntity controller) {
         UUID uuid = controller.getPlayerWhoMayEdit();
         return uuid != null && !uuid.equals(player.getUUID());
+    }
+
+    private static void removeIntruderIfPresent(MinecraftServer server, ResourceLocation dimId, UUID playerUUID) {
+        ServerLevel level = server.getLevel(ResourceKey.create(Registries.DIMENSION, dimId));
+        if (level == null) return;
+        IntrudersSavedData intruders = IntrudersSavedData.getOrCreate(level);
+        server.getPlayerList().getPlayers().stream()
+                .filter(p -> p.getUUID().equals(playerUUID))
+                .findFirst()
+                .ifPresent(p -> intruders.remove(p.getUUID()));
     }
 }

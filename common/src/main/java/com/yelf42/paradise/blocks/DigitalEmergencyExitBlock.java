@@ -43,10 +43,6 @@ public class DigitalEmergencyExitBlock extends DigitalUploaderBlock {
         return CODEC;
     }
 
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
-        return true;
-    }
-
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
         return new DigitalEmergencyExitBlockEntity(blockPos, blockState);

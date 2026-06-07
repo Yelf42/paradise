@@ -61,12 +61,12 @@ public class DataServerBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new DataSeverBlockEntity(blockPos, blockState, blockState.getOptionalValue(DataServerBlock.CORRUPT).orElse(false));
+        return new DataServerBlockEntity(blockPos, blockState, blockState.getOptionalValue(DataServerBlock.CORRUPT).orElse(false));
     }
 
     @Override
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        DataSeverBlockEntity dsbe = level.getBlockEntity(pos, ModBlockEntities.DATA_SERVER).orElse(null);
+        DataServerBlockEntity dsbe = level.getBlockEntity(pos, ModBlockEntities.DATA_SERVER).orElse(null);
         if (dsbe != null) {
             popAccessDisc(level, pos, dsbe.getDimension());
             dsbe.setCooldown(false);
@@ -81,7 +81,7 @@ public class DataServerBlock extends BaseEntityBlock {
 
         ItemStack itemstack = player.getItemInHand(hand);
         if (itemstack.is(Items.MUSIC_DISC_OTHERSIDE) || itemstack.is(ModItems.ACCESS_DISC)) {
-            DataSeverBlockEntity dsbe = level.getBlockEntity(pos, ModBlockEntities.DATA_SERVER).orElse(null);
+            DataServerBlockEntity dsbe = level.getBlockEntity(pos, ModBlockEntities.DATA_SERVER).orElse(null);
             if (dsbe != null && dsbe.offCooldown()) {
                 itemstack.shrink(1);
                 dsbe.setCooldown(true);

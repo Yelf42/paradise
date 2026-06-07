@@ -18,7 +18,7 @@ public class ModBlockEntities {
     public static final LinkedHashMap<String, BlockEntityType<?>> REGISTERED_BLOCK_ENTITIES = new LinkedHashMap<>();
 
     public static BlockEntityType<DataCoreBlockEntity> DATA_CORE = register("data_core", DataCoreBlockEntity::new, ModBlocks.DATA_CORE);
-    public static BlockEntityType<DataSeverBlockEntity> DATA_SERVER = register("data_server", DataSeverBlockEntity::new, ModBlocks.DATA_SERVER);
+    public static BlockEntityType<DataServerBlockEntity> DATA_SERVER = register("data_server", DataServerBlockEntity::new, ModBlocks.DATA_SERVER);
     public static BlockEntityType<DataReaderBlockEntity> DATA_READER = register("data_reader", DataReaderBlockEntity::new, ModBlocks.DATA_READER);
 
     public static BlockEntityType<DigitalUploaderBlockEntity> DIGITAL_UPLOADER = register("digital_uploader", DigitalUploaderBlockEntity::new, ModBlocks.DIGITAL_UPLOADER);
@@ -27,6 +27,8 @@ public class ModBlockEntities {
     public static BlockEntityType<DigitalWhitelistControllerBlockEntity> WHITELIST_CONTROLLER = register("whitelist_controller", DigitalWhitelistControllerBlockEntity::new, ModBlocks.WHITELIST_CONTROLLER);
     public static BlockEntityType<DigitalWhitelisterBlockEntity> DIGITAL_WHITELISTER = register("digital_whitelister", DigitalWhitelisterBlockEntity::new, ModBlocks.DIGITAL_WHITELISTER);
     public static BlockEntityType<DigitalIntruderDetectorBlockEntity> DIGITAL_INTRUDER_DETECTOR = register("digital_intruder_detector", DigitalIntruderDetectorBlockEntity::new, ModBlocks.DIGITAL_INTRUDER_DETECTOR);
+    public static BlockEntityType<WarningLightBlockEntity> WARNING_LIGHT = register("warning_light", WarningLightBlockEntity::new, ModBlocks.WARNING_LIGHT);
+    public static BlockEntityType<DigitalTransitRecordBlockEntity> DIGITAL_TRANSIT_RECORD = register("digital_transit_record", DigitalTransitRecordBlockEntity::new, ModBlocks.DIGITAL_TRANSIT_RECORD);
 
 
     public static <T extends BlockEntity> BlockEntityType<T> register(String name, BiFunction<BlockPos, BlockState, T> function, Block block) {

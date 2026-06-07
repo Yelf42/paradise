@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "paradise:sculpting_staff"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "paradise:gardening_staff"
+  }
+}

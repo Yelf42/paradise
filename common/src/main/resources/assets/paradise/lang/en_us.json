@@ -40,6 +40,23 @@
   "block.paradise.digital_bulb": "Digital Bulb",
   "item.paradise.digital_bulb": "Digital Bulb",
 
+  "block.paradise.digital_sculpture_1": "Digital Sculpture",
+  "item.paradise.digital_sculpture_1": "Digital Sculpture",
+  "block.paradise.digital_sculpture_2": "Digital Sculpture",
+  "item.paradise.digital_sculpture_2": "Digital Sculpture",
+  "block.paradise.digital_sculpture_3": "Digital Sculpture",
+  "item.paradise.digital_sculpture_3": "Digital Sculpture",
+  "block.paradise.digital_sculpture_4": "Digital Sculpture",
+  "item.paradise.digital_sculpture_4": "Digital Sculpture",
+  "block.paradise.digital_sculpture_5": "Digital Sculpture",
+  "item.paradise.digital_sculpture_5": "Digital Sculpture",
+
+  "block.paradise.digital_transit_record": "Digital Transit Record",
+  "item.paradise.digital_transit_record": "Digital Transit Record",
+
+  "block.paradise.warning_light": "Warning Light",
+  "item.paradise.warning_light": "Warning Light",
+
   "block.paradise.data_core": "Data Core",
   "item.paradise.data_core": "Data Core",
   "block.paradise.data_server": "Data Server",
@@ -54,19 +71,24 @@
 
   "item.paradise.access_disc": "Access Disc",
   "item.paradise.server_locator": "Data Server Detector",
-  "item.paradise.admin_tool": "Gardening Staff",
+  "item.paradise.gardening_staff": "Gardening Staff",
+  "item.paradise.sculpting_staff": "Gardening Staff",
   "item.paradise.bucket_hat": "Bucket Hat",
   "item.paradise.egg_hat": "Fried Egg",
   "item.paradise.scrambler": "Data Scrambler",
   "item.paradise.digital_arrow": "Digital Arrow",
+  "item.paradise.backup_record": "Backup Record",
 
   "gui.paradise.uploader.unavailable": "DOWNLOADER DISABLED",
   "gui.paradise.reader.unavailable": "INVALID ADDRESS",
   "gui.paradise.teleport.not_whitelisted": "ACCESS DENIED, NOT WHITELISTED",
+  "gui.paradise.scrambler.ejection": "IDENTITY REVEALED, EJECTING",
 
   "gui.paradise.whitelist.title": "Whitelist Control",
   "gui.paradise.whitelist.active": "Active",
   "gui.paradise.whitelist.history": "History",
+
+  "gui.paradise.transit_log.title": "Transit Log",
 
   "tag.item.paradise.digital_blocks": "Digital Blocks",
 

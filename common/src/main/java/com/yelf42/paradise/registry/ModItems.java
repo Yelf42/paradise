@@ -12,7 +12,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -29,8 +28,11 @@ public class ModItems {
     public static final Item EGG_HAT = registerItem("egg_hat", EggHatItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
 
     public static final Item SCRAMBLER = registerItem("scrambler", ScramblerItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
-    public static final Item ADMIN_TOOL = registerItem("admin_tool", AdminToolItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
+    public static final Item GARDENING_STAFF = registerItem("gardening_staff", GardeningStaffItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
+    public static final Item SCULPTING_STAFF = registerItem("sculpting_staff", SculptingStaffItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
     public static final Item SERVER_LOCATOR = registerItem("server_locator", ServerLocatorItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1).component(ModComponents.SERVER_LOCATION, new ModComponents.ServerLocatorComponent(null)));
+    public static final Item BACKUP_RECORD = registerItem("backup_record", BackupRecordItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1).component(ModComponents.DIMENSION_ADDRESS, new ModComponents.DimensionAddressComponent(Paradise.identifier(""))));
+
 
     public static final Item DIGITAL_ARROW = registerItem("digital_arrow", DigitalArrowItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(64));
 

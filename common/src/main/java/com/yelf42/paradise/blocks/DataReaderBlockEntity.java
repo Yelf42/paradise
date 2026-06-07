@@ -109,7 +109,7 @@ public class DataReaderBlockEntity extends BlockEntity implements Clearable, Con
     }
 
     public void setCooldown(boolean state) {
-        if (!state && !this.isEmpty() && invalidItem()) popDisc();
+        if (!state && !this.isEmpty() && invalidItem()) popDisc(this.getBlockState());
         this.cooldown = state;
     }
 
@@ -135,13 +135,15 @@ public class DataReaderBlockEntity extends BlockEntity implements Clearable, Con
         }
     }
 
-    public void popDisc() {
+    public void popDisc(BlockState state) {
+        this.popDisc(state, true);
+    }
+    public void popDisc(BlockState state, boolean sfx) {
         // TODO disc removal sfx
         if (this.level != null && !this.level.isClientSide) {
             BlockPos blockpos = this.getBlockPos();
             ItemStack itemstack = this.getTheItem();
-            BlockState reader = this.level.getBlockState(blockpos);
-            Direction facing = reader.getValue(DataReaderBlock.FACING);
+            Direction facing = state.getValue(DataReaderBlock.FACING);
             if (!itemstack.isEmpty()) {
                 ItemStack copy = itemstack.copy();
                 spawnItem(this.level, copy, 0.1, facing, getDispensePosition(blockpos.getCenter(), facing));

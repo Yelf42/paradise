@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "paradise:item/admin_tool"
+    "layer0": "paradise:item/gardening_staff_gui"
   }
 }

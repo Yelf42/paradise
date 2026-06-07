@@ -3,6 +3,8 @@ package com.yelf42.paradise.items;
 import com.yelf42.paradise.dimensions.IntrudersSavedData;
 import com.yelf42.paradise.registry.ModEffects;
 import com.yelf42.paradise.registry.ModItems;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -24,6 +26,7 @@ public class ScramblerItem extends Item {
             IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(serverLevel);
             if (!intrudersSavedData.isIntruder(player.getUUID())) return;
 
+            player.displayClientMessage(Component.translatable("gui.paradise.scrambler.ejection").withStyle(ChatFormatting.RED), true);
             player.addEffect(ModEffects.ejectInstance());
         }
     }

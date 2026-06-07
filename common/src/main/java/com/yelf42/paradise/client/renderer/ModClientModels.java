@@ -9,6 +9,7 @@ import java.util.Map;
 
 public class ModClientModels {
     public static final Map<ItemLike, ModelResourceLocation> CUSTOM_GUI_MODELS = Map.of(
-            ModItems.ADMIN_TOOL, ModelResourceLocation.inventory(Paradise.identifier("admin_tool_gui"))
+            ModItems.GARDENING_STAFF, ModelResourceLocation.inventory(Paradise.identifier("gardening_staff_gui")),
+            ModItems.SCULPTING_STAFF, ModelResourceLocation.inventory(Paradise.identifier("sculpting_staff_gui"))
     );
 }

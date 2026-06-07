@@ -6,8 +6,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.yelf42.paradise.blocks.DataSeverBlockEntity;
+import com.yelf42.paradise.blocks.DataServerBlockEntity;
 import com.yelf42.paradise.dimensions.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
@@ -42,7 +41,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class ModCommands {
 
@@ -59,6 +57,35 @@ public class ModCommands {
 
 
     public static void register(@NotNull CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registryAccess, Commands.CommandSelection environment) {
+
+        dispatcher.register(Commands.literal("paradiseTransitLog")
+                .requires(s -> s.hasPermission(2))
+                .then(Commands.argument("dimension", ResourceLocationArgument.id()).suggests(DIMENSION_SUGGESTIONS)
+                        .executes((context) -> {
+                            CommandSourceStack source = context.getSource();
+
+                            if (!source.isPlayer()) {
+                                source.sendFailure(Component.literal("Only players can use this command").withStyle(ChatFormatting.RED));
+                                return Command.SINGLE_SUCCESS;
+                            }
+
+                            MinecraftServer server = source.getServer();
+                            ResourceLocation dimensionId = ResourceLocationArgument.getId(context, "dimension");
+                            ServerLevel level = server.getLevel(ResourceKey.create(Registries.DIMENSION, dimensionId));
+
+                            if (level == null) {
+                                source.sendFailure(Component.literal("Unknown dimension: " + dimensionId).withStyle(ChatFormatting.RED));
+                                return Command.SINGLE_SUCCESS;
+                            }
+
+                            TransitLogSavedData transitLogSavedData = TransitLogSavedData.getOrCreate(level);
+                            source.sendSystemMessage(Component.literal("Transit Log for " + dimensionId + ": "));
+                            for (String entry : transitLogSavedData.getTransitLog()) {
+                                source.sendSystemMessage(Component.literal(" - " + entry).withStyle(ChatFormatting.YELLOW));
+                            }
+
+                            return Command.SINGLE_SUCCESS;
+                        })));
 
         dispatcher.register(Commands.literal("paradiseIntruders")
                         .requires(s -> s.hasPermission(2))
@@ -82,14 +109,14 @@ public class ModCommands {
                             IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(level);
                             if (intrudersSavedData.intrudersPresent(level)) {
                                 source.sendSystemMessage(Component.literal("There are currently intruders in " + dimensionId + ": "));
-                                for (UUID id : intrudersSavedData.getIntruders()) {
+                                for (UUID id : intrudersSavedData.getPresentIntruders(level)) {
                                     Entity entity = level.getEntity(id);
                                     if (entity instanceof Player player) {
                                         source.sendSystemMessage(Component.literal(" - " + player.getName()).withStyle(ChatFormatting.YELLOW));
                                     }
                                 }
                             } else {
-                                source.sendSystemMessage(Component.literal("There are no intruders in " + dimensionId));
+                                source.sendSystemMessage(Component.literal("There are currently no intruders in " + dimensionId));
                                 if (intrudersSavedData.totalIntruders() > 0) {
                                     source.sendSystemMessage(Component.literal("These are the UUID's of offline intruders: "));
                                     for (UUID id : intrudersSavedData.getIntruders()) {
@@ -98,7 +125,33 @@ public class ModCommands {
                                 }
                             }
                             return Command.SINGLE_SUCCESS;
-                        })));
+                        }).then(Commands.argument("addPlayer", EntityArgument.player())
+                                .executes((context) -> {
+                                    CommandSourceStack source = context.getSource();
+                                    MinecraftServer server = source.getServer();
+
+                                    if (!source.isPlayer()) {
+                                        source.sendFailure(Component.literal("Only players can use this command").withStyle(ChatFormatting.RED));
+                                        return Command.SINGLE_SUCCESS;
+                                    }
+
+                                    ResourceLocation dimensionId = ResourceLocationArgument.getId(context, "dimension");
+                                    ServerLevel level = server.getLevel(ResourceKey.create(Registries.DIMENSION, dimensionId));
+
+                                    if (level == null) {
+                                        source.sendFailure(Component.literal("Unknown dimension: " + dimensionId).withStyle(ChatFormatting.RED));
+                                        return Command.SINGLE_SUCCESS;
+                                    }
+
+                                    ServerPlayer player = EntityArgument.getPlayer(context, "addPlayer");
+                                    IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(level);
+                                    intrudersSavedData.add(player.getUUID());
+                                    source.sendSystemMessage(Component.literal("Added " + player.getName() + " as an Intruder to " + dimensionId));
+
+
+                                    return Command.SINGLE_SUCCESS;
+                                }))
+                ));
 
         dispatcher.register(Commands.literal("paradiseWhitelists")
                         .requires(s -> s.hasPermission(2))
@@ -242,7 +295,7 @@ public class ModCommands {
                                             dataServerLevel.setBlock(dataServerLocation.getLeft(), Blocks.AIR.defaultBlockState(), 3);
 
                                             dataServerLevel.setBlock(dataServerLocation.getLeft(), ModBlocks.DATA_SERVER.defaultBlockState(), 3);
-                                            DataSeverBlockEntity dsbe = dataServerLevel.getBlockEntity(dataServerLocation.getLeft(), ModBlockEntities.DATA_SERVER).orElse(null);
+                                            DataServerBlockEntity dsbe = dataServerLevel.getBlockEntity(dataServerLocation.getLeft(), ModBlockEntities.DATA_SERVER).orElse(null);
                                             if (dsbe != null) {
                                                 ResourceLocation id = dsbe.getDimension();
                                                 source.sendSystemMessage(Component.literal("Created new Data Server with dimension: ").append(Component.literal(id.toString()).withStyle(ChatFormatting.AQUA)));
@@ -288,7 +341,7 @@ public class ModCommands {
                             BlockPos targetPos = BlockPosArgument.getBlockPos(context, "dataServerLocation");
                             ServerLevel serverLevel = source.getPlayer().serverLevel();
                             serverLevel.setBlock(targetPos, ModBlocks.DATA_SERVER.defaultBlockState(), 3);
-                            DataSeverBlockEntity dsbe = serverLevel.getBlockEntity(targetPos, ModBlockEntities.DATA_SERVER).orElse(null);
+                            DataServerBlockEntity dsbe = serverLevel.getBlockEntity(targetPos, ModBlockEntities.DATA_SERVER).orElse(null);
                             if (dsbe == null) {
                                 source.sendFailure(Component.literal("Failed to fetch DataServer block entity").withStyle(ChatFormatting.RED));
                                 return Command.SINGLE_SUCCESS;

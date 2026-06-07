@@ -103,6 +103,52 @@ public class ModBlocks {
             new Item.Properties().rarity(Rarity.UNCOMMON)
     );
 
+    public static final Block DIGITAL_SCULPTURE_1 = registerCreative(
+            "digital_sculpture_1",
+            DigitalSculpture::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.QUARTZ)
+                    .strength(0.0F)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+    public static final Block DIGITAL_SCULPTURE_2 = registerCreative(
+            "digital_sculpture_2",
+            DigitalSculpture::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.QUARTZ)
+                    .strength(0.0F)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+    public static final Block DIGITAL_SCULPTURE_3 = registerCreative(
+            "digital_sculpture_3",
+            DigitalSculpture::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.QUARTZ)
+                    .strength(0.0F)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+    public static final Block DIGITAL_SCULPTURE_4 = registerCreative(
+            "digital_sculpture_4",
+            DigitalSculpture::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.QUARTZ)
+                    .strength(0.0F)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+    public static final Block DIGITAL_SCULPTURE_5 = registerCreative(
+            "digital_sculpture_5",
+            DigitalSculpture::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.QUARTZ)
+                    .strength(0.0F)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
+
     public static final Block DIGITAL_VOLUME_BARRIER = registerCreative(
             "digital_volume_barrier",
             DigitalVolumeBarrierBlock::new,
@@ -179,6 +225,16 @@ public class ModBlocks {
             new Item.Properties().rarity(Rarity.UNCOMMON)
     );
 
+    public static final Block DIGITAL_TRANSIT_RECORD = register(
+            "digital_transit_record",
+            DigitalTransitRecord::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.QUARTZ)
+                    .lightLevel((state) -> 12)
+                    .strength(0.1F)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
+    );
 
     public static final Block WHITELIST_CONTROLLER = registerCreative("whitelist_controller",
             DigitalWhitelistController::new,
@@ -191,6 +247,17 @@ public class ModBlocks {
                     .noTerrainParticles()
                     .pushReaction(PushReaction.BLOCK),
             new Item.Properties().rarity(Rarity.RARE)
+    );
+
+    public static final Block WARNING_LIGHT = register(
+            "warning_light",
+            WarningLight::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_RED)
+                    .strength(0.1F)
+                    .sound(SoundType.GLASS)
+                    .lightLevel((state) -> state.getValue(WarningLight.POWERED) ? 15 : 0),
+            new Item.Properties().rarity(Rarity.UNCOMMON)
     );
 
     public static final Block DATA_DOWNLOADER = register(

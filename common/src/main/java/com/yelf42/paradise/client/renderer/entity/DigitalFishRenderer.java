@@ -30,6 +30,8 @@ public class DigitalFishRenderer extends EntityRenderer<DigitalFish> {
 
     @Override
     public void render(DigitalFish p_entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
+        super.render(p_entity, entityYaw, partialTick, poseStack, multiBufferSource, packedLight);
+
         if (ModRenderTypes.shimmerShader == null) return;
 
         poseStack.pushPose();
