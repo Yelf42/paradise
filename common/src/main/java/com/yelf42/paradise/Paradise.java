@@ -15,17 +15,13 @@ import net.minecraft.world.level.levelgen.synth.PerlinSimplexNoise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO whitelist system
-//  Intruder response
-//  Testing
-
 // TODO whole dimension effects (maybe same place that whitelist is configured?)
 
 // TODO giant digital asparagus
 
 // TODO get neoforge working
 
-// TODO more binary particles
+// TODO more/use more binary particles
 
 public class Paradise {
 

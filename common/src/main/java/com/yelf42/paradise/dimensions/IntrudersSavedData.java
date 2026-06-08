@@ -26,6 +26,7 @@ public class IntrudersSavedData extends SavedData {
     private static final String ID = "paradise_intruders";
 
     private final Set<UUID> intruders = new HashSet<>();
+    private UUID watcher;
 
     public static IntrudersSavedData getOrCreate(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
@@ -47,6 +48,9 @@ public class IntrudersSavedData extends SavedData {
             intrudersTag.add(uuidTag);
         }
         tag.put("intruders", intrudersTag);
+
+        if (watcher != null) tag.putUUID("watcher", watcher);
+
         return tag;
     }
 
@@ -58,6 +62,8 @@ public class IntrudersSavedData extends SavedData {
             CompoundTag uuidTag = intrudersTag.getCompound(i);
             intrudersSavedData.intruders.add(uuidTag.getUUID("uuid"));
         }
+
+        intrudersSavedData.watcher = tag.contains("watcher") ? tag.getUUID("watcher") : null;
 
         return intrudersSavedData;
     }
@@ -103,5 +109,13 @@ public class IntrudersSavedData extends SavedData {
     public void clear() {
         intruders.clear();
         setDirty();
+    }
+
+    public UUID getWatcher() {
+        return watcher;
+    }
+
+    public void setWatcher(UUID watcher) {
+        this.watcher = watcher;
     }
 }

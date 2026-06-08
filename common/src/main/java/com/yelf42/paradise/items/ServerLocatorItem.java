@@ -15,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -26,6 +27,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import java.util.List;
 
 // TODO better item texture lol
+// TODO broken?
 public class ServerLocatorItem extends Item {
 
     public ServerLocatorItem(Properties properties) {
@@ -35,6 +37,8 @@ public class ServerLocatorItem extends Item {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         super.inventoryTick(stack, level, entity, slotId, isSelected);
+
+        if (!Inventory.isHotbarSlot(slotId)) return;
 
         if (entity instanceof Player player) {
             BlockPos entityPos = entity.blockPosition();

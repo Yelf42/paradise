@@ -21,6 +21,6 @@ void main() {
         outColor = vec4(0.5 + 0.5 * step(spacing * 0.5, ring), 0.0, 0.0, 1.0);
     }
 
-    outColor.a * vertColor.a;
+    outColor.a *= vertColor.a;
     fragColor = outColor;
 }

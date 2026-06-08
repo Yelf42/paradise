@@ -30,7 +30,10 @@ public class DataServerBlockEntity extends BlockEntity {
 
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        this.dimension = ResourceLocation.tryParse(tag.getString("dimension"));
+
+        ResourceLocation parsed = ResourceLocation.tryParse(tag.getString("dimension"));
+        this.dimension = (parsed != null) ? parsed : Paradise.identifier("");
+
         this.cooldown = tag.getBoolean("cooldown");
     }
 
@@ -43,8 +46,8 @@ public class DataServerBlockEntity extends BlockEntity {
     @Override
     public void setLevel(Level level) {
         super.setLevel(level);
-
         if (!level.isClientSide) {
+            //Paradise.LOGGER.info("DataServerBlockEntity setLevel at: " + this.worldPosition + " with: " + dimension);
             DimensionRegistry.ParadiseType type = DimensionRegistry.ParadiseType.DAY;
             if (level.getRandom().nextInt(100) < Paradise.CONFIG.nightChance) type = DimensionRegistry.ParadiseType.NIGHT;
 
@@ -59,6 +62,8 @@ public class DataServerBlockEntity extends BlockEntity {
             }
         }
     }
+
+
 
     public ResourceLocation getDimension() {
         return this.dimension;
