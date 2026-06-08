@@ -100,7 +100,7 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
      * but still during server load (so that it's not too late).
      * Hopefully hints that these dimension may be removed later.
      */
-    @Inject(method = "prepareLevels", at = @At("RETURN"))
+    @Inject(method = "prepareLevels", at = @At("HEAD"))
     private void loadDynamicDimensions(ChunkProgressListener chunkProgressListener, CallbackInfo ci) {
         this.dynamicDimensions.loadDynamicDimensions();
         DataServerLocations.getOrCreate(levels.get(Level.OVERWORLD));
@@ -329,14 +329,14 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
         this.dynamicDimensions.add(level.dimension());
         level.tick(() -> true);
 
-//        IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(level);
-//        Paradise.LOGGER.info("Trying to spawn Watcher");
-//        if (level.getEntity(intrudersSavedData.getWatcher()) == null) {
-//            DigitalWatcher watcher = ModEntities.DIGITAL_WATCHER.create(level);
-//            watcher.setPos(0, -20, 0);
-//            level.addFreshEntity(watcher);
-//            intrudersSavedData.setWatcher(watcher.getUUID());
-//        }
+        IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(level);
+        //Paradise.LOGGER.info("Trying to spawn Watcher");
+        if (level.getEntity(intrudersSavedData.getWatcher()) == null) {
+            DigitalWatcher watcher = ModEntities.DIGITAL_WATCHER.create(level);
+            watcher.setPos(0, -20, 0);
+            level.addFreshEntity(watcher);
+            intrudersSavedData.setWatcher(watcher.getUUID());
+        }
     }
 
     @Inject(method = "tickChildren", at = @At(value = "HEAD"))
