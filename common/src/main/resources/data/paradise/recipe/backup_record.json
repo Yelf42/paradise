@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "item": "minecraft:totem_of_undying"
+    },
+    "A": {
+      "item": "paradise:access_disc"
+    },
+    "R": {
+      "item": "minecraft:recovery_compass"
+    },
+    "N": {
+      "item": "minecraft:netherite_scrap"
+    }
+  },
+  "pattern": [
+    "NAN",
+    "NRN",
+    " G "
+  ],
+  "result": {
+    "count": 1,
+    "id": "paradise:backup_record"
+  }
+}

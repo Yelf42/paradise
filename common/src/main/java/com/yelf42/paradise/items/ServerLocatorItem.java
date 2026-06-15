@@ -26,8 +26,6 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 
 import java.util.List;
 
-// TODO better item texture lol
-// TODO broken?
 public class ServerLocatorItem extends Item {
 
     public ServerLocatorItem(Properties properties) {
@@ -47,34 +45,47 @@ public class ServerLocatorItem extends Item {
             if (serverLocatorComponent == null) return;
 
             BlockPos storedPos = serverLocatorComponent.location();
-            if (storedPos == null) storedPos = new BlockPos(Integer.MAX_VALUE, 0, Integer.MAX_VALUE);
+            if (storedPos == null) {
+                if (level instanceof ServerLevel serverLevel) {
+                    if (level.getGameTime() % 400 == 0) {
+                        BlockPos bunkerPos = locateBunker(serverLevel, entityPos);
+                        if (bunkerPos != null) {
+                            long dx = bunkerPos.getX() - entityPos.getX();
+                            long dz = bunkerPos.getZ() - entityPos.getZ();
+                            long distSqrXZ = dx * dx + dz * dz;
+                            if (distSqrXZ <= 60000) {
+                                stack.set(ModComponents.SERVER_LOCATION, new ModComponents.ServerLocatorComponent(bunkerPos));
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+
+            if (level instanceof ServerLevel) {
+                return;
+            }
 
             int dist = (entityPos.getX() - storedPos.getX()) * (entityPos.getX() - storedPos.getX()) + (entityPos.getZ() - storedPos.getZ()) * (entityPos.getZ() - storedPos.getZ());
             dist = (int)Math.sqrt(dist);
 
-            if (level instanceof ServerLevel serverLevel) {
-                if (level.getGameTime() % 400 == 0 && dist > 256) {
-                    BlockPos bunkerPos = locateBunker(serverLevel, entityPos);
-                    if (bunkerPos == null) return;
-                    stack.set(ModComponents.SERVER_LOCATION, new ModComponents.ServerLocatorComponent(bunkerPos));
-                }
-            } else {
-                if (dist > 256) return;
-                //Paradise.LOGGER.info("Dist: " + dist);
+            if (dist > 256) {
+                stack.set(ModComponents.SERVER_LOCATION, new ModComponents.ServerLocatorComponent(null));
+                return;
+            }
 
-                int interval = Math.max((dist / 16) * 4, 4);
+            int interval = Math.max((dist / 16) * 4, 4);
 
-                long lastSound = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-                        .copyTag().getLong("lastSound");
+            long lastSound = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+                    .copyTag().getLong("lastSound");
 
-                long gameTime = level.getGameTime();
-                if (gameTime - lastSound >= interval) {
-                    level.playSound(player, entityPos, ModSounds.SERVER_LOCATOR_PING, SoundSource.PLAYERS, 0.25f, 1.0f + 0.1f * (level.getRandom().nextFloat()));
+            long gameTime = level.getGameTime();
+            if (gameTime - lastSound >= interval) {
+                level.playSound(player, entityPos, ModSounds.SERVER_LOCATOR_PING, SoundSource.PLAYERS, 0.25f, 1.0f + 0.1f * (level.getRandom().nextFloat()));
 
-                    CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-                    tag.putLong("lastSound", gameTime);
-                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-                }
+                CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+                tag.putLong("lastSound", gameTime);
+                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
             }
         }
 

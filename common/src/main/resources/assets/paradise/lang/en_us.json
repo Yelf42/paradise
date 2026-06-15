@@ -6,6 +6,8 @@
   "item.paradise.digital_grass_block": "Digital Grass Block",
   "block.paradise.digital_grass_barrier": "Digital Grass Barrier",
   "item.paradise.digital_grass_barrier": "Digital Grass Barrier",
+  "block.paradise.digital_grass_slab_block": "Digital Grass Slab",
+  "item.paradise.digital_grass_slab_block": "Digital Grass Slab",
 
   "block.paradise.digital_pillar": "Digital Pillar",
   "item.paradise.digital_pillar": "Digital Pillar",
@@ -13,6 +15,9 @@
   "item.paradise.digital_pillar_slab": "Digital Pillar Slab",
   "block.paradise.digital_pillar_barrier": "Digital Pillar Barrier",
   "item.paradise.digital_pillar_barrier": "Digital Pillar Barrier",
+
+  "block.paradise.digital_asparagus": "Digital Asparagus",
+  "item.paradise.digital_asparagus": "Digital Asparagus",
 
   "block.paradise.digital_uploader": "Digital Uploader",
   "item.paradise.digital_uploader": "Digital Uploader",
@@ -70,7 +75,8 @@
   "item.paradise.emergency_exit": "Emergency Exit",
 
   "item.paradise.access_disc": "Access Disc",
-  "item.paradise.server_locator": "Data Server Detector",
+  "item.paradise.address_chip": "Address Chip",
+  "item.paradise.server_locator": "Signal Detector",
   "item.paradise.gardening_staff": "Gardening Staff",
   "item.paradise.sculpting_staff": "Gardening Staff",
   "item.paradise.bucket_hat": "Bucket Hat",
@@ -93,6 +99,12 @@
   "tag.item.paradise.digital_blocks": "Digital Blocks",
 
   "subtitles.item.server_locator_ping": "Server Detector Ping",
+  "subtitles.block.data_core_hum": "Data Core Hum",
+  "subtitles.block.data_print": "Data Printing",
+  "subtitles.block.data_write": "Data Writing",
+  "subtitles.entity.watcher_attack": "Digital Watcher Attack",
+  "subtitles.entity.crash_bolt": "Crash Bolt",
+
 
   "effect.paradise.eject": "EJECTION"
 }

@@ -1,9 +1,7 @@
 package com.yelf42.paradise.blocks;
 
 import com.yelf42.paradise.Paradise;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;

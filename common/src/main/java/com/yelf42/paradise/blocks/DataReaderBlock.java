@@ -6,6 +6,7 @@ import com.yelf42.paradise.dimensions.TransitLogSavedData;
 import com.yelf42.paradise.dimensions.WhitelistsSavedData;
 import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModItems;
+import com.yelf42.paradise.registry.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,12 +15,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -77,10 +80,9 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
     @Override
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof DataReaderBlockEntity readerBlockEntity) {
+            level.getBlockEntity(pos, ModBlockEntities.DATA_READER).ifPresent(readerBlockEntity -> {
                 readerBlockEntity.popDisc(state, false);
-            }
+            });
         }
         super.onRemove(state, level, pos, newState, isMoving);
     }
@@ -133,7 +135,7 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
                 level.setBlock(pos, state.setValue(HAS_DISC, 0), 3);
                 drbe.setCooldown(false);
                 drbe.popDisc(state);
-                level.scheduleTick(pos, state.getBlock(), 100, TickPriority.NORMAL);
+                level.scheduleTick(pos, state.getBlock(), 5, TickPriority.NORMAL);
                 return ItemInteractionResult.sidedSuccess(level.isClientSide);
             }
         } else {
@@ -143,8 +145,9 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
                 ItemStack disc = itemstack.copy();
                 itemstack.shrink(1);
                 drbe.setTheItem(disc);
-                drbe.setCooldown(true);                // TODO play CD insert sound, change tick delay to sound length
-                level.scheduleTick(pos, state.getBlock(), 200, TickPriority.NORMAL);
+                drbe.setCooldown(true);
+                level.playSound(null, pos.getCenter().x(), pos.getCenter().y(), pos.getCenter().z(), ModSounds.DATA_PRINTING, SoundSource.BLOCKS);
+                level.scheduleTick(pos, state.getBlock(), 124, TickPriority.NORMAL);
                 return ItemInteractionResult.sidedSuccess(level.isClientSide);
             }
         }
@@ -212,14 +215,11 @@ public class DataReaderBlock extends BaseEntityBlock implements Portal {
 
         // Clear target location:
         BlockPos spawnPos = new BlockPos(56, 6, 0);
-        ChunkPos chunkPos = new ChunkPos(spawnPos);
-        serverlevel.setChunkForced(chunkPos.x, chunkPos.z, true);
         for (int i = 0; i <= 1; i++) {
             BlockPos target = spawnPos.above(i);
             Block.dropResources(serverlevel.getBlockState(target), serverlevel, target, serverlevel.getBlockEntity(target));
             serverlevel.setBlock(target, Blocks.AIR.defaultBlockState(), 3);
         }
-        serverlevel.setChunkForced(chunkPos.x, chunkPos.z, false);
 
         return new DimensionTransition(serverlevel, spawnPoint, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
     }

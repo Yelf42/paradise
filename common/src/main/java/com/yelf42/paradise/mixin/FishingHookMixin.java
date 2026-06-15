@@ -35,7 +35,6 @@ public abstract class FishingHookMixin {
         FishingHook self = (FishingHook) (Object) this;
         Player player = self.getPlayerOwner();
 
-        // TODO loot table
         if (player != null && entity instanceof DigitalFish digitalFish) {
             ItemStack tool = player.getMainHandItem();
             if (!tool.is(Items.FISHING_ROD)) tool = new ItemStack(Items.FISHING_ROD);

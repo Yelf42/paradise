@@ -117,5 +117,6 @@ public class IntrudersSavedData extends SavedData {
 
     public void setWatcher(UUID watcher) {
         this.watcher = watcher;
+        setDirty();
     }
 }

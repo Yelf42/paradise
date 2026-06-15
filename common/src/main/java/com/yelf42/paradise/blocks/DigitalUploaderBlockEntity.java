@@ -2,6 +2,8 @@ package com.yelf42.paradise.blocks;
 
 import com.yelf42.paradise.dimensions.DownloaderLocations;
 import com.yelf42.paradise.registry.ModBlockEntities;
+import com.yelf42.paradise.registry.ModComponents;
+import com.yelf42.paradise.registry.ModParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Position;
@@ -13,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.ticks.ContainerSingleItem;
 
 public class DigitalUploaderBlockEntity extends AbstractDigitalSymbolBlockEntity implements Clearable, ContainerSingleItem.BlockContainerSingleItem {
@@ -52,7 +55,7 @@ public class DigitalUploaderBlockEntity extends AbstractDigitalSymbolBlockEntity
 
     public static void tick(Level level, BlockPos pos, BlockState state, DigitalUploaderBlockEntity uploader) {
         if (level.getGameTime() % 60 == 0) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 boolean prev = uploader.validAddress;
                 boolean curr  = uploader.isAddressValid(level);
                 if (prev != curr) {
@@ -60,14 +63,19 @@ public class DigitalUploaderBlockEntity extends AbstractDigitalSymbolBlockEntity
                     level.sendBlockUpdated(pos, state, state, 3);
                 }
             }
+        }
 
+        if (level.isClientSide()) {
+            if (!uploader.shouldRender() || level.getRandom().nextInt(5) != 0) return;
+            Vec3 p = pos.getBottomCenter();
+            level.addParticle(ModParticles.ASCENDING_BITS, p.x() + 0.35 - level.getRandom().nextDouble() * 0.7, p.y() + 0.52, p.z() + 0.35 - level.getRandom().nextDouble() * 0.7, 0, level.getRandom().nextDouble() * 0.03 + 0.02, 0);
         }
     }
 
     private boolean isAddressValid(Level level) {
         if (level.getServer().overworld() == null || this.addressItem.isEmpty()) return false;
         DownloaderLocations downloaders = DownloaderLocations.getOrCreate(level.getServer().overworld());
-        return downloaders.has(this.addressItem.getHoverName().getString());
+        return downloaders.has(this.addressItem.getOrDefault(ModComponents.DOWNLOADER_ADDRESS, new ModComponents.DownloaderAddressComponent("")).address());
     }
 
     @Override
@@ -90,7 +98,7 @@ public class DigitalUploaderBlockEntity extends AbstractDigitalSymbolBlockEntity
     }
 
     public String getAddress() {
-        if (hasItem()) return this.addressItem.getHoverName().getString();
+        if (hasItem()) return this.addressItem.getOrDefault(ModComponents.DOWNLOADER_ADDRESS, new ModComponents.DownloaderAddressComponent("")).address();
         return "ERROR";
     }
 
@@ -110,7 +118,6 @@ public class DigitalUploaderBlockEntity extends AbstractDigitalSymbolBlockEntity
     }
 
     public void popItem() {
-        // TODO item removal sfx
         if (this.level != null && !this.level.isClientSide) {
             BlockPos blockpos = this.getBlockPos();
             ItemStack itemstack = this.getTheItem();

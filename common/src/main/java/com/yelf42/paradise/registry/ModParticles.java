@@ -22,6 +22,7 @@ public class ModParticles {
     public static final SimpleParticleType ERROR_RIPPLE = registerSimple("error_ripple");
 
     public static final SimpleParticleType BITS = registerSimple("bits");
+    public static final SimpleParticleType ASCENDING_BITS = registerSimple("ascending_bits");
 
     private static SimpleParticleType registerSimple(String name) {
         var simpleParticleType = Services.PLATFORM.simpleParticleType();

@@ -1,0 +1,7 @@
+{
+  "parent": "paradise:block/digital_asparagus_2",
+	"textures": {
+		"0": "paradise:block/digital_asparagus_1",
+		"1": "paradise:block/digital_asparagus_leaves_1"
+	}
+}

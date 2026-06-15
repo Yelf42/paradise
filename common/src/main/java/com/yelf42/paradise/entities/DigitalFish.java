@@ -103,12 +103,12 @@ public class DigitalFish extends Mob {
 
     @Override
     public boolean canBeHitByProjectile() {
-        return super.canBeHitByProjectile(); // TODO false if lured by pylon
+        return super.canBeHitByProjectile();
     }
 
     @Override
     public boolean isPushable() {
-        return super.isPushable(); // TODO false if lured by pylon
+        return super.isPushable();
     }
 
     @Override

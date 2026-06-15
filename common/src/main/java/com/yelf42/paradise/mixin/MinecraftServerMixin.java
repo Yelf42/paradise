@@ -25,8 +25,6 @@ package com.yelf42.paradise.mixin;
 import com.mojang.datafixers.DataFixer;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.dimensions.*;
-import com.yelf42.paradise.entities.DigitalWatcher;
-import com.yelf42.paradise.registry.ModEntities;
 import com.yelf42.paradise.registry.ModPackets;
 import com.yelf42.paradise.registry.RegistryUtil;
 import net.minecraft.core.LayeredRegistryAccess;
@@ -328,15 +326,6 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
         this.levels.put(level.dimension(), level);
         this.dynamicDimensions.add(level.dimension());
         level.tick(() -> true);
-
-        IntrudersSavedData intrudersSavedData = IntrudersSavedData.getOrCreate(level);
-        //Paradise.LOGGER.info("Trying to spawn Watcher");
-        if (level.getEntity(intrudersSavedData.getWatcher()) == null) {
-            DigitalWatcher watcher = ModEntities.DIGITAL_WATCHER.create(level);
-            watcher.setPos(0, -20, 0);
-            level.addFreshEntity(watcher);
-            intrudersSavedData.setWatcher(watcher.getUUID());
-        }
     }
 
     @Inject(method = "tickChildren", at = @At(value = "HEAD"))

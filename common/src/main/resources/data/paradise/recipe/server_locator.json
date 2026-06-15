@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "R": {
+      "item": "minecraft:recovery_compass"
+    },
+    "N": {
+      "item": "minecraft:netherite_scrap"
+    }
+  },
+  "pattern": [
+    "G G",
+    "GGG",
+    "NRN"
+  ],
+  "result": {
+    "count": 1,
+    "id": "paradise:server_locator"
+  }
+}

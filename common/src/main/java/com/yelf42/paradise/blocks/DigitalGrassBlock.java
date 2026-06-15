@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import org.jetbrains.annotations.Nullable;
 
-// TODO transition from 7->0 issue
 public class DigitalGrassBlock extends Block {
 
     public static final MapCodec<DigitalGrassBlock> CODEC = simpleCodec(DigitalGrassBlock::new);

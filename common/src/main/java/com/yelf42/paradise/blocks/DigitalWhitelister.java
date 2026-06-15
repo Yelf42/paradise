@@ -83,7 +83,6 @@ public class DigitalWhitelister extends BaseEntityBlock {
             boolean flag = level.hasNeighborSignal(pos);
             if (flag != state.getValue(POWERED)) {
                 if (flag) {
-                    // TODO unlock sfx?
                     if (level instanceof ServerLevel serverLevel) tryReactivate(serverLevel, pos);
                 }
                 level.setBlock(pos, state.setValue(POWERED, flag), 3);

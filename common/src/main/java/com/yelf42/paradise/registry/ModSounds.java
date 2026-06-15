@@ -12,6 +12,11 @@ public class ModSounds {
     public static final LinkedHashMap<String, SoundEvent> REGISTERED_SOUNDS = new LinkedHashMap<>();
 
     public static final SoundEvent SERVER_LOCATOR_PING = register("item.server_locator_ping");
+    public static final SoundEvent DATA_CORE_HUM = register("block.data_core_hum");
+    public static final SoundEvent DATA_PRINTING = register("block.data_print");
+    public static final SoundEvent DATA_WRITE = register("block.data_write");
+    public static final SoundEvent WATCHER_ATTACK = register("entity.watcher_attack");
+    public static final SoundEvent CRASH_BOLT = register("entity.crash_bolt");
 
     private static SoundEvent register(String name) {
         var soundEvent = SoundEvent.createVariableRangeEvent(Paradise.identifier(name));

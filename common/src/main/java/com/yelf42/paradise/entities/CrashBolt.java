@@ -2,6 +2,7 @@ package com.yelf42.paradise.entities;
 
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.dimensions.DataServerLocations;
+import com.yelf42.paradise.registry.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -11,6 +12,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -47,7 +49,7 @@ public class CrashBolt extends Entity {
         super.tick();
         if (this.life >= 2) {
             if (this.level().isClientSide()) {
-                // TODO sfx
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.CRASH_BOLT, SoundSource.WEATHER, 3.0F, 0.8F + this.random.nextFloat() * 0.2F, false);
             }
         }
 

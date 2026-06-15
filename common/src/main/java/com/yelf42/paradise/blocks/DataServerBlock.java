@@ -2,15 +2,14 @@ package com.yelf42.paradise.blocks;
 
 import com.mojang.serialization.MapCodec;
 import com.yelf42.paradise.dimensions.DataServerLocations;
-import com.yelf42.paradise.registry.ModBlockEntities;
-import com.yelf42.paradise.registry.ModBlocks;
-import com.yelf42.paradise.registry.ModComponents;
-import com.yelf42.paradise.registry.ModItems;
+import com.yelf42.paradise.registry.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -18,6 +17,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.JukeboxPlayable;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -80,14 +80,15 @@ public class DataServerBlock extends BaseEntityBlock {
         if (hitResult.getDirection() != Direction.NORTH) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         ItemStack itemstack = player.getItemInHand(hand);
-        if (itemstack.is(Items.MUSIC_DISC_OTHERSIDE) || itemstack.is(ModItems.ACCESS_DISC)) {
+        JukeboxPlayable jukeboxplayable = itemstack.get(DataComponents.JUKEBOX_PLAYABLE);
+        if (itemstack.is(ModItems.ACCESS_DISC) || jukeboxplayable != null) {
             DataServerBlockEntity dsbe = level.getBlockEntity(pos, ModBlockEntities.DATA_SERVER).orElse(null);
             if (dsbe != null && dsbe.offCooldown()) {
                 itemstack.shrink(1);
                 dsbe.setCooldown(true);
                 level.setBlock(pos, state.setValue(BURNING, true), 3);
-                // TODO play CD insert sound, change tick delay to sound length
-                level.scheduleTick(pos, state.getBlock(), 100, TickPriority.NORMAL);
+                level.playSound(null, pos.getCenter().x(), pos.getCenter().y(), pos.getCenter().z(), ModSounds.DATA_PRINTING, SoundSource.BLOCKS);
+                level.scheduleTick(pos, state.getBlock(), 124, TickPriority.NORMAL);
                 return ItemInteractionResult.CONSUME;
             }
         }

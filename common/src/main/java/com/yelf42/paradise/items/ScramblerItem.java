@@ -12,7 +12,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-// TODO assets
 public class ScramblerItem extends Item {
     public ScramblerItem(Properties properties) {
         super(properties);

@@ -4,5 +4,41 @@
       "paradise:item/click"
     ],
     "subtitle": "subtitles.item.server_locator_ping"
+  },
+  "block.data_core_hum": {
+    "sounds": [
+      "paradise:block/computer_hum"
+    ],
+    "subtitle": "subtitles.block.data_core_hum"
+  },
+  "block.data_print": {
+    "sounds": [
+      "paradise:block/print_1",
+      "paradise:block/print_2",
+      "paradise:block/print_3"
+    ],
+    "subtitle": "subtitles.block.data_print"
+  },
+  "block.data_write": {
+    "sounds": [
+      "paradise:block/data_write"
+    ],
+    "subtitle": "subtitles.block.data_write"
+  },
+  "entity.watcher_attack": {
+    "sounds": [
+      "paradise:entity/bong"
+    ],
+    "subtitle": "subtitles.entity.watcher_attack"
+  },
+  "entity.crash_bolt": {
+    "sounds": [
+      "paradise:entity/crackle_01",
+      "paradise:entity/crackle_02",
+      "paradise:entity/crackle_03",
+      "paradise:entity/crackle_04",
+      "paradise:entity/crackle_05"
+    ],
+    "subtitle": "subtitles.entity.crash_bolt"
   }
 }

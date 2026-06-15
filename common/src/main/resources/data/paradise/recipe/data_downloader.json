@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "T": {
+      "item": "minecraft:tinted_glass"
+    },
+    "N": {
+      "item": "minecraft:netherite_scrap"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "A": {
+      "item": "paradise:address_chip"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "NTN",
+    "NDR",
+    "NAN"
+  ],
+  "result": {
+    "count": 1,
+    "id": "paradise:data_downloader"
+  }
+}

@@ -11,7 +11,14 @@
         },
         {
           "type": "minecraft:item",
-          "name": "paradise:digital_pillar",
+          "functions": [
+            {
+              "add": false,
+              "count": 4,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "paradise:digital_arrow",
           "weight": 29
         },
         {

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "paradise:backup_record"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "paradise:backup_record"
+  }
+}

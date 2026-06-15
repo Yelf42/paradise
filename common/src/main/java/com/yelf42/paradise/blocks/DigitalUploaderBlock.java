@@ -8,6 +8,7 @@ import com.yelf42.paradise.dimensions.WhitelistsSavedData;
 import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModBlocks;
 import com.yelf42.paradise.registry.ModItems;
+import com.yelf42.paradise.registry.ModParticles;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -76,6 +78,14 @@ public class DigitalUploaderBlock extends BaseEntityBlock implements Portal {
     }
 
     @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!newState.is(state.getBlock())) {
+            level.getBlockEntity(pos, ModBlockEntities.DIGITAL_UPLOADER).ifPresent(DigitalUploaderBlockEntity::popItem);
+        }
+        super.onRemove(state, level, pos, newState, isMoving);
+    }
+
+    @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
         return new DigitalUploaderBlockEntity(blockPos, blockState);
     }
@@ -104,7 +114,7 @@ public class DigitalUploaderBlock extends BaseEntityBlock implements Portal {
             dube.popItem();
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
         } else {
-            if (itemstack.isEmpty()) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            if (itemstack.isEmpty() || !itemstack.is(ModItems.ADDRESS_CHIP)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             dube.setTheItem(itemstack.copyWithCount(1));
             itemstack.shrink(1);
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
@@ -144,13 +154,9 @@ public class DigitalUploaderBlock extends BaseEntityBlock implements Portal {
         ServerLevel serverlevel = serverLevel.getServer().getLevel(ResourceKey.create(Registries.DIMENSION, destination.getRight()));
         if (serverlevel == null) return null;
 
-        ChunkPos chunkPos = new ChunkPos(serverLocation);
-        serverlevel.setChunkForced(chunkPos.x, chunkPos.z, true);
-
         // Check if actually downloader position
         BlockState downloader = serverlevel.getBlockState(serverLocation);
         if (!downloader.is(ModBlocks.DATA_DOWNLOADER)) {
-            serverlevel.setChunkForced(chunkPos.x, chunkPos.z, false);
             downloaders.remove(dube.getAddress());
             return null;
         }
@@ -183,11 +189,10 @@ public class DigitalUploaderBlock extends BaseEntityBlock implements Portal {
             Block.dropResources(serverlevel.getBlockState(target), serverlevel, target, serverlevel.getBlockEntity(target));
             serverlevel.setBlock(target, Blocks.AIR.defaultBlockState(), 3);
         }
-        serverlevel.setChunkForced(chunkPos.x, chunkPos.z, false);
 
         float f = downloader.getOptionalValue(DataDownloaderBlock.FACING).orElse(Direction.NORTH).toYRot();
         Vec3 vec3 = serverLocation.above().getBottomCenter();
-        return new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND);
+        return new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
     }
 
     @Override

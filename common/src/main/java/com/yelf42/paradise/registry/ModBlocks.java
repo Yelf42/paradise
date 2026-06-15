@@ -3,6 +3,7 @@ package com.yelf42.paradise.registry;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.blocks.*;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -22,6 +23,18 @@ public class ModBlocks {
     public static final LinkedHashMap<String, Item> REGISTERED_CREATIVE_BLOCK_ITEMS = new LinkedHashMap<>();
     public static final LinkedHashMap<String, Block> REGISTERED_BLOCKS = new LinkedHashMap<>();
 
+    public static final Block DIGITAL_ASPARAGUS = register(
+            "digital_asparagus",
+            DigitalAsparagus::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_GREEN)
+                    .strength(0.1F)
+                    .offsetType(BlockBehaviour.OffsetType.XZ)
+                    .dynamicShape()
+                    .sound(SoundType.GRASS),
+            new Item.Properties().rarity(Rarity.RARE).food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.3F).build())
+    );
+
     public static final Block DIGITAL_GRASS_BLOCK = register(
             "digital_grass_block",
             DigitalGrassBlock::new,
@@ -30,7 +43,18 @@ public class ModBlocks {
                     .strength(0.1F)
                     .sound(SoundType.GRASS)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
+    );
+
+    public static final Block DIGITAL_GRASS_SLAB_BLOCK = register(
+            "digital_grass_slab_block",
+            DigitalGrassSlabBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_GREEN)
+                    .strength(0.1F)
+                    .sound(SoundType.GRASS)
+                    .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
+            new Item.Properties().rarity(Rarity.RARE)
     );
 
     public static final Block DIGITAL_GRASS_BARRIER = registerCreative(
@@ -44,7 +68,7 @@ public class ModBlocks {
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
                     .noTerrainParticles()
                     .pushReaction(PushReaction.BLOCK),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
 
     public static final Block DIGITAL_BARRIER = registerCreative(
@@ -57,9 +81,9 @@ public class ModBlocks {
                     .noOcclusion()
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
                     .noTerrainParticles()
-                    .sound(SoundType.WET_GRASS) // TODO more watery sfx?
+                    .sound(SoundType.WET_GRASS)
                     .pushReaction(PushReaction.BLOCK),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
 
     public static final Block DIGITAL_VOLUME = register(
@@ -70,7 +94,7 @@ public class ModBlocks {
                     .strength(0.1F)
                     .randomTicks()
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
 
     public static final Block DIGITAL_PILLAR = register(
@@ -80,7 +104,7 @@ public class ModBlocks {
                     .mapColor(MapColor.QUARTZ)
                     .strength(0.1F)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
     public static final Block DIGITAL_PILLAR_BARRIER = registerCreative(
             "digital_pillar_barrier",
@@ -91,7 +115,7 @@ public class ModBlocks {
                     .noLootTable()
                     .pushReaction(PushReaction.BLOCK)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
     public static final Block DIGITAL_PILLAR_SLAB = register(
             "digital_pillar_slab",
@@ -100,7 +124,7 @@ public class ModBlocks {
                     .mapColor(MapColor.QUARTZ)
                     .strength(0.1F)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
 
     public static final Block DIGITAL_SCULPTURE_1 = registerCreative(
@@ -110,7 +134,7 @@ public class ModBlocks {
                     .mapColor(MapColor.QUARTZ)
                     .strength(0.0F)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
     public static final Block DIGITAL_SCULPTURE_2 = registerCreative(
             "digital_sculpture_2",
@@ -119,7 +143,7 @@ public class ModBlocks {
                     .mapColor(MapColor.QUARTZ)
                     .strength(0.0F)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
     public static final Block DIGITAL_SCULPTURE_3 = registerCreative(
             "digital_sculpture_3",
@@ -128,7 +152,7 @@ public class ModBlocks {
                     .mapColor(MapColor.QUARTZ)
                     .strength(0.0F)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
     public static final Block DIGITAL_SCULPTURE_4 = registerCreative(
             "digital_sculpture_4",
@@ -137,7 +161,7 @@ public class ModBlocks {
                     .mapColor(MapColor.QUARTZ)
                     .strength(0.0F)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
     public static final Block DIGITAL_SCULPTURE_5 = registerCreative(
             "digital_sculpture_5",
@@ -146,7 +170,7 @@ public class ModBlocks {
                     .mapColor(MapColor.QUARTZ)
                     .strength(0.0F)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
 
     public static final Block DIGITAL_VOLUME_BARRIER = registerCreative(
@@ -160,7 +184,7 @@ public class ModBlocks {
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
                     .noTerrainParticles()
                     .pushReaction(PushReaction.BLOCK),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
 
     public static final Block DIGITAL_UPLOADER = register(
@@ -172,7 +196,7 @@ public class ModBlocks {
                     .noTerrainParticles()
                     .pushReaction(PushReaction.BLOCK)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
 
     public static final Block EMERGENCY_EXIT = registerCreative("emergency_exit",
@@ -201,7 +225,7 @@ public class ModBlocks {
                     .lightLevel((state) -> 15)
                     .sound(SoundType.METAL)
                     .pushReaction(PushReaction.DESTROY),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
 
     public static final Block DIGITAL_WHITELISTER = register(
@@ -211,7 +235,7 @@ public class ModBlocks {
                     .mapColor(MapColor.QUARTZ)
                     .strength(0.0F)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
 
     public static final Block DIGITAL_INTRUDER_DETECTOR = register(
@@ -222,7 +246,7 @@ public class ModBlocks {
                     .strength(0.1F)
                     .lightLevel((state) -> state.getValue(DigitalIntruderDetector.DETECTED) ? 15 : 0)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
 
     public static final Block DIGITAL_TRANSIT_RECORD = register(
@@ -233,7 +257,7 @@ public class ModBlocks {
                     .lightLevel((state) -> 12)
                     .strength(0.1F)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
-            new Item.Properties().rarity(Rarity.UNCOMMON)
+            new Item.Properties().rarity(Rarity.RARE)
     );
 
     public static final Block WHITELIST_CONTROLLER = registerCreative("whitelist_controller",
@@ -265,7 +289,7 @@ public class ModBlocks {
             DataDownloaderBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_GRAY)
-                    .strength(-1.0F, 3600000.8F)
+                    .strength(2.5F, 3600000.8F)
                     .noTerrainParticles()
                     .pushReaction(PushReaction.BLOCK)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false)),
@@ -285,7 +309,7 @@ public class ModBlocks {
                     .noOcclusion()
                     .sound(SoundType.METAL)
                     .pushReaction(PushReaction.BLOCK),
-            new Item.Properties().rarity(Rarity.RARE)
+            new Item.Properties().rarity(Rarity.UNCOMMON)
     );
     public static final Block DATA_SERVER = registerCreative(
             "data_server",
@@ -298,10 +322,9 @@ public class ModBlocks {
                     .noTerrainParticles()
                     .sound(SoundType.METAL)
                     .pushReaction(PushReaction.BLOCK),
-            new Item.Properties().rarity(Rarity.RARE)
+            new Item.Properties().rarity(Rarity.UNCOMMON)
     );
 
-    // TODO graphical issue on corner
     public static final Block DATA_SHIELD = registerCreative(
             "data_shield",
             Block::new,
@@ -313,7 +336,7 @@ public class ModBlocks {
                     .noTerrainParticles()
                     .sound(SoundType.METAL)
                     .pushReaction(PushReaction.BLOCK),
-            new Item.Properties().rarity(Rarity.RARE)
+            new Item.Properties().rarity(Rarity.UNCOMMON)
     );
 
     public static final Block DATA_READER = register(
@@ -327,7 +350,7 @@ public class ModBlocks {
                     .lightLevel((state) -> (state.getValue(DataReaderBlock.HAS_DISC)) * 6)
                     .sound(SoundType.METAL)
                     .pushReaction(PushReaction.BLOCK),
-            new Item.Properties().rarity(Rarity.RARE)
+            new Item.Properties().rarity(Rarity.UNCOMMON)
     );
 
     public static Block register(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties settings, Item.Properties itemSettings) {

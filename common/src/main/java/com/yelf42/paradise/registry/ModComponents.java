@@ -8,6 +8,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
@@ -36,6 +38,21 @@ public class ModComponents {
         }
     }
 
+    public static final DataComponentType<DownloaderAddressComponent> DOWNLOADER_ADDRESS = DataComponentType.<DownloaderAddressComponent>builder().persistent(DownloaderAddressComponent.CODEC).build();
+    public record DownloaderAddressComponent(String address) implements TooltipProvider {
+        public static final Codec<DownloaderAddressComponent> CODEC = RecordCodecBuilder.create(builder -> {
+            return builder.group(
+                    ExtraCodecs.ESCAPED_STRING.fieldOf("address").forGetter(DownloaderAddressComponent::address)
+            ).apply(builder, DownloaderAddressComponent::new);
+        });
+
+        @Override
+        public void addToTooltip(Item.TooltipContext tooltipContext, Consumer<Component> tooltip, TooltipFlag tooltipFlag) {
+            String print = (address.isEmpty()) ? "Empty" : address;
+            tooltip.accept(Component.literal(print).withStyle(ChatFormatting.GRAY));
+        }
+    }
+
     public static final DataComponentType<ServerLocatorComponent> SERVER_LOCATION = DataComponentType.<ServerLocatorComponent>builder().persistent(ServerLocatorComponent.CODEC).build();
     public record ServerLocatorComponent(BlockPos location) implements TooltipProvider {
         public static final Codec<ServerLocatorComponent> CODEC = RecordCodecBuilder.create(builder -> {
@@ -53,6 +70,7 @@ public class ModComponents {
     /// BINDER
     public static void register(BiConsumer<DataComponentType<?>, ResourceLocation> consumer) {
         consumer.accept(DIMENSION_ADDRESS, Paradise.identifier("dimension_address"));
+        consumer.accept(DOWNLOADER_ADDRESS, Paradise.identifier("downloader_address"));
         consumer.accept(SERVER_LOCATION, Paradise.identifier("server_location"));
     }
 }

@@ -144,7 +144,6 @@ public class WhitelistScreen extends Screen {
         }
     }
 
-    // TODO should switch selected to new name position
     private void onMoveClicked() {
         if (selectedIndex < 0) return;
         String name;

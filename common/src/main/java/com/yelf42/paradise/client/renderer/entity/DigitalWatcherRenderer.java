@@ -65,28 +65,28 @@ public class DigitalWatcherRenderer extends EntityRenderer<DigitalWatcher>  {
         float v1 = 0.25f + 0.25f * frame;
 
         consumer.addVertex(pose, -halfW, -halfH, 0)
-                .setColor(255, 255, 255, alpha)
+                .setColor(64, 64, 4, alpha)
                 .setUv(u0, v1)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(LightTexture.FULL_BRIGHT)
                 .setNormal(lastPose, 0, 1, 0);
 
         consumer.addVertex(pose, halfW, -halfH, 0)
-                .setColor(255, 255, 255, alpha)
+                .setColor(64, 64, 4, alpha)
                 .setUv(u1, v1)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(LightTexture.FULL_BRIGHT)
                 .setNormal(lastPose, 0, 1, 0);
 
         consumer.addVertex(pose, halfW, halfH, 0)
-                .setColor(255, 255, 255, alpha)
+                .setColor(64, 64, 4, alpha)
                 .setUv(u1, v0)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(LightTexture.FULL_BRIGHT)
                 .setNormal(lastPose, 0, 1, 0);
 
         consumer.addVertex(pose, -halfW, halfH, 0)
-                .setColor(255, 255, 255, alpha)
+                .setColor(64, 64, 4, alpha)
                 .setUv(u0, v0)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(LightTexture.FULL_BRIGHT)

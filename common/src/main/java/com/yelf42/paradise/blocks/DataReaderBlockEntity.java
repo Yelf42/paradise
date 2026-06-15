@@ -139,7 +139,6 @@ public class DataReaderBlockEntity extends BlockEntity implements Clearable, Con
         this.popDisc(state, true);
     }
     public void popDisc(BlockState state, boolean sfx) {
-        // TODO disc removal sfx
         if (this.level != null && !this.level.isClientSide) {
             BlockPos blockpos = this.getBlockPos();
             ItemStack itemstack = this.getTheItem();

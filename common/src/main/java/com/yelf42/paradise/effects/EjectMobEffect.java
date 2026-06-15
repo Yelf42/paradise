@@ -26,7 +26,6 @@ public class EjectMobEffect extends MobEffect {
     @Override
     public void onEffectStarted(LivingEntity livingEntity, int amplifier) {
         super.onEffectStarted(livingEntity, amplifier);
-        // TODO sfx that lasts until ejection
     }
 
     @Override

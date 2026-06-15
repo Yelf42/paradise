@@ -2,6 +2,7 @@ package com.yelf42.paradise.blocks;
 
 import com.mojang.serialization.MapCodec;
 import com.yelf42.paradise.dimensions.DataServerLocations;
+import com.yelf42.paradise.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -14,8 +15,6 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -48,7 +47,9 @@ public class DigitalEmergencyExitBlock extends DigitalUploaderBlock {
         return new DigitalEmergencyExitBlockEntity(blockPos, blockState);
     }
     @Override
-    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {return null;}
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+        return createTickerHelper(blockEntityType, ModBlockEntities.EMERGENCY_EXIT, DigitalEmergencyExitBlockEntity::tick);
+    }
 
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
@@ -88,19 +89,16 @@ public class DigitalEmergencyExitBlock extends DigitalUploaderBlock {
         ServerLevel serverlevel = level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION, destination.getRight()));
 
         // Clear target location:
-        ChunkPos chunkPos = new ChunkPos(serverLocation);
-        serverlevel.setChunkForced(chunkPos.x, chunkPos.z, true);
         for (int i = 0; i <= 1; i++) {
             BlockPos target = serverLocation.north().above(i);
             Block.dropResources(serverlevel.getBlockState(target), serverlevel, target, serverlevel.getBlockEntity(target));
             serverlevel.setBlock(target, Blocks.AIR.defaultBlockState(), 3);
         }
-        serverlevel.setChunkForced(chunkPos.x, chunkPos.z, false);
 
 
         Vec3 vec3 = serverLocation.north().getBottomCenter();
         float f = Direction.NORTH.toYRot();
-        return new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND);
+        return new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
     }
 
     @Override

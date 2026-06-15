@@ -8,6 +8,7 @@ import com.yelf42.paradise.registry.ModBlocks;
 import com.yelf42.paradise.registry.ModComponents;
 import com.yelf42.paradise.registry.ModItems;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
@@ -21,7 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.List;
 import java.util.function.Predicate;
 
-// TODO assets
 public class BackupRecordItem extends Item {
 
     public static final Predicate<ItemStack> VALID_BACKUP = stack -> {
@@ -77,5 +77,10 @@ public class BackupRecordItem extends Item {
         if (address != null) {
             address.addToTooltip(context, tooltipComponents::add, tooltipFlag);
         }
+    }
+
+    @Override
+    public boolean isFoil(ItemStack stack) {
+        return VALID_BACKUP.test(stack) || super.isFoil(stack);
     }
 }

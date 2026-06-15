@@ -89,6 +89,8 @@ public class ParadiseFabricClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DIGITAL_VOLUME, RenderType.solid());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DIGITAL_VOLUME_BARRIER, RenderType.solid());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DIGITAL_INTRUDER_DETECTOR, RenderType.cutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DIGITAL_ASPARAGUS, RenderType.cutout());
+
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WARNING_LIGHT, RenderType.translucent());
 
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DATA_CORE, RenderType.cutout());
@@ -99,12 +101,12 @@ public class ParadiseFabricClient implements ClientModInitializer {
         ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) ->
                 world != null && pos != null
                         ? BiomeColors.getAverageGrassColor(world, pos)
-                        : 0xB9E63D, ModBlocks.DIGITAL_GRASS_BLOCK, ModBlocks.DIGITAL_GRASS_BARRIER
+                        : 0xB9E63D, ModBlocks.DIGITAL_GRASS_BLOCK, ModBlocks.DIGITAL_GRASS_BARRIER, ModBlocks.DIGITAL_GRASS_SLAB_BLOCK
         );
 
         ColorProviderRegistry.ITEM.register((stack, tintIndex) ->
                         0xB9E63D,
-                ModBlocks.DIGITAL_GRASS_BLOCK.asItem(), ModBlocks.DIGITAL_GRASS_BARRIER.asItem()
+                ModBlocks.DIGITAL_GRASS_BLOCK.asItem(), ModBlocks.DIGITAL_GRASS_BARRIER.asItem(), ModBlocks.DIGITAL_GRASS_SLAB_BLOCK.asItem()
         );
 
         // Block Entities
@@ -130,6 +132,7 @@ public class ParadiseFabricClient implements ClientModInitializer {
         ParticleFactoryRegistry.getInstance().register(ModParticles.NIGHT_RIPPLE, RippleParticle.NightFactory::new);
         ParticleFactoryRegistry.getInstance().register(ModParticles.ERROR_RIPPLE, RippleParticle.ErrorFactory::new);
         ParticleFactoryRegistry.getInstance().register(ModParticles.BITS, DigitalParticle.BitFactory::new);
+        ParticleFactoryRegistry.getInstance().register(ModParticles.ASCENDING_BITS, DigitalParticle.AscendingBitFactory::new);
 
         // Packets
         ClientPlayNetworking.registerGlobalReceiver(ModPackets.CreateDimensionPayload.ID, (payload, context) -> {

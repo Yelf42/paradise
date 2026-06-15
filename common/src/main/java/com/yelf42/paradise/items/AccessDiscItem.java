@@ -8,7 +8,6 @@ import net.minecraft.world.item.TooltipFlag;
 
 import java.util.List;
 
-// TODO add different visuals for empty vs written discs (post 1.21.4)
 public class AccessDiscItem extends Item {
     public AccessDiscItem(Properties properties) {
         super(properties);

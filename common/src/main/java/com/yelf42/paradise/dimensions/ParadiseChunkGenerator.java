@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.blocks.DigitalGrassBarrierBlock;
 import com.yelf42.paradise.blocks.DigitalGrassBlock;
+import com.yelf42.paradise.blocks.DigitalGrassSlabBlock;
 import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
@@ -173,10 +174,20 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
             StructureManager structureManager, ChunkAccess chunk) {
 
         ChunkPos chunkPos = chunk.getPos();
-        if (chunkPos.x > 12 || chunkPos.x < -12 || chunkPos.z > 12 || chunkPos.z < -12) return CompletableFuture.completedFuture(chunk);
+        if (chunkPos.x > 12 || chunkPos.x < -12 || chunkPos.z > 12 || chunkPos.z < -12) {
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    int worldX = chunkPos.getMinBlockX() + x;
+                    int worldZ = chunkPos.getMinBlockZ() + z;
+                    BlockPos pos = new BlockPos(worldX, 0, worldZ);
+                    chunk.setBlockState(pos, ModBlocks.DIGITAL_BARRIER.defaultBlockState(), false);
+                }
+            }
+            return CompletableFuture.completedFuture(chunk);
+        }
 
-        int hillAmplitude = 6; // how tall the hills are
-        double scale = 0.015;  // lower = broader/smoother hills
+        int hillAmplitude = 6;
+        double scale = 0.015;
 
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
@@ -188,7 +199,9 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
                 double dist = (new Vector2i(worldX, worldZ)).distance(0, 0);
                 double sCurve = 1.0 / (1.0 + Math.pow(Math.E, 0.2 * (dist - 75.0)));
 
-                int surfaceHeight = (int) (sCurve + noiseVal * hillAmplitude * sCurve);
+                double rawHeight = sCurve + noiseVal * hillAmplitude * sCurve;
+                int surfaceHeight = (int) rawHeight;
+                boolean needsSlab = (rawHeight - surfaceHeight) >= 0.5;
 
                 for (int y = chunk.getMinBuildHeight(); y <= surfaceHeight; y++) {
                     BlockPos pos = new BlockPos(worldX, y, worldZ);
@@ -221,6 +234,11 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
                         chunk.setBlockState(pos, grassStateForPos(pos, this.level), false);
                     }
                 }
+
+                if (needsSlab) {
+                    BlockPos slabPos = new BlockPos(worldX, surfaceHeight + 1, worldZ);
+                    chunk.setBlockState(slabPos, grassSlabBottomStateForPos(slabPos, this.level), false);
+                }
             }
         }
 
@@ -240,6 +258,10 @@ public class ParadiseChunkGenerator extends ChunkGenerator {
     private BlockState grassStateForPos(BlockPos pos, String level) {
         int offset = DigitalGrassBlock.getOffsetForPos(pos, level);
         return ModBlocks.DIGITAL_GRASS_BLOCK.defaultBlockState().setValue(DigitalGrassBlock.OFFSET, offset);
+    }
+    private BlockState grassSlabBottomStateForPos(BlockPos pos, String level) {
+        int offset = DigitalGrassBlock.getOffsetForPos(pos, level);
+        return ModBlocks.DIGITAL_GRASS_SLAB_BLOCK.defaultBlockState().setValue(DigitalGrassSlabBlock.OFFSET, offset);
     }
     private BlockState grassBarrierStateForPos(BlockPos pos, String level) {
         int offset = DigitalGrassBlock.getOffsetForPos(pos, level);

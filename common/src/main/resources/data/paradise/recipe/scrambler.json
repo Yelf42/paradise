@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "S": {
+      "item": "minecraft:redstone"
+    },
+    "B": {
+      "item": "minecraft:wither_skeleton_skull"
+    },
+    "N": {
+      "item": "minecraft:netherite_scrap"
+    }
+  },
+  "pattern": [
+    "NNN",
+    "SBS",
+    " G "
+  ],
+  "result": {
+    "count": 1,
+    "id": "paradise:scrambler"
+  }
+}

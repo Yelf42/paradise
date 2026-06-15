@@ -56,28 +56,28 @@ public class DigitalWatcherBeamRenderer extends EntityRenderer<DigitalWatcherBea
             VertexConsumer consumer = multiBufferSource.getBuffer(ModRenderTypes.WATCHER.apply(TEXTURE_LOCATION));
 
             consumer.addVertex(pose, -halfW, -halfH, 0)
-                    .setColor(255, 255, 255, 255)
+                    .setColor(16, 16, 1, 255)
                     .setUv(0.0f, 1.0f)
                     .setOverlay(OverlayTexture.NO_OVERLAY)
                     .setLight(LightTexture.FULL_BRIGHT)
                     .setNormal(lastPose, 0, 1, 0);
 
             consumer.addVertex(pose, halfW, -halfH, 0)
-                    .setColor(255, 255, 255, 255)
+                    .setColor(16, 16, 1, 255)
                     .setUv(1.0f, 1.0f)
                     .setOverlay(OverlayTexture.NO_OVERLAY)
                     .setLight(LightTexture.FULL_BRIGHT)
                     .setNormal(lastPose, 0, 1, 0);
 
             consumer.addVertex(pose, halfW, halfH, 0)
-                    .setColor(255, 255, 255, 255)
+                    .setColor(16, 16, 1, 255)
                     .setUv(1.0f, 0.0f)
                     .setOverlay(OverlayTexture.NO_OVERLAY)
                     .setLight(LightTexture.FULL_BRIGHT)
                     .setNormal(lastPose, 0, 1, 0);
 
             consumer.addVertex(pose, -halfW, halfH, 0)
-                    .setColor(255, 255, 255, 255)
+                    .setColor(16, 16, 1, 255)
                     .setUv(0.0f, 0.0f)
                     .setOverlay(OverlayTexture.NO_OVERLAY)
                     .setLight(LightTexture.FULL_BRIGHT)

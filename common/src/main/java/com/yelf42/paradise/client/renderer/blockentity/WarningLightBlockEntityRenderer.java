@@ -109,8 +109,6 @@ public class WarningLightBlockEntityRenderer<T extends WarningLightBlockEntity> 
                     .setNormal(lastPose, n.x(), n.y(), n.z());
         }
 
-        ((MultiBufferSource.BufferSource) multiBufferSource).endBatch(ModRenderTypes.UNSHADED_COLOR);
-
         VertexConsumer solidConsumer = multiBufferSource.getBuffer(RenderType.entityTranslucent(WHITE));
         if (blockEntity.isPowered()) {
             renderSquarePrism(lastPose, pose, solidConsumer,0.125f, 0.25f, -0.125f, 255, 0, 0);

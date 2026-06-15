@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "type=bottom,offset=0": { "model": "paradise:block/digital_grass/digital_grass_slab_bottom0" },
+    "type=bottom,offset=1": { "model": "paradise:block/digital_grass/digital_grass_slab_bottom1" },
+    "type=bottom,offset=2": { "model": "paradise:block/digital_grass/digital_grass_slab_bottom2" },
+    "type=bottom,offset=3": { "model": "paradise:block/digital_grass/digital_grass_slab_bottom3" },
+    "type=bottom,offset=4": { "model": "paradise:block/digital_grass/digital_grass_slab_bottom4" },
+    "type=bottom,offset=5": { "model": "paradise:block/digital_grass/digital_grass_slab_bottom5" },
+    "type=bottom,offset=6": { "model": "paradise:block/digital_grass/digital_grass_slab_bottom6" },
+    "type=bottom,offset=7": { "model": "paradise:block/digital_grass/digital_grass_slab_bottom7" },
+
+    "type=top,offset=0": { "model": "paradise:block/digital_grass/digital_grass_slab_top0" },
+    "type=top,offset=1": { "model": "paradise:block/digital_grass/digital_grass_slab_top1" },
+    "type=top,offset=2": { "model": "paradise:block/digital_grass/digital_grass_slab_top2" },
+    "type=top,offset=3": { "model": "paradise:block/digital_grass/digital_grass_slab_top3" },
+    "type=top,offset=4": { "model": "paradise:block/digital_grass/digital_grass_slab_top4" },
+    "type=top,offset=5": { "model": "paradise:block/digital_grass/digital_grass_slab_top5" },
+    "type=top,offset=6": { "model": "paradise:block/digital_grass/digital_grass_slab_top6" },
+    "type=top,offset=7": { "model": "paradise:block/digital_grass/digital_grass_slab_top7" },
+
+    "type=double,offset=0": { "model": "paradise:block/digital_grass/digital_grass0" },
+    "type=double,offset=1": { "model": "paradise:block/digital_grass/digital_grass1" },
+    "type=double,offset=2": { "model": "paradise:block/digital_grass/digital_grass2" },
+    "type=double,offset=3": { "model": "paradise:block/digital_grass/digital_grass3" },
+    "type=double,offset=4": { "model": "paradise:block/digital_grass/digital_grass4" },
+    "type=double,offset=5": { "model": "paradise:block/digital_grass/digital_grass5" },
+    "type=double,offset=6": { "model": "paradise:block/digital_grass/digital_grass6" },
+    "type=double,offset=7": { "model": "paradise:block/digital_grass/digital_grass7" }
+  }
+}

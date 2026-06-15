@@ -2,20 +2,21 @@ package com.yelf42.paradise.blocks;
 
 import com.mojang.serialization.MapCodec;
 import com.yelf42.paradise.dimensions.DownloaderLocations;
+import com.yelf42.paradise.registry.ModComponents;
+import com.yelf42.paradise.registry.ModItems;
+import com.yelf42.paradise.registry.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
@@ -29,6 +30,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.ticks.TickPriority;
 import org.jetbrains.annotations.Nullable;
 
+// TODO Create compatibility?
 public class DataDownloaderBlock extends BaseEntityBlock {
 
     public static final MapCodec<DataDownloaderBlock> CODEC = simpleCodec(DataDownloaderBlock::new);
@@ -59,8 +61,8 @@ public class DataDownloaderBlock extends BaseEntityBlock {
     @Override
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         level.setBlock(pos, state.setValue(PRINTING, false), 3);
-        ItemStack stack = new ItemStack(Items.PAPER);
-        stack.set(DataComponents.CUSTOM_NAME, Component.literal(hashAddress(pos, level.dimension().location())));
+        ItemStack stack = new ItemStack(ModItems.ADDRESS_CHIP);
+        stack.set(ModComponents.DOWNLOADER_ADDRESS, new ModComponents.DownloaderAddressComponent(hashAddress(pos, level.dimension().location())));
         spawnItem(level, stack, 0.1, state.getValue(FACING), getDispensePosition(pos.getCenter(), state.getValue(FACING)));
     }
 
@@ -85,11 +87,12 @@ public class DataDownloaderBlock extends BaseEntityBlock {
         if (state.getValue(PRINTING)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         ItemStack inHand = player.getItemInHand(hand);
-        if (inHand.is(Items.PAPER)) {
+        if (inHand.is(ModItems.ADDRESS_CHIP)) {
             if (!level.isClientSide) {
                 inHand.shrink(1);
                 level.setBlock(pos, state.setValue(PRINTING, true), 3);
-                level.scheduleTick(pos, this, 100, TickPriority.NORMAL); // TODO printing sfx
+                level.playSound(null, pos.getCenter().x(), pos.getCenter().y(), pos.getCenter().z(), ModSounds.DATA_WRITE, SoundSource.BLOCKS);
+                level.scheduleTick(pos, this, 80, TickPriority.NORMAL);
             }
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
         }
@@ -123,9 +126,13 @@ public class DataDownloaderBlock extends BaseEntityBlock {
 
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (level instanceof ServerLevel serverLevel) {
-            DownloaderLocations downloaders = DownloaderLocations.getOrCreate(serverLevel.getServer().overworld());
+        if (!state.is(newState.getBlock()) && !level.isClientSide()) {
+            DownloaderLocations downloaders = DownloaderLocations.getOrCreate(level.getServer().overworld());
             downloaders.remove(hashAddress(pos, level.dimension().location()));
+            if (state.getValue(PRINTING)) {
+                ItemStack stack = new ItemStack(ModItems.ADDRESS_CHIP);
+                spawnItem(level, stack, 0.1, state.getValue(FACING), getDispensePosition(pos.getCenter(), state.getValue(FACING)));
+            }
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
     }

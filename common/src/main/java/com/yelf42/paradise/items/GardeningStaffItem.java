@@ -2,7 +2,6 @@ package com.yelf42.paradise.items;
 
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.blocks.DigitalSculpture;
-import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -10,9 +9,15 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -22,8 +27,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
-// TODO add sheep / collars?
-// TODO placeholder texture
 public class GardeningStaffItem extends Item {
 
     public static class CyclicOrderedSet<T> {
@@ -74,6 +77,25 @@ public class GardeningStaffItem extends Item {
             ModBlocks.DIGITAL_VOLUME_BARRIER,
             ModBlocks.DIGITAL_GRASS_BARRIER,
             ModBlocks.DIGITAL_PILLAR_BARRIER
+    ));
+
+    private static final CyclicOrderedSet<DyeColor> QUERY_DYE_COLORS = new CyclicOrderedSet<>(List.of(
+            DyeColor.WHITE,
+            DyeColor.LIGHT_GRAY,
+            DyeColor.GRAY,
+            DyeColor.BLACK,
+            DyeColor.BROWN,
+            DyeColor.RED,
+            DyeColor.ORANGE,
+            DyeColor.YELLOW,
+            DyeColor.LIME,
+            DyeColor.GREEN,
+            DyeColor.CYAN,
+            DyeColor.LIGHT_BLUE,
+            DyeColor.BLUE,
+            DyeColor.PURPLE,
+            DyeColor.MAGENTA,
+            DyeColor.PINK
     ));
 
     public GardeningStaffItem(Properties properties) {
@@ -152,6 +174,23 @@ public class GardeningStaffItem extends Item {
                 serverLevel.setBlock(pos, state.setValue(DigitalSculpture.ROTATION, (state.getValue(DigitalSculpture.ROTATION) + 1) % 8), 2);
             }
             return InteractionResult.sidedSuccess(clientSide);
+        }
+
+        return InteractionResult.PASS;
+    }
+
+    // Easy to add other entities if their dye methods aren't private
+    @Override
+    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
+        if (target instanceof Sheep sheep) {
+            DyeColor currColor = sheep.getColor();
+            if (sheep.isAlive() && !sheep.isSheared() && QUERY_DYE_COLORS.contains(currColor) ) {
+                if (!player.level().isClientSide) {
+                    sheep.setColor(QUERY_DYE_COLORS.next(currColor));
+                }
+
+                return InteractionResult.sidedSuccess(player.level().isClientSide);
+            }
         }
 
         return InteractionResult.PASS;

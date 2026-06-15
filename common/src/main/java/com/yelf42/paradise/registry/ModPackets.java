@@ -9,7 +9,10 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 import java.util.*;
 

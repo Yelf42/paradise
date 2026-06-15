@@ -22,18 +22,16 @@ public class ModItems {
     public static final LinkedHashMap<String, Item> REGISTERED_ITEMS = new LinkedHashMap<>();
     public static final LinkedHashMap<String, Item> REGISTERED_CREATIVE_ITEMS = new LinkedHashMap<>();
 
-    public static final Item ACCESS_DISC = registerItem("access_disc", AccessDiscItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1).component(ModComponents.DIMENSION_ADDRESS, new ModComponents.DimensionAddressComponent(Paradise.identifier(""))));
+    public static final Item ACCESS_DISC = registerItem("access_disc", AccessDiscItem::new, new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(1).component(ModComponents.DIMENSION_ADDRESS, new ModComponents.DimensionAddressComponent(Paradise.identifier(""))));
+    public static final Item ADDRESS_CHIP = registerItem("address_chip", AddressChipItem::new, new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(1).component(ModComponents.DIMENSION_ADDRESS, new ModComponents.DimensionAddressComponent(Paradise.identifier(""))));
+    public static final Item SCRAMBLER = registerItem("scrambler", ScramblerItem::new, new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(1));
+    public static final Item SERVER_LOCATOR = registerItem("server_locator", ServerLocatorItem::new, new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(1).component(ModComponents.SERVER_LOCATION, new ModComponents.ServerLocatorComponent(null)));
+    public static final Item BACKUP_RECORD = registerItem("backup_record", BackupRecordItem::new, new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(1).component(ModComponents.DIMENSION_ADDRESS, new ModComponents.DimensionAddressComponent(Paradise.identifier(""))));
 
-    public static final Item BUCKET_HAT = registerItem("bucket_hat", BucketHatItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
-    public static final Item EGG_HAT = registerItem("egg_hat", EggHatItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
-
-    public static final Item SCRAMBLER = registerItem("scrambler", ScramblerItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
+    public static final Item BUCKET_HAT = registerItem("bucket_hat", HatItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
+    public static final Item EGG_HAT = registerItem("egg_hat", HatItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
     public static final Item GARDENING_STAFF = registerItem("gardening_staff", GardeningStaffItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
     public static final Item SCULPTING_STAFF = registerItem("sculpting_staff", SculptingStaffItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1));
-    public static final Item SERVER_LOCATOR = registerItem("server_locator", ServerLocatorItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1).component(ModComponents.SERVER_LOCATION, new ModComponents.ServerLocatorComponent(null)));
-    public static final Item BACKUP_RECORD = registerItem("backup_record", BackupRecordItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(1).component(ModComponents.DIMENSION_ADDRESS, new ModComponents.DimensionAddressComponent(Paradise.identifier(""))));
-
-
     public static final Item DIGITAL_ARROW = registerItem("digital_arrow", DigitalArrowItem::new, new Item.Properties().rarity(Rarity.RARE).stacksTo(64));
 
 

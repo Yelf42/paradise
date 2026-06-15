@@ -22,10 +22,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.ticks.TickPriority;
 import org.jetbrains.annotations.Nullable;
 
-// TODO assets
 public class DigitalIntruderDetector extends BaseEntityBlock {
 
     public static final MapCodec<DigitalIntruderDetector> CODEC = simpleCodec(DigitalIntruderDetector::new);
