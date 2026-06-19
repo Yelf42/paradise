@@ -24,14 +24,14 @@ public class ItemRendererMixin {
 
     @ModifyVariable(method = "render", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private BakedModel modifyModel(BakedModel model, ItemStack stack, ItemDisplayContext ctx) {
-        if (!ModClientModels.CUSTOM_GUI_MODELS.containsKey(stack.getItem())) return model;
+        if (!ModClientModels.getCustomGuiModels().containsKey(stack.getItem())) return model;
 
         if (ctx == ItemDisplayContext.GUI
                 || ctx == ItemDisplayContext.GROUND
                 || ctx == ItemDisplayContext.FIXED) {
             return Minecraft.getInstance()
                     .getModelManager()
-                    .getModel(ModClientModels.CUSTOM_GUI_MODELS.get(stack.getItem()));
+                    .getModel(ModClientModels.getCustomGuiModels().get(stack.getItem()));
         }
 
         return model;

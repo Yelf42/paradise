@@ -1,32 +1,73 @@
-# MultiLoader Template
+# Paradise
+Paradise is a pocket dimension mod lightly inspired by Dimensional Doors and Shimeji Simulation.
+It adds quaint digital worlds perfect for building in, 
+and to act as a teleportation hub to get to different parts of your world. There are also a number of unique decorative 
+and functional blocks and items that add flavour and utility to the experience.
 
-This project provides a Gradle project template that can compile Minecraft mods for multiple modloaders using a common project for the sources. This project does not require any third party libraries or dependencies. If you have any questions or want to discuss the project, please join our [Discord](https://discord.myceliummod.network).
+The mod also adds a complex PvP element through a Whitelist and Intrusion system. Each pocket dimension has a whitelist
+that can be edited by those on the whitelist (or anyone if the whitelist is empty). Player who aren't whitelisted won't
+be able to teleport into the dimension through normal means<sup>1</sup>. However, by using a DataScrambler a player can 
+hack their way in and when they do so, they become a pixelated Intruder and trigger the dimensions defense mechanism, the 
+**Watcher**. If at any time the intruder lets go of the DataScrambler, the system will lock onto them and eject them
+from the dimension in 20 seconds
 
-## Getting Started
+<sup>1</sup> Teleportation into a paradise dimension via other means (such as Waystones) cannot block unwhitelisted
+players, but will auto inflict the EJECTION effect on intruders
 
-### IntelliJ IDEA
-This guide will show how to import the MultiLoader Template into IntelliJ IDEA. The setup process is roughly equivalent to setting up the modloaders independently and should be very familiar to anyone who has worked with their MDKs.
+## Commands
+These commands all require OP permission 2 or higher, and are intended for server admin use.
 
-1. Clone or download this repository to your computer.
-2. Configure the project by setting the properties in the `gradle.properties` file. You will also need to change the `rootProject.name`  property in `settings.gradle`, this should match the folder name of your project, or else IDEA may complain.
-3. Open the template's root folder as a new project in IDEA. This is the folder that contains this README.md file and the gradlew executable.
-4. If your default JVM/JDK is not Java 21 you will encounter an error when opening the project. This error is fixed by going to `File > Settings > Build, Execution, Deployment > Build Tools > Gradle > Gradle JVM` and changing the value to a valid Java 21 JVM. You will also need to set the Project SDK to Java 21. This can be done by going to `File > Project Structure > Project SDK`. Once both have been set open the Gradle tab in IDEA and click the refresh button to reload the project.
-5. Open your Run/Debug Configurations. Under the `Application` category there should now be options to run Fabric and NeoForge projects. Select one of the client options and try to run it.
-6. Assuming you were able to run the game in step 5 your workspace should now be set up.
+`/paradiseTransitLog <dimension>` </br>
+This command will output the TransitLog for the given dimension, in the server log or the chat. </br>
+The data is identical to what can be seen in a DigitalTransitRecord block. </br>
 
-### Eclipse
-While it is possible to use this template in Eclipse it is not recommended. During the development of this template multiple critical bugs and quirks related to Eclipse were found at nearly every level of the required build tools. While we continue to work with these tools to report and resolve issues support for projects like these are not there yet. For now Eclipse is considered unsupported by this project. The development cycle for build tools is notoriously slow so there are no ETAs available.
+`/paradiseIntruders <dimension> [addPlayer]` </br>
+By default, this command will list the players in the given dimension. </br>
+If they are online, it will give their username, and if they are offline it will give their UUID. </br>
+If you add a player to the end of the command, it will add that player to the dimensions intruder list 
+(this is for testing purposes)
 
-## Development Guide
-When using this template the majority of your mod should be developed in the `common` project. The `common` project is compiled against the vanilla game and is used to hold code that is shared between the different loader-specific versions of your mod. The `common` project has no knowledge or access to ModLoader specific code, apis, or concepts. Code that requires something from a specific loader must be done through the project that is specific to that loader, such as the `fabric` or `neoforge` projects.
+`/paradiseRemoveDimension <dimension> <replaceDataServer?>` </br>
+Deletes the specified dimension and corresponding Whitelist data </br>
+If `replaceDataServer?` is true, a new DataServer will be placed where
+the original dimensions DataServer was, and will generate a new dimension.
+This does nothing for dimensions that lack a DataServer
 
-Loader specific projects such as the `fabric` and `neoforge` project are used to load the `common` project into the game. These projects also define code that is specific to that loader. Loader specific projects can access all the code in the `common` project. It is important to remember that the `common` project can not access code from loader specific projects.
+`/paradiseGenDataServer <dataServerLocation>` </br>
+Places a DataServer block at the specified location, and prints the dimension name created </br>
+(This is pretty useless as you can just place the block in-game.
+Holding shift when placing will set the DataServer's dimension to NULLSPACE)
 
-## Removing Platforms and Loaders
-While this template has support for many modloaders, new loaders may appear in the future, and existing loaders may become less relevant.
+`/paradiseGenDimension <DAY|NIGHT>` </br>
+Creates a new dimension without a DataServer, of the specified type
 
-Removing loader specific projects is as easy as deleting the folder, and removing the `include("projectname")` line from the `settings.gradle` file.
-For example if you wanted to remove support for `forge` you would follow the following steps:
+`/paradiseGenDisc <dimension>` </br>
+Has to be run by a player. </br>
+Gives the player an AccessDisc linked to the specified dimension
 
-1. Delete the subproject folder. For example, delete `MultiLoader-Template/forge`.
-2. Remove the project from `settings.gradle`. For example, remove `include("forge")`. 
+`/paradiseTp <dimension> [location]` </br>
+Teleports the player to the DataServer corresponding to the dimension. </br>
+If a location is provided, teleports the player to that location within the specified dimension
+
+`/paradiseWhitelists (list|add|remove|flip|check) <dimension> [player]` </br>
+**List:** </br>
+Lists the active and history whitelisted player names for the given dimension
+
+**Add:** </br>
+Requires a player </br>
+Adds the player to the active list </br>
+Removes the player from the history list if they were present </br>
+Removes the player from the intruder list if they were present </br>
+
+**Remove:** </br>
+Requires a player </br>
+Removes the player from either list if present </br>
+
+**Flip:** </br>
+Requires a player </br>
+Moves the player to the opposite list if they were in either </br>
+Removes the player from the intruder list if they are now in the active list </br>
+
+**Check:** </br>
+Requires a player </br>
+Outputs whether the input player is whitelisted in the input dimension </br>

@@ -43,7 +43,7 @@ public abstract class ModelBakeryMixin {
                         Map<ResourceLocation, List<BlockStateModelLoader.LoadedJson>> blockStateResources,
                         CallbackInfo ci) {
 
-        for (ModelResourceLocation modelResourceLocation : ModClientModels.CUSTOM_GUI_MODELS.values()) {
+        for (ModelResourceLocation modelResourceLocation : ModClientModels.CUSTOM_GUI_MODEL_LOCATIONS) {
             loadSpecialItemModelAndDependencies(modelResourceLocation);
             UnbakedModel model = topLevelModels.get(modelResourceLocation);
             if (model != null) {

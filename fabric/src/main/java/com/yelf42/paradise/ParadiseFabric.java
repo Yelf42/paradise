@@ -23,24 +23,13 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-// TODO change icon.png
 public class ParadiseFabric implements ModInitializer {
-
-    public static final Event<DimensionAddedCallback> DIMENSION_ADDED_EVENT = EventFactory.createArrayBacked(DimensionAddedCallback.class, t -> (key, level) -> {
-        for (DimensionAddedCallback callback : t) {
-            callback.dimensionAdded(key, level);
-        }
-    });
-    public static final Event<DimensionRemovedCallback> DIMENSION_REMOVED_EVENT = EventFactory.createArrayBacked(DimensionRemovedCallback.class, t -> (key, level) -> {
-        for (DimensionRemovedCallback callback : t) {
-            callback.dimensionRemoved(key, level);
-        }
-    });
 
     @Override
     public void onInitialize() {
@@ -98,8 +87,19 @@ public class ParadiseFabric implements ModInitializer {
     }
 
     private static void registerFabricEventListeners() {
-        DIMENSION_ADDED_EVENT.register((key, level) -> ServerWorldEvents.LOAD.invoker().onWorldLoad(level.getServer(), level));
-        DIMENSION_REMOVED_EVENT.register((key, level) -> ServerWorldEvents.UNLOAD.invoker().onWorldUnload(level.getServer(), level));
+        ServerWorldEvents.LOAD.register((server, level) -> {
+            ResourceKey<Level> key = level.dimension();
+            for (DimensionAddedCallback callback : DimensionRegistry.DIMENSION_ADDED_EVENT) {
+                callback.dimensionAdded(key, level);
+            }
+        });
+
+        ServerWorldEvents.UNLOAD.register((server, level) -> {
+            ResourceKey<Level> key = level.dimension();
+            for (DimensionRemovedCallback callback : DimensionRegistry.DIMENSION_REMOVED_EVENT) {
+                callback.dimensionRemoved(key, level);
+            }
+        });
     }
 
     private void registerEntityAttributes() {

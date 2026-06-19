@@ -205,6 +205,7 @@ public class ModBlocks {
                     .mapColor(MapColor.COLOR_RED)
                     .noOcclusion()
                     .noLootTable()
+                    .lightLevel((s)-> 12)
                     .strength(-1.0F, 3600000.8F)
                     .isValidSpawn(((blockState, blockGetter, blockPos, entityType) -> false))
                     .noTerrainParticles()

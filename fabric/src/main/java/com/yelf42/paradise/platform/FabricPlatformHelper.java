@@ -2,6 +2,7 @@ package com.yelf42.paradise.platform;
 
 import com.yelf42.paradise.ParadiseFabric;
 import com.yelf42.paradise.dimensions.DimensionAddedCallback;
+import com.yelf42.paradise.dimensions.DimensionRegistry;
 import com.yelf42.paradise.dimensions.DimensionRemovedCallback;
 import com.yelf42.paradise.platform.services.IPlatformHelper;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -71,18 +72,25 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
     @Override
     public void registerAddedEvent(DimensionAddedCallback callback) {
-        ParadiseFabric.DIMENSION_ADDED_EVENT.register(callback);
+        DimensionRegistry.DIMENSION_ADDED_EVENT.add(callback);
     }
+
     @Override
     public void registerRemovedEvent(DimensionRemovedCallback callback) {
-        ParadiseFabric.DIMENSION_REMOVED_EVENT.register(callback);
+        DimensionRegistry.DIMENSION_REMOVED_EVENT.add(callback);
     }
+
     @Override
     public void invokeRemovedEvent(@NotNull ResourceKey<Level> key, @NotNull ServerLevel level) {
-        ParadiseFabric.DIMENSION_REMOVED_EVENT.invoker().dimensionRemoved(key, level);
+        for (DimensionRemovedCallback callback : DimensionRegistry.DIMENSION_REMOVED_EVENT) {
+            callback.dimensionRemoved(key, level);
+        }
     }
+
     @Override
     public void invokeAddedEvent(@NotNull ResourceKey<Level> key, @NotNull ServerLevel level) {
-        ParadiseFabric.DIMENSION_ADDED_EVENT.invoker().dimensionAdded(key, level);
+        for (DimensionAddedCallback callback : DimensionRegistry.DIMENSION_ADDED_EVENT) {
+            callback.dimensionAdded(key, level);
+        }
     }
 }

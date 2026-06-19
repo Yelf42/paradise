@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.blocks.DataServerBlockEntity;
 import com.yelf42.paradise.dimensions.*;
 import net.minecraft.ChatFormatting;
@@ -28,14 +27,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -67,11 +64,6 @@ public class ModCommands {
                         .executes((context) -> {
                             CommandSourceStack source = context.getSource();
 
-                            if (!source.isPlayer()) {
-                                source.sendFailure(Component.literal("Only players can use this command").withStyle(ChatFormatting.RED));
-                                return Command.SINGLE_SUCCESS;
-                            }
-
                             MinecraftServer server = source.getServer();
                             ResourceLocation dimensionId = ResourceLocationArgument.getId(context, "dimension");
                             ServerLevel level = server.getLevel(ResourceKey.create(Registries.DIMENSION, dimensionId));
@@ -95,11 +87,6 @@ public class ModCommands {
                 .then(Commands.argument("dimension", ResourceLocationArgument.id()).suggests(DIMENSION_SUGGESTIONS)
                         .executes((context) -> {
                             CommandSourceStack source = context.getSource();
-
-                            if (!source.isPlayer()) {
-                                source.sendFailure(Component.literal("Only players can use this command").withStyle(ChatFormatting.RED));
-                                return Command.SINGLE_SUCCESS;
-                            }
 
                             MinecraftServer server = source.getServer();
                             ResourceLocation dimensionId = ResourceLocationArgument.getId(context, "dimension");
@@ -133,11 +120,6 @@ public class ModCommands {
                                     CommandSourceStack source = context.getSource();
                                     MinecraftServer server = source.getServer();
 
-                                    if (!source.isPlayer()) {
-                                        source.sendFailure(Component.literal("Only players can use this command").withStyle(ChatFormatting.RED));
-                                        return Command.SINGLE_SUCCESS;
-                                    }
-
                                     ResourceLocation dimensionId = ResourceLocationArgument.getId(context, "dimension");
                                     ServerLevel level = server.getLevel(ResourceKey.create(Registries.DIMENSION, dimensionId));
 
@@ -170,11 +152,6 @@ public class ModCommands {
                                     .executes((context) -> {
                                         // List whitelist data
                                         CommandSourceStack source = context.getSource();
-
-                                        if (!source.isPlayer()) {
-                                            source.sendFailure(Component.literal("Only players can use this command").withStyle(ChatFormatting.RED));
-                                            return Command.SINGLE_SUCCESS;
-                                        }
 
                                         String operation = StringArgumentType.getString(context, "operation");
                                         if (!operation.equals("list")) {
@@ -215,11 +192,6 @@ public class ModCommands {
                                                 // Other operations
                                                 CommandSourceStack source = context.getSource();
                                                 MinecraftServer server = source.getServer();
-
-                                                if (!source.isPlayer()) {
-                                                    source.sendFailure(Component.literal("Only players can use this command").withStyle(ChatFormatting.RED));
-                                                    return Command.SINGLE_SUCCESS;
-                                                }
 
                                                 String operation = StringArgumentType.getString(context, "operation");
                                                 String playerName = StringArgumentType.getString(context, "player");
@@ -274,11 +246,6 @@ public class ModCommands {
                             .executes((context) -> {
                                 CommandSourceStack source = context.getSource();
                                 MinecraftServer server = source.getServer();
-
-                                if (!source.isPlayer()) {
-                                    source.sendFailure(Component.literal("Only players can use this command").withStyle(ChatFormatting.RED));
-                                    return Command.SINGLE_SUCCESS;
-                                }
 
                                 ResourceLocation dimensionId = ResourceLocationArgument.getId(context, "dimension");
 
@@ -336,11 +303,6 @@ public class ModCommands {
                         .executes(context -> {
                             CommandSourceStack source = context.getSource();
 
-                            if (!source.isPlayer()) {
-                                source.sendFailure(Component.literal("Only players can use this command").withStyle(ChatFormatting.RED));
-                                return Command.SINGLE_SUCCESS;
-                            }
-
                             BlockPos targetPos = BlockPosArgument.getBlockPos(context, "dataServerLocation");
                             ServerLevel serverLevel = source.getPlayer().serverLevel();
                             serverLevel.setBlock(targetPos, ModBlocks.DATA_SERVER.defaultBlockState(), 3);
@@ -366,11 +328,6 @@ public class ModCommands {
                         .executes((context -> {
 
                             CommandSourceStack source = context.getSource();
-
-                            if (!source.isPlayer()) {
-                                source.sendFailure(Component.literal("Only players can use this command").withStyle(ChatFormatting.RED));
-                                return Command.SINGLE_SUCCESS;
-                            }
 
                             String typeArgument = StringArgumentType.getString(context, "type");
                             try {
@@ -443,6 +400,7 @@ public class ModCommands {
                                 return Command.SINGLE_SUCCESS;
                             }
 
+
                             ResourceLocation dimensionId = ResourceLocationArgument.getId(context, "dimension");
                             DataServerLocations dsl = DataServerLocations.getOrCreate(server.overworld());
                             Pair<BlockPos, ResourceLocation> dataServerLocation = dsl.get(dimensionId);
@@ -478,11 +436,6 @@ public class ModCommands {
                         .then(Commands.argument("location", Vec3Argument.vec3())
                                 .executes(context -> {
                                     CommandSourceStack source = context.getSource();
-
-                                    if (!source.isPlayer()) {
-                                        source.sendFailure(Component.literal("Only players can use this command").withStyle(ChatFormatting.RED));
-                                        return Command.SINGLE_SUCCESS;
-                                    }
 
                                     ResourceLocation dimensionId = ResourceLocationArgument.getId(context, "dimension");
                                     ResourceKey<Level> dimensionKey = ResourceKey.create(Registries.DIMENSION, dimensionId);

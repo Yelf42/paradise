@@ -26,6 +26,7 @@ import com.google.common.collect.ImmutableList;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.mixin.*;
 import com.yelf42.paradise.registry.ModPackets;
+import com.yelf42.paradise.dimensions.PlayerRemover;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -50,6 +51,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +61,9 @@ public class DimensionRegistry {
     private final Holder<DimensionType> typeHolderDay;
     private final Holder<DimensionType> typeHolderNight;
     private final Holder<DimensionType> typeHolderError;
+
+    public static final List<DimensionAddedCallback> DIMENSION_ADDED_EVENT = new ArrayList<>();
+    public static final List<DimensionRemovedCallback> DIMENSION_REMOVED_EVENT = new ArrayList<>();
 
     private ParadiseDimensionSavedData savedData;
 
