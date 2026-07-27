@@ -24,7 +24,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.ticks.TickPriority;
 
-// TODO emissive filament
 public class DigitalBulb extends Block {
 
     public static final MapCodec<DigitalBulb> CODEC = simpleCodec(DigitalBulb::new);

@@ -4,16 +4,20 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.yelf42.paradise.blocks.AbstractDigitalSymbolBlockEntity;
 import com.yelf42.paradise.client.ModRenderTypes;
+import dev.ryanhcode.sable.companion.SableCompanion;
+import dev.ryanhcode.sable.companion.SubLevelAccess;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.Position;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
+import org.joml.*;
+
+import java.lang.Math;
 
 public class DigitalSymbolRenderer<T extends AbstractDigitalSymbolBlockEntity> implements BlockEntityRenderer<T> {
     private final BlockEntityRenderDispatcher entityRenderDispatcher;
@@ -33,7 +37,9 @@ public class DigitalSymbolRenderer<T extends AbstractDigitalSymbolBlockEntity> i
 
         poseStack.pushPose();
         poseStack.translate(0.5, this.height, 0.5);
-        Quaternionf orientation = calculateOrientation(new Quaternionf(), t.getBlockPos().getBottomCenter().add(0, 1.5, 0));
+
+        Quaternionf orientation = calculateOrientation(new Quaternionf(), t);
+
         poseStack.mulPose(orientation);
         float halfW = 0.5f;
         float halfH = 0.5f;
@@ -73,12 +79,25 @@ public class DigitalSymbolRenderer<T extends AbstractDigitalSymbolBlockEntity> i
     }
 
 
-    private Quaternionf calculateOrientation(Quaternionf quaternion, Vec3 pos) {
+    private Quaternionf calculateOrientation(Quaternionf quaternion, T t) {
         Vec3 cameraPos = this.entityRenderDispatcher.camera.getPosition();
+
+        Position tPos = t.getBlockPos().getBottomCenter().add(0, 1.5, 0);
+        Position pos = SableCompanion.INSTANCE.projectOutOfSubLevel(t.getLevel(), tPos);
+        SubLevelAccess subLevelAccess = SableCompanion.INSTANCE.getContaining(t);
+
         double dx = cameraPos.x() - pos.x();
         double dz = cameraPos.z() - pos.z();
-        float yaw = (float) Math.atan2(dx, dz);
-        return quaternion.rotateY(yaw);
+        double worldYaw = Math.atan2(dx, dz);
+
+        double localYaw = worldYaw;
+        if (subLevelAccess != null) {
+            Quaterniondc subLevelOrientation = subLevelAccess.logicalPose().orientation();
+            double subLevelYaw = subLevelOrientation.getEulerAnglesYXZ(new Vector3d()).y();
+            localYaw = worldYaw - subLevelYaw;
+        }
+
+        return quaternion.rotateY((float) localYaw);
     }
 
     @Override

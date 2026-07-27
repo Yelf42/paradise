@@ -15,10 +15,6 @@ import net.minecraft.world.level.levelgen.synth.PerlinSimplexNoise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO giant digital asparagus
-
-// TODO get neoforge working
-
 public class Paradise {
 
     public static final String MOD_ID = "paradise";

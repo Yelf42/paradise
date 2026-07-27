@@ -59,7 +59,6 @@ public class ParadiseFabricClient implements ClientModInitializer {
                     DefaultVertexFormat.NEW_ENTITY,
                     ModRenderTypes::setUnshadedColorShader
             );
-            ModRenderTypes.initUnshadedColor();
 
             context.register(
                     Paradise.identifier("digital_teleport"),

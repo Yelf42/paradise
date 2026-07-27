@@ -45,6 +45,8 @@ public class ParadiseNeoforge {
 
         NeoForgePlatformHelper.register(eventBus);
 
+        bind(Registries.STRUCTURE_PLACEMENT, ModStructurePlacementTypes::register);
+
         bind(Registries.PARTICLE_TYPE, ModParticles::register);
 
         bind(Registries.BLOCK, ModBlocks::registerBlocks);

@@ -30,7 +30,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.ticks.TickPriority;
 import org.jetbrains.annotations.Nullable;
 
-// TODO Create compatibility?
 public class DataDownloaderBlock extends BaseEntityBlock {
 
     public static final MapCodec<DataDownloaderBlock> CODEC = simpleCodec(DataDownloaderBlock::new);
@@ -62,7 +61,10 @@ public class DataDownloaderBlock extends BaseEntityBlock {
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         level.setBlock(pos, state.setValue(PRINTING, false), 3);
         ItemStack stack = new ItemStack(ModItems.ADDRESS_CHIP);
-        stack.set(ModComponents.DOWNLOADER_ADDRESS, new ModComponents.DownloaderAddressComponent(hashAddress(pos, level.dimension().location())));
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof DataDownloaderBlockEntity dataDownloaderBlockEntity) {
+            stack.set(ModComponents.DOWNLOADER_ADDRESS, new ModComponents.DownloaderAddressComponent(dataDownloaderBlockEntity.getOrCreateAddress()));
+        }
         spawnItem(level, stack, 0.1, state.getValue(FACING), getDispensePosition(pos.getCenter(), state.getValue(FACING)));
     }
 
@@ -117,28 +119,22 @@ public class DataDownloaderBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
-        if (level instanceof ServerLevel serverLevel) {
-            DownloaderLocations downloaders = DownloaderLocations.getOrCreate(serverLevel.getServer().overworld());
-            downloaders.add(hashAddress(pos, level.dimension().location()), pos, level.dimension().location());
-        }
-    }
-
-    @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock()) && !level.isClientSide()) {
-            DownloaderLocations downloaders = DownloaderLocations.getOrCreate(level.getServer().overworld());
-            downloaders.remove(hashAddress(pos, level.dimension().location()));
+            if (level.getBlockEntity(pos) instanceof DataDownloaderBlockEntity downloader) {
+                String id = downloader.getAddressOrNull();
+                if (id != null) {
+                    DownloaderLocations downloaders = DownloaderLocations.getOrCreate(level.getServer().overworld());
+                    downloaders.removeIfAt(id, pos, level.dimension().location());
+                }
+            }
+
             if (state.getValue(PRINTING)) {
                 ItemStack stack = new ItemStack(ModItems.ADDRESS_CHIP);
                 spawnItem(level, stack, 0.1, state.getValue(FACING), getDispensePosition(pos.getCenter(), state.getValue(FACING)));
             }
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
-    }
-
-    private String hashAddress(BlockPos pos, ResourceLocation dim) {
-        return dim.toString() + "@" + pos.getX() + "," + pos.getY() + "," + pos.getZ();
     }
 
     protected BlockState rotate(BlockState state, Rotation rotation) {

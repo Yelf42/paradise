@@ -6,7 +6,6 @@ import com.yelf42.paradise.client.gui.screens.TransitLogScreen;
 import com.yelf42.paradise.client.gui.screens.WhitelistScreen;
 import com.yelf42.paradise.client.particle.DigitalParticle;
 import com.yelf42.paradise.client.particle.RippleParticle;
-import com.yelf42.paradise.client.renderer.ModClientModels;
 import com.yelf42.paradise.client.renderer.blockentity.*;
 import com.yelf42.paradise.client.renderer.entity.*;
 import com.yelf42.paradise.registry.*;
@@ -131,10 +130,7 @@ public class ParadiseNeoforgeClient {
 
             event.registerShader(
                     new ShaderInstance(event.getResourceProvider(), Paradise.identifier("unshaded_color"), DefaultVertexFormat.NEW_ENTITY),
-                    shader -> {
-                        ModRenderTypes.setUnshadedColorShader(shader);
-                        ModRenderTypes.initUnshadedColor();
-                    }
+                    ModRenderTypes::setUnshadedColorShader
             );
 
             event.registerShader(

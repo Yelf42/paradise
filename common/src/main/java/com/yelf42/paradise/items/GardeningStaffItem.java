@@ -138,7 +138,6 @@ public class GardeningStaffItem extends Item {
                         BlockEntity blockEntity = serverLevel.getBlockEntity(pos);
                         CompoundTag compoundTag = (blockEntity == null) ? null : blockEntity.saveWithoutMetadata(serverLevel.registryAccess());
 
-                        // TODO test
                         if (blockEntity instanceof BaseContainerBlockEntity container) {
                             for (ServerPlayer p : serverLevel.players()) {
                                 if (!p.containerMenu.slots.isEmpty() && p.containerMenu.slots.getFirst().container == container) {

@@ -39,7 +39,7 @@ public class WarningLightBlockEntityRenderer<T extends WarningLightBlockEntity> 
 
         PoseStack.Pose lastPose = poseStack.last();
         Matrix4f pose = lastPose.pose();
-        VertexConsumer consumer = multiBufferSource.getBuffer(ModRenderTypes.UNSHADED_COLOR);
+        VertexConsumer consumer = multiBufferSource.getBuffer(ModRenderTypes.UNSHADED_COLOR.apply(WHITE));
 
         if (blockEntity.isPowered()) {
             float minY1 = -0.2f;

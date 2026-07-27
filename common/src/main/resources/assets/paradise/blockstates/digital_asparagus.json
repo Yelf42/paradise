@@ -1,13 +1,13 @@
 {
   "variants": {
     "section=0": {
-      "model": "minecraft:block/birch_fence_post"
+      "model": "paradise:block/digital_asparagus_top"
     },
     "section=1": {
-      "model": "paradise:block/digital_asparagus_1"
+      "model": "paradise:block/digital_asparagus_stem"
     },
     "section=2": {
-      "model": "paradise:block/digital_asparagus_2"
+      "model": "paradise:block/digital_asparagus_base"
     }
   }
 }

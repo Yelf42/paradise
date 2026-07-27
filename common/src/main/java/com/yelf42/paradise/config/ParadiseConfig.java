@@ -9,7 +9,7 @@ public class ParadiseConfig extends WrappedConfig {
 
     @Comment("How many extra items should BackupRecord's save?")
     @IntegerRange(min=0, max=64)
-    public int backupSaves = 9;
+    public int backupSaves = 0;
 
     @Comment("")
     @Comment("-------------------------------")
@@ -70,7 +70,7 @@ public class ParadiseConfig extends WrappedConfig {
     @Comment("WARNING: Changing post-generation may cause issues (including use of /locate)")
     @ChangeWarning(folk.sisby.kaleido.lib.quiltconfig.api.metadata.ChangeWarning.Type.RequiresRestart)
     @IntegerRange(min=1, max=4095)
-    public int bunkerCount = 48;
+    public int bunkerCount = 12;
 
     @Comment("")
     @Comment("-------------------------------")

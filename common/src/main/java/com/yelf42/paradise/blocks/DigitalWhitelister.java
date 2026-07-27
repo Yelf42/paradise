@@ -98,6 +98,7 @@ public class DigitalWhitelister extends BaseEntityBlock {
         }
     }
 
+    // Might not work in a sublevel
     private void tryReactivate(ServerLevel level, BlockPos pos) {
         WhitelistsSavedData whitelistsSavedData = WhitelistsSavedData.getOrCreate(level.getServer().overworld());
         ResourceLocation dimId = level.dimension().location();

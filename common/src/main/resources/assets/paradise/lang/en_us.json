@@ -93,6 +93,7 @@
   "gui.paradise.whitelist.title": "Whitelist Control",
   "gui.paradise.whitelist.active": "Active",
   "gui.paradise.whitelist.history": "History",
+  "gui.paradise.whitelist.input": "player name...",
 
   "gui.paradise.transit_log.title": "Transit Log",
 

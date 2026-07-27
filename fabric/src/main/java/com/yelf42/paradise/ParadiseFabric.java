@@ -34,7 +34,7 @@ public class ParadiseFabric implements ModInitializer {
     @Override
     public void onInitialize() {
 
-        ModStructurePlacementTypes.register();
+        bind(BuiltInRegistries.STRUCTURE_PLACEMENT, ModStructurePlacementTypes::register);
 
         bind(BuiltInRegistries.PARTICLE_TYPE, ModParticles::register);
 

@@ -9,6 +9,9 @@ import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModBlocks;
 import com.yelf42.paradise.registry.ModItems;
 import com.yelf42.paradise.registry.ModParticles;
+import dev.ryanhcode.sable.companion.SableCompanion;
+import dev.ryanhcode.sable.companion.SubLevelAccess;
+import dev.ryanhcode.sable.companion.math.Pose3dc;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -157,7 +160,7 @@ public class DigitalUploaderBlock extends BaseEntityBlock implements Portal {
         // Check if actually downloader position
         BlockState downloader = serverlevel.getBlockState(serverLocation);
         if (!downloader.is(ModBlocks.DATA_DOWNLOADER)) {
-            downloaders.remove(dube.getAddress());
+            downloaders.removeIfAt(dube.getAddress(), serverLocation, destination.getRight());
             return null;
         }
 
@@ -190,13 +193,28 @@ public class DigitalUploaderBlock extends BaseEntityBlock implements Portal {
             serverlevel.setBlock(target, Blocks.AIR.defaultBlockState(), 3);
         }
 
-        float f = downloader.getOptionalValue(DataDownloaderBlock.FACING).orElse(Direction.NORTH).toYRot();
-        Vec3 vec3 = serverLocation.above().getBottomCenter();
-        return new DimensionTransition(serverlevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
+        float baseYaw = downloader.getOptionalValue(DataDownloaderBlock.FACING).orElse(Direction.NORTH).toYRot();
+        Vec3 localPos = serverLocation.above().getBottomCenter();
+
+        Vec3 globalPos = localPos;
+        float yaw = baseYaw;
+
+        SubLevelAccess subLevelAccess = SableCompanion.INSTANCE.getContaining(serverlevel, localPos);
+        if (subLevelAccess != null) {
+            Pose3dc pose = subLevelAccess.logicalPose();
+            globalPos = pose.transformPosition(localPos);
+
+            double rad = Math.toRadians(baseYaw);
+            Vec3 localFacing = new Vec3(-Math.sin(rad), 0, Math.cos(rad));
+            Vec3 globalFacing = pose.transformNormal(localFacing);
+            yaw = (float) Math.toDegrees(Math.atan2(-globalFacing.x, globalFacing.z));
+        }
+
+        return new DimensionTransition(serverlevel, globalPos, entity.getDeltaMovement(), yaw, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET));
     }
 
-    @Override
-    public Transition getLocalTransition() {
-        return Transition.CONFUSION;
-    }
+@Override
+public Portal.Transition getLocalTransition() {
+    return Portal.Transition.CONFUSION;
+}
 }

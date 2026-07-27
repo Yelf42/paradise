@@ -1,6 +1,5 @@
 package com.yelf42.paradise.client;
 
-import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -8,7 +7,6 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
@@ -16,7 +14,6 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-import java.lang.reflect.Method;
 import java.util.function.Function;
 
 public class ModRenderTypes extends RenderType {
@@ -34,11 +31,6 @@ public class ModRenderTypes extends RenderType {
     public static Function<ResourceLocation, RenderType> HOLOGRAM = Util.memoize(ModRenderTypes::createHologram);
     private static RenderType createHologram(ResourceLocation texture) {
         try {
-            Method create = RenderType.class.getDeclaredMethod("create", String.class, VertexFormat.class,
-                    VertexFormat.Mode.class, int.class, boolean.class, boolean.class,
-                    RenderType.CompositeState.class);
-            create.setAccessible(true);
-
             RenderType.CompositeState state = RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_HOLOGRAM_SHADER)
                     .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
@@ -49,8 +41,8 @@ public class ModRenderTypes extends RenderType {
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(true);
 
-            return (RenderType) create.invoke(null, "paradise_hologram", DefaultVertexFormat.NEW_ENTITY,
-                    VertexFormat.Mode.QUADS, 1536, true, false, state);
+            return RenderType.create("paradise_hologram", DefaultVertexFormat.NEW_ENTITY,
+                    VertexFormat.Mode.QUADS, 1536, state);
         } catch (Exception e) {
             throw new RuntimeException("Failed to create hologram render type", e);
         }
@@ -64,11 +56,6 @@ public class ModRenderTypes extends RenderType {
     public static Function<ResourceLocation, RenderType> SHIMMER = Util.memoize(ModRenderTypes::createShimmer);
     private static RenderType createShimmer(ResourceLocation texture) {
         try {
-            Method create = RenderType.class.getDeclaredMethod("create", String.class, VertexFormat.class,
-                    VertexFormat.Mode.class, int.class, boolean.class, boolean.class,
-                    RenderType.CompositeState.class);
-            create.setAccessible(true);
-
             RenderType.CompositeState state = RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_SHIMMER_SHADER)
                     .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
@@ -79,8 +66,8 @@ public class ModRenderTypes extends RenderType {
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(true);
 
-            return (RenderType) create.invoke(null, "paradise_shimmer", DefaultVertexFormat.NEW_ENTITY,
-                    VertexFormat.Mode.QUADS, 1536, true, false, state);
+            return RenderType.create("paradise_shimmer", DefaultVertexFormat.NEW_ENTITY,
+                    VertexFormat.Mode.QUADS, 1536, state);
         } catch (Exception e) {
             throw new RuntimeException("Failed to create shimmer render type", e);
         }
@@ -94,11 +81,6 @@ public class ModRenderTypes extends RenderType {
     public static Function<ResourceLocation, RenderType> WATCHER = Util.memoize(ModRenderTypes::createWatcher);
     private static RenderType createWatcher(ResourceLocation texture) {
         try {
-            Method create = RenderType.class.getDeclaredMethod("create", String.class, VertexFormat.class,
-                    VertexFormat.Mode.class, int.class, boolean.class, boolean.class,
-                    RenderType.CompositeState.class);
-            create.setAccessible(true);
-
             RenderType.CompositeState state = RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_WATCHER_SHADER)
                     .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
@@ -110,8 +92,8 @@ public class ModRenderTypes extends RenderType {
                     .setWriteMaskState(RenderStateShard.COLOR_WRITE)
                     .createCompositeState(true);
 
-            return (RenderType) create.invoke(null, "paradise_watcher", DefaultVertexFormat.NEW_ENTITY,
-                    VertexFormat.Mode.QUADS, 1536, true, false, state);
+            return RenderType.create("paradise_watcher", DefaultVertexFormat.NEW_ENTITY,
+                    VertexFormat.Mode.QUADS, 1536, state);
         } catch (Exception e) {
             throw new RuntimeException("Failed to create watcher render type", e);
         }
@@ -120,14 +102,9 @@ public class ModRenderTypes extends RenderType {
     public static void setUnshadedColorShader(ShaderInstance shader) {unshadedColorShader = shader;}
     public static ShaderInstance unshadedColorShader;
     private static final ShaderStateShard RENDERTYPE_UNSHADED_COLOR_SHADER = new ShaderStateShard(() -> unshadedColorShader);
-    public static RenderType UNSHADED_COLOR;
-    public static void initUnshadedColor() {
+    public static Function<ResourceLocation, RenderType> UNSHADED_COLOR = Util.memoize(ModRenderTypes::createUnshadedColor);;
+    public static RenderType createUnshadedColor(ResourceLocation texture) {
         try {
-            Method create = RenderType.class.getDeclaredMethod("create", String.class, VertexFormat.class,
-                    VertexFormat.Mode.class, int.class, boolean.class, boolean.class,
-                    RenderType.CompositeState.class);
-            create.setAccessible(true);
-
             RenderType.CompositeState state = RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_UNSHADED_COLOR_SHADER)
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
@@ -138,8 +115,8 @@ public class ModRenderTypes extends RenderType {
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(true);
 
-            UNSHADED_COLOR = (RenderType) create.invoke(null, "paradise_unshaded_color", DefaultVertexFormat.NEW_ENTITY,
-                    VertexFormat.Mode.QUADS, 1536, false, false, state);
+            return RenderType.create("paradise_unshaded_color", DefaultVertexFormat.NEW_ENTITY,
+                    VertexFormat.Mode.QUADS, 1536, state);
         } catch (Exception e) {
             throw new RuntimeException("Failed to create unshaded color render type", e);
         }
@@ -153,11 +130,6 @@ public class ModRenderTypes extends RenderType {
     public static Function<ResourceLocation, RenderType> DIGITAL_TELEPORT = Util.memoize(ModRenderTypes::createDigitalTeleport);
     private static RenderType createDigitalTeleport(ResourceLocation texture) {
         try {
-            Method create = RenderType.class.getDeclaredMethod("create", String.class, VertexFormat.class,
-                    VertexFormat.Mode.class, int.class, boolean.class, boolean.class,
-                    RenderType.CompositeState.class);
-            create.setAccessible(true);
-
             RenderType.CompositeState state = RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_DIGITAL_TELEPORT_SHADER)
                     .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
@@ -168,8 +140,8 @@ public class ModRenderTypes extends RenderType {
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(true);
 
-            return (RenderType) create.invoke(null, "paradise_digital_teleport", DefaultVertexFormat.NEW_ENTITY,
-                    VertexFormat.Mode.QUADS, 1536, true, false, state);
+            return RenderType.create("paradise_digital_teleport", DefaultVertexFormat.NEW_ENTITY,
+                    VertexFormat.Mode.QUADS, 1536, state);
         } catch (Exception e) {
             throw new RuntimeException("Failed to create hologram render type", e);
         }
@@ -184,11 +156,6 @@ public class ModRenderTypes extends RenderType {
     public static Function<ResourceLocation, RenderType> PIXELIZE = Util.memoize(ModRenderTypes::createPixelize);
     private static RenderType createPixelize(ResourceLocation texture) {
         try {
-            Method create = RenderType.class.getDeclaredMethod("create", String.class, VertexFormat.class,
-                    VertexFormat.Mode.class, int.class, boolean.class, boolean.class,
-                    RenderType.CompositeState.class);
-            create.setAccessible(true);
-
             RenderType.CompositeState state = RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_PIXELIZE_SHADER)
                     .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
@@ -199,8 +166,8 @@ public class ModRenderTypes extends RenderType {
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(true);
 
-            RenderType base = (RenderType) create.invoke(null, "paradise_pixelize", DefaultVertexFormat.NEW_ENTITY,
-                    VertexFormat.Mode.QUADS, 1536, true, false, state);
+            RenderType base = RenderType.create("paradise_pixelize", DefaultVertexFormat.NEW_ENTITY,
+                    VertexFormat.Mode.QUADS, 1536, state);
 
             return new RenderType("paradise_pixelize", DefaultVertexFormat.NEW_ENTITY,
                     VertexFormat.Mode.QUADS, 1536, true, false,
