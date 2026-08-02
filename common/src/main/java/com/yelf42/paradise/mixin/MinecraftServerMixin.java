@@ -24,6 +24,7 @@ package com.yelf42.paradise.mixin;
 
 import com.mojang.datafixers.DataFixer;
 import com.yelf42.paradise.Paradise;
+import com.yelf42.paradise.config.ParadiseServerHolder;
 import com.yelf42.paradise.dimensions.*;
 import com.yelf42.paradise.registry.ModPackets;
 import com.yelf42.paradise.registry.RegistryUtil;
@@ -91,6 +92,12 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void initDynamicDimensions(Thread thread, LevelStorageSource.LevelStorageAccess levelStorageAccess, PackRepository packRepository, WorldStem worldStem, Proxy proxy, DataFixer dataFixer, Services services, ChunkProgressListenerFactory chunkProgressListenerFactory, CallbackInfo ci) {
         this.dynamicDimensions = new DimensionRegistry((MinecraftServer) (Object) this);
+        ParadiseServerHolder.set((MinecraftServer) (Object) this);
+    }
+
+    @Inject(method = "stopServer", at = @At("RETURN"))
+    private void clearCurrentServer(CallbackInfo ci) {
+        ParadiseServerHolder.clear();
     }
 
     /**
@@ -103,6 +110,7 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
         this.dynamicDimensions.loadDynamicDimensions();
         DataServerLocations.getOrCreate(levels.get(Level.OVERWORLD));
         DownloaderLocations.getOrCreate(levels.get(Level.OVERWORLD));
+        BunkerSavedData.get((MinecraftServer) (Object) this);
     }
 
     public ResourceLocation paradise$createIfAbsent(DimensionRegistry.ParadiseType type) {

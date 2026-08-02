@@ -74,4 +74,7 @@ public class ParadiseDimensionSavedData extends SavedData {
         return Collections.unmodifiableMap(dimensions);
     }
 
+    public int getBunkerDimensionCount() {
+        return dimensions.size();
+    }
 }
