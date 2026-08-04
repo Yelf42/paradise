@@ -1,17 +1,17 @@
 {
+  "placement": {
+    "type": "paradise:bunkers",
+    "spread_type": "triangular",
+    "salt": 83469867,
+    "exclusion_zone": {
+      "other_set": "minecraft:mineshafts",
+      "chunk_count": 10
+    }
+  },
   "structures": [
     {
       "structure": "paradise:bunker",
       "weight": 1
     }
-  ],
-  "placement": {
-    "type": "paradise:bunkers",
-    "preferred_biomes": "#minecraft:stronghold_biased_to",
-    "salt": 5432,
-    "exclusion_zone": {
-      "chunk_count": 5,
-      "other_set": "minecraft:mineshafts"
-    }
-  }
+  ]
 }

@@ -43,6 +43,15 @@ repositories {
         url = 'https://maven.blamejared.com'
     }
     maven { url 'https://repo.sleeping.town/' }
+
+    exclusiveContent {
+        forRepository {
+            maven { url = "https://maven.ryanhcode.dev/releases" }
+        }
+        filter {
+            includeGroup("dev.ryanhcode.sable-companion")
+        }
+    }
 }
 
 // Declare capabilities on the outgoing configurations.

@@ -29,8 +29,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-// TODO assets
-// TODO texture shifting like bamboo?
 public class DigitalAsparagus extends Block implements SimpleWaterloggedBlock, BonemealableBlock {
 
     // 0 top
@@ -40,7 +38,6 @@ public class DigitalAsparagus extends Block implements SimpleWaterloggedBlock, B
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public static final VoxelShape BODY_SHAPE = Block.box(4, 0, 4, 12, 16, 12);
-    public static final VoxelShape TOP_SHAPE = Block.box(4, 0, 4, 12, 12, 12);
 
     public DigitalAsparagus(Properties properties) {
         super(properties);
@@ -50,7 +47,7 @@ public class DigitalAsparagus extends Block implements SimpleWaterloggedBlock, B
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         Vec3 offset = state.getOffset(level, pos);
-        return (state.getValue(SECTION) == 0 ? TOP_SHAPE : BODY_SHAPE).move(offset.x(), offset.y(), offset.z());
+        return (BODY_SHAPE).move(offset.x(), offset.y(), offset.z());
     }
 
     @Override

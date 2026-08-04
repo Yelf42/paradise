@@ -7,6 +7,7 @@ import com.yelf42.paradise.registry.ModBlockEntities;
 import com.yelf42.paradise.registry.ModBlocks;
 import com.yelf42.paradise.registry.ModComponents;
 import com.yelf42.paradise.registry.ModItems;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -74,6 +75,9 @@ public class BackupRecordItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
         ModComponents.DimensionAddressComponent address = stack.get(ModComponents.DIMENSION_ADDRESS);
+        if (!isFoil(stack)) {
+            tooltipComponents.add(Component.translatable("tooltip.item.backup_record_help").withStyle(ChatFormatting.GRAY));
+        }
         if (address != null) {
             address.addToTooltip(context, tooltipComponents::add, tooltipFlag);
         }

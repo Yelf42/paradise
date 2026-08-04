@@ -262,5 +262,4 @@ public abstract class ServerLevelMixin {
 //        return weatherCycleGameRule;
 //    }
 
-
 }

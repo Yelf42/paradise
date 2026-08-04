@@ -9,7 +9,7 @@ public class ParadiseConfig extends WrappedConfig {
 
     @Comment("How many extra items should BackupRecord's save?")
     @IntegerRange(min=0, max=64)
-    public int backupSaves = 9;
+    public int backupSaves = 0;
 
     @Comment("")
     @Comment("-------------------------------")
@@ -70,27 +70,25 @@ public class ParadiseConfig extends WrappedConfig {
     @Comment("WARNING: Changing post-generation may cause issues (including use of /locate)")
     @ChangeWarning(folk.sisby.kaleido.lib.quiltconfig.api.metadata.ChangeWarning.Type.RequiresRestart)
     @IntegerRange(min=1, max=4095)
-    public int bunkerCount = 48;
+    public int bunkerCount = 12;
 
     @Comment("")
     @Comment("-------------------------------")
     @Comment("")
-    @Comment("How far apart should rings for bunker generation be?")
-    @Comment("Note this is quite weird and complex, see https://minecraft.wiki/w/Structure_set#Placement_types")
+    @Comment("How far apart on average should bunker generate?")
     @Comment("WARNING: Requires restarting the server")
     @Comment("WARNING: Changing post-generation may cause issues (including use of /locate)")
     @ChangeWarning(folk.sisby.kaleido.lib.quiltconfig.api.metadata.ChangeWarning.Type.RequiresRestart)
     @IntegerRange(min=0, max=1023)
-    public int bunkerDistance = 8;
+    public int bunkerSpacing = 20;
 
     @Comment("")
     @Comment("-------------------------------")
     @Comment("")
-    @Comment("How many bunkers should generate on the first ring?")
-    @Comment("Note this is quite weird and complex, see https://minecraft.wiki/w/Structure_set#Placement_types")
+    @Comment("Minimum distance between bunkers?")
     @Comment("WARNING: Requires restarting the server")
     @Comment("WARNING: Changing post-generation may cause issues (including use of /locate)")
     @ChangeWarning(folk.sisby.kaleido.lib.quiltconfig.api.metadata.ChangeWarning.Type.RequiresRestart)
     @IntegerRange(min=0, max=1023)
-    public int bunkerSpread = 4;
+    public int bunkerSeparation = 10;
 }

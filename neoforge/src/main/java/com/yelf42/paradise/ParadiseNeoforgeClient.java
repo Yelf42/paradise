@@ -6,7 +6,6 @@ import com.yelf42.paradise.client.gui.screens.TransitLogScreen;
 import com.yelf42.paradise.client.gui.screens.WhitelistScreen;
 import com.yelf42.paradise.client.particle.DigitalParticle;
 import com.yelf42.paradise.client.particle.RippleParticle;
-import com.yelf42.paradise.client.renderer.ModClientModels;
 import com.yelf42.paradise.client.renderer.blockentity.*;
 import com.yelf42.paradise.client.renderer.entity.*;
 import com.yelf42.paradise.registry.*;
@@ -131,10 +130,7 @@ public class ParadiseNeoforgeClient {
 
             event.registerShader(
                     new ShaderInstance(event.getResourceProvider(), Paradise.identifier("unshaded_color"), DefaultVertexFormat.NEW_ENTITY),
-                    shader -> {
-                        ModRenderTypes.setUnshadedColorShader(shader);
-                        ModRenderTypes.initUnshadedColor();
-                    }
+                    ModRenderTypes::setUnshadedColorShader
             );
 
             event.registerShader(
@@ -153,31 +149,6 @@ public class ParadiseNeoforgeClient {
 
     // Custom S2C payload handlers
     public static class ClientPayloadHandler {
-        public static void handleCreateDimension(ModPackets.CreateDimensionPayload payload, IPayloadContext context) {
-            ResourceLocation id = payload.id();
-            DimensionType type = payload.dimensionType().value();
-
-            context.enqueueWork(() -> {
-                Minecraft client = Minecraft.getInstance();
-                ClientPacketListener handler = client.getConnection();
-
-                RegistryUtil.registerUnfreezeExact(handler.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE), id, type);
-                handler.levels().add(ResourceKey.create(Registries.DIMENSION, id));
-            });
-        }
-
-        public static void handleRemoveDimension(ModPackets.RemoveDimensionPayload payload, IPayloadContext context) {
-            ResourceLocation id = payload.id();
-
-            context.enqueueWork(() -> {
-                Minecraft client = Minecraft.getInstance();
-                ClientPacketListener handler = client.getConnection();
-
-                RegistryUtil.unregister(handler.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE), id);
-                handler.levels().remove(ResourceKey.create(Registries.DIMENSION, id));
-            });
-        }
-
         public static void handleOpenTransitLog(ModPackets.OpenTransitLogPayload payload, IPayloadContext context) {
             ResourceLocation dimId = payload.dimensionId();
             List<String> transitLog = payload.transitLog();

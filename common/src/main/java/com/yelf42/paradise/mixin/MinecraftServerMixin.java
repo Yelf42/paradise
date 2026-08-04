@@ -22,8 +22,11 @@ package com.yelf42.paradise.mixin;
  * SOFTWARE.
  */
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.datafixers.DataFixer;
 import com.yelf42.paradise.Paradise;
+import com.yelf42.paradise.config.ParadiseServerHolder;
 import com.yelf42.paradise.dimensions.*;
 import com.yelf42.paradise.registry.ModPackets;
 import com.yelf42.paradise.registry.RegistryUtil;
@@ -53,7 +56,10 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -77,8 +83,8 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
     public abstract LayeredRegistryAccess<RegistryLayer> registries();
 
     @Shadow
-    @Nullable
-    private String motd;
+    public abstract Iterable<ServerLevel> getAllLevels();
+
     @Unique
     private final @NotNull List<ServerLevel> pendingLevels = new ArrayList<>();
     @Unique
@@ -91,6 +97,12 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void initDynamicDimensions(Thread thread, LevelStorageSource.LevelStorageAccess levelStorageAccess, PackRepository packRepository, WorldStem worldStem, Proxy proxy, DataFixer dataFixer, Services services, ChunkProgressListenerFactory chunkProgressListenerFactory, CallbackInfo ci) {
         this.dynamicDimensions = new DimensionRegistry((MinecraftServer) (Object) this);
+        ParadiseServerHolder.set((MinecraftServer) (Object) this);
+    }
+
+    @Inject(method = "stopServer", at = @At("RETURN"))
+    private void clearCurrentServer(CallbackInfo ci) {
+        ParadiseServerHolder.clear();
     }
 
     /**
@@ -103,6 +115,7 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
         this.dynamicDimensions.loadDynamicDimensions();
         DataServerLocations.getOrCreate(levels.get(Level.OVERWORLD));
         DownloaderLocations.getOrCreate(levels.get(Level.OVERWORLD));
+        BunkerSavedData.get((MinecraftServer) (Object) this);
     }
 
     public ResourceLocation paradise$createIfAbsent(DimensionRegistry.ParadiseType type) {
@@ -325,6 +338,10 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
         DimensionAddedCallback.invoke(level.dimension(), level);
         this.levels.put(level.dimension(), level);
         this.dynamicDimensions.add(level.dimension());
+
+        // fixme Annoying problem with NeoForge snapshotting levels to tick
+        com.yelf42.paradise.platform.Services.PLATFORM.updateServerLevels(level);
+
         level.tick(() -> true);
     }
 
@@ -337,4 +354,5 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
     private void markNotTickingLevels(BooleanSupplier booleanSupplier, CallbackInfo ci) {
         this.tickingLevels = false;
     }
+
 }

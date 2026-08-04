@@ -3,9 +3,11 @@ package com.yelf42.paradise.items;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.blocks.DigitalSculpture;
 import com.yelf42.paradise.registry.ModBlocks;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,6 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -138,7 +141,6 @@ public class GardeningStaffItem extends Item {
                         BlockEntity blockEntity = serverLevel.getBlockEntity(pos);
                         CompoundTag compoundTag = (blockEntity == null) ? null : blockEntity.saveWithoutMetadata(serverLevel.registryAccess());
 
-                        // TODO test
                         if (blockEntity instanceof BaseContainerBlockEntity container) {
                             for (ServerPlayer p : serverLevel.players()) {
                                 if (!p.containerMenu.slots.isEmpty() && p.containerMenu.slots.getFirst().container == container) {
@@ -194,5 +196,10 @@ public class GardeningStaffItem extends Item {
         }
 
         return InteractionResult.PASS;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable("tooltip.item.gardening_staff").withStyle(ChatFormatting.GRAY));
     }
 }

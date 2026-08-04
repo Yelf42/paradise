@@ -15,9 +15,7 @@ import net.minecraft.world.level.levelgen.synth.PerlinSimplexNoise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO giant digital asparagus
-
-// TODO get neoforge working
+// TODO add tooltips to blocks?
 
 public class Paradise {
 

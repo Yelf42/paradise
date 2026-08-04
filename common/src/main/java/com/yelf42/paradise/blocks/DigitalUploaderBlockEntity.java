@@ -73,7 +73,7 @@ public class DigitalUploaderBlockEntity extends AbstractDigitalSymbolBlockEntity
     }
 
     private boolean isAddressValid(Level level) {
-        if (level.getServer().overworld() == null || this.addressItem.isEmpty()) return false;
+        if (this.addressItem.isEmpty()) return false;
         DownloaderLocations downloaders = DownloaderLocations.getOrCreate(level.getServer().overworld());
         return downloaders.has(this.addressItem.getOrDefault(ModComponents.DOWNLOADER_ADDRESS, new ModComponents.DownloaderAddressComponent("")).address());
     }

@@ -32,7 +32,7 @@ public class ModBlocks {
                     .offsetType(BlockBehaviour.OffsetType.XZ)
                     .dynamicShape()
                     .sound(SoundType.GRASS),
-            new Item.Properties().rarity(Rarity.RARE).food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.3F).build())
+            new Item.Properties().rarity(Rarity.RARE).food(new FoodProperties.Builder().nutrition(1).saturationModifier(0.3F).build())
     );
 
     public static final Block DIGITAL_GRASS_BLOCK = register(

@@ -4,32 +4,28 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.registry.ModStructurePlacementTypes;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.Vec3i;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.levelgen.structure.placement.ConcentricRingsStructurePlacement;
-import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
+import net.minecraft.world.level.levelgen.structure.placement.*;
 
 import java.util.Optional;
 
-public class BunkerStructurePlacement extends ConcentricRingsStructurePlacement {
+public class BunkerStructurePlacement extends RandomSpreadStructurePlacement {
 
     public static final MapCodec<BunkerStructurePlacement> CODEC = RecordCodecBuilder.mapCodec(instance ->
             placementCodec(instance).and(
-                    RegistryCodecs.homogeneousList(Registries.BIOME)
-                            .fieldOf("preferred_biomes")
-                            .forGetter(ConcentricRingsStructurePlacement::preferredBiomes)
+                    RandomSpreadType.CODEC.optionalFieldOf("spread_type", RandomSpreadType.TRIANGULAR)
+                            .forGetter(RandomSpreadStructurePlacement::spreadType)
             ).apply(instance, BunkerStructurePlacement::new)
     );
 
     public BunkerStructurePlacement(Vec3i locateOffset, FrequencyReductionMethod freqMethod, float freq,
-                                    int salt, Optional<ExclusionZone> exclusionZone, HolderSet<Biome> preferredBiomes) {
+                                        int salt, Optional<ExclusionZone> exclusionZone,
+                                        RandomSpreadType spreadType) {
         super(locateOffset, freqMethod, freq, salt, exclusionZone,
-                Paradise.CONFIG.bunkerDistance, Paradise.CONFIG.bunkerSpread, Paradise.CONFIG.bunkerCount, preferredBiomes);
+                Paradise.CONFIG.bunkerSpacing, Paradise.CONFIG.bunkerSeparation, spreadType);
     }
 
+    @Override
     public StructurePlacementType<?> type() {
         return ModStructurePlacementTypes.BUNKERS;
     }

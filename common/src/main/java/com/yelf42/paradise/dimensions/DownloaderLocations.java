@@ -59,16 +59,21 @@ public class DownloaderLocations extends SavedData {
         return tag;
     }
 
-    public boolean add(String dimId, BlockPos pos, ResourceLocation hostDimId) {
-        if (downloaders.containsKey(dimId)) return false;
-        downloaders.put(dimId, Pair.of(pos,hostDimId));
+    public void set(String id, BlockPos pos, ResourceLocation hostDimId) {
+        Pair<BlockPos, ResourceLocation> existing = downloaders.get(id);
+        if (existing != null && existing.getLeft().equals(pos) && existing.getRight().equals(hostDimId)) {
+            return;
+        }
+        downloaders.put(id, Pair.of(pos, hostDimId));
         setDirty();
-        return true;
     }
 
-    public void remove(String dimId) {
-        downloaders.remove(dimId);
-        setDirty();
+    public void removeIfAt(String id, BlockPos pos, ResourceLocation dim) {
+        Pair<BlockPos, ResourceLocation> existing = downloaders.get(id);
+        if (existing != null && existing.getLeft().equals(pos) && existing.getRight().equals(dim)) {
+            downloaders.remove(id);
+            setDirty();
+        }
     }
 
     public @Nullable Pair<BlockPos, ResourceLocation> get(String id) {

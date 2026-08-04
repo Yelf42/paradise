@@ -49,6 +49,7 @@
 			}
 		},
 		{
+          "shade": false,
 			"name": "filament1",
 			"from": [8, 6, 6.5],
 			"to": [8, 9, 9.5],
@@ -63,6 +64,7 @@
 			}
 		},
 		{
+          "shade": false,
 			"name": "filament2",
 			"from": [8, 6, 6.5],
 			"to": [8, 9, 9.5],
