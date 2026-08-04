@@ -44,3 +44,8 @@ If a location is provided, teleports the player to that location within the spec
 * **Remove:** Requires a player. Removes the player from either list if present.
 * **Flip:** Requires a player. Moves the player to the opposite list if they were in either, and removes them from the intruder list if they are now in the active list.
 * **Check:** Requires a player. Outputs whether the input player is whitelisted in the input dimension.
+
+## TODO one day
+Raids of intruders if your dim is whitelisted
+Annoying wandering trader if your dim isn't whitelisted
+Locked dims that require using the DataScrambler to enter (maybe timed, dim gets removed afterwards?)
