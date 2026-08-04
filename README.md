@@ -46,6 +46,7 @@ If a location is provided, teleports the player to that location within the spec
 * **Check:** Requires a player. Outputs whether the input player is whitelisted in the input dimension.
 
 ## TODO one day
+Maybe give the DigitalVolume texture some flare
 Raids of intruders if your dim is whitelisted
 Annoying wandering trader if your dim isn't whitelisted
 Locked dims that require using the DataScrambler to enter (maybe timed, dim gets removed afterwards?)
