@@ -10,7 +10,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+
+import java.util.List;
 
 public class ScramblerItem extends Item {
     public ScramblerItem(Properties properties) {
@@ -28,5 +31,12 @@ public class ScramblerItem extends Item {
             player.displayClientMessage(Component.translatable("gui.paradise.scrambler.ejection").withStyle(ChatFormatting.RED), true);
             player.addEffect(ModEffects.ejectInstance());
         }
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable("tooltip.item.scrambler_help_1").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("tooltip.item.scrambler_help_2").withStyle(ChatFormatting.GRAY)
+                .append(Component.literal("EJECTION").withStyle(ChatFormatting.RED)));
     }
 }

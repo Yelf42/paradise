@@ -2,37 +2,43 @@ package com.yelf42.paradise;
 
 
 import com.yelf42.paradise.blocks.DigitalWhitelistControllerBlockEntity;
-import com.yelf42.paradise.client.renderer.ModClientModels;
 import com.yelf42.paradise.dimensions.*;
 import com.yelf42.paradise.entities.DigitalFish;
 import com.yelf42.paradise.platform.NeoForgePlatformHelper;
 import com.yelf42.paradise.registry.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
+import static net.neoforged.fml.loading.FMLEnvironment.dist;
 
 @Mod(Paradise.MOD_ID)
 public class ParadiseNeoforge {
@@ -78,14 +84,16 @@ public class ParadiseNeoforge {
             eventBus.addListener(ParadiseNeoforgeClient::registerEntityRenderers);
             eventBus.addListener(ParadiseNeoforgeClient::registerParticleFactories);
             eventBus.addListener(ParadiseNeoforgeClient::registerShaders);
-        }
 
-        eventBus.addListener(this::registerPayloadHandlers);
+        }
+        eventBus.addListener(this::registerPayloadHandlersS2C);
+        eventBus.addListener(this::registerPayloadHandlersC2S);
 
         NeoForge.EVENT_BUS.addListener(this::registerCommands);
 
-        NeoForge.EVENT_BUS.addListener(this::onLevelLoad);
-        NeoForge.EVENT_BUS.addListener(this::onLevelUnload);
+        // Doesn't seem to do anything, and idk why I added them (not in DynDim)
+        //NeoForge.EVENT_BUS.addListener(this::onLevelLoad);
+        //NeoForge.EVENT_BUS.addListener(this::onLevelUnload);
 
         Paradise.init();
 
@@ -111,7 +119,6 @@ public class ParadiseNeoforge {
             }
         }
     }
-
     public void onLevelUnload(LevelEvent.Unload event) {
         if (event.getLevel() instanceof ServerLevel level) {
             ResourceKey<Level> key = level.dimension();
@@ -129,18 +136,58 @@ public class ParadiseNeoforge {
         ModCommands.register(event.getDispatcher(), event.getBuildContext(), event.getCommandSelection());
     }
 
-    public void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
+    public void registerPayloadHandlersS2C(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(Paradise.MOD_ID);
+        registrar.playToClient(ModPackets.CreateDimensionPayload.ID, ModPackets.CreateDimensionPayload.CODEC,
+                ClientPayloadHandler::handleCreateDimension);
+        registrar.playToClient(ModPackets.RemoveDimensionPayload.ID, ModPackets.RemoveDimensionPayload.CODEC,
+                ClientPayloadHandler::handleRemoveDimension);
 
-        registrar.playToClient(ModPackets.CreateDimensionPayload.ID, ModPackets.CreateDimensionPayload.CODEC, ParadiseNeoforgeClient.ClientPayloadHandler::handleCreateDimension);
-        registrar.playToClient(ModPackets.RemoveDimensionPayload.ID, ModPackets.RemoveDimensionPayload.CODEC, ParadiseNeoforgeClient.ClientPayloadHandler::handleRemoveDimension);
+        registrar.playToClient(ModPackets.OpenTransitLogPayload.ID, ModPackets.OpenTransitLogPayload.CODEC,
+                clientOnly(() -> ParadiseNeoforgeClient.ClientPayloadHandler::handleOpenTransitLog));
+        registrar.playToClient(ModPackets.OpenWhitelistPayload.ID, ModPackets.OpenWhitelistPayload.CODEC,
+                clientOnly(() -> ParadiseNeoforgeClient.ClientPayloadHandler::handleOpenWhitelist));
+    }
+    public void registerPayloadHandlersC2S(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar(Paradise.MOD_ID);
+        registrar.playToServer(ModPackets.MutateWhitelistPayload.ID, ModPackets.MutateWhitelistPayload.CODEC,
+                ServerPayloadHandler::handleMutateWhitelist);
+        registrar.playToServer(ModPackets.CloseWhitelistPayload.ID, ModPackets.CloseWhitelistPayload.CODEC,
+                ServerPayloadHandler::handleCloseWhitelist);
+    }
+    private static <T extends CustomPacketPayload> IPayloadHandler<T> clientOnly(
+            java.util.function.Supplier<IPayloadHandler<T>> supplier) {
+        return (payload, context) -> {
+            if (dist.isClient()) {
+                supplier.get().handle(payload, context);
+            }
+        };
+    }
 
-        registrar.playToClient(ModPackets.OpenTransitLogPayload.ID, ModPackets.OpenTransitLogPayload.CODEC, ParadiseNeoforgeClient.ClientPayloadHandler::handleOpenTransitLog);
+    public static class ClientPayloadHandler {
+        public static void handleCreateDimension(ModPackets.CreateDimensionPayload payload, IPayloadContext context) {
+            ResourceLocation id = payload.id();
+            DimensionType type = payload.dimensionType().value();
 
-        registrar.playToClient(ModPackets.OpenWhitelistPayload.ID, ModPackets.OpenWhitelistPayload.CODEC, ParadiseNeoforgeClient.ClientPayloadHandler::handleOpenWhitelist);
+            context.enqueueWork(() -> {
+                Minecraft client = Minecraft.getInstance();
+                ClientPacketListener handler = client.getConnection();
+                RegistryUtil.registerUnfreezeExact(handler.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE), id, type);
+                handler.levels().add(ResourceKey.create(Registries.DIMENSION, id));
+            });
+        }
 
-        registrar.playToServer(ModPackets.MutateWhitelistPayload.ID, ModPackets.MutateWhitelistPayload.CODEC, ServerPayloadHandler::handleMutateWhitelist);
-        registrar.playToServer(ModPackets.CloseWhitelistPayload.ID, ModPackets.CloseWhitelistPayload.CODEC, ServerPayloadHandler::handleCloseWhitelist);
+        public static void handleRemoveDimension(ModPackets.RemoveDimensionPayload payload, IPayloadContext context) {
+            ResourceLocation id = payload.id();
+
+            context.enqueueWork(() -> {
+                Minecraft client = Minecraft.getInstance();
+                ClientPacketListener handler = client.getConnection();
+
+                RegistryUtil.unregister(handler.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE), id);
+                handler.levels().remove(ResourceKey.create(Registries.DIMENSION, id));
+            });
+        }
     }
 
     public static class ServerPayloadHandler {

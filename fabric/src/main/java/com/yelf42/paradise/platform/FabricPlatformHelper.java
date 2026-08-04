@@ -93,4 +93,9 @@ public class FabricPlatformHelper implements IPlatformHelper {
             callback.dimensionAdded(key, level);
         }
     }
+
+    @Override
+    public void updateServerLevels(@NotNull ServerLevel level) {
+        // Does nothing because Fabric is perfect <3
+    }
 }

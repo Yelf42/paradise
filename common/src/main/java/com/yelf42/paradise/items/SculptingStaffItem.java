@@ -2,12 +2,16 @@ package com.yelf42.paradise.items;
 
 import com.yelf42.paradise.blocks.DigitalSculpture;
 import com.yelf42.paradise.registry.ModBlocks;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -54,5 +58,10 @@ public class SculptingStaffItem extends Item {
         InteractionResult placement = ModBlocks.DIGITAL_SCULPTURE_1.asItem().useOn(context);
         if (placement.indicateItemUse()) context.getItemInHand().grow(1);
         return placement;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable("tooltip.item.sculpting_staff").withStyle(ChatFormatting.GRAY));
     }
 }

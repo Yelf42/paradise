@@ -22,6 +22,8 @@ package com.yelf42.paradise.mixin;
  * SOFTWARE.
  */
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.datafixers.DataFixer;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.config.ParadiseServerHolder;
@@ -54,7 +56,10 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -78,8 +83,8 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
     public abstract LayeredRegistryAccess<RegistryLayer> registries();
 
     @Shadow
-    @Nullable
-    private String motd;
+    public abstract Iterable<ServerLevel> getAllLevels();
+
     @Unique
     private final @NotNull List<ServerLevel> pendingLevels = new ArrayList<>();
     @Unique
@@ -333,6 +338,10 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
         DimensionAddedCallback.invoke(level.dimension(), level);
         this.levels.put(level.dimension(), level);
         this.dynamicDimensions.add(level.dimension());
+
+        // fixme Annoying problem with NeoForge snapshotting levels to tick
+        com.yelf42.paradise.platform.Services.PLATFORM.updateServerLevels(level);
+
         level.tick(() -> true);
     }
 
@@ -345,4 +354,5 @@ public abstract class MinecraftServerMixin implements DimensionProvider {
     private void markNotTickingLevels(BooleanSupplier booleanSupplier, CallbackInfo ci) {
         this.tickingLevels = false;
     }
+
 }

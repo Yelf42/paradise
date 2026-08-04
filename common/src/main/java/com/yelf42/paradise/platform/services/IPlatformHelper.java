@@ -69,4 +69,6 @@ public interface IPlatformHelper {
     void invokeRemovedEvent(@NotNull ResourceKey<Level> key, @NotNull ServerLevel level);
 
     void invokeAddedEvent(@NotNull ResourceKey<Level> key, @NotNull ServerLevel level);
+
+    void updateServerLevels(@NotNull ServerLevel level);
 }

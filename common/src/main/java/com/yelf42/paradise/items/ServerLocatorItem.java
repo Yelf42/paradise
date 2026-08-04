@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.registry.ModComponents;
 import com.yelf42.paradise.registry.ModSounds;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -106,6 +107,7 @@ public class ServerLocatorItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
         ModComponents.ServerLocatorComponent serverLocatorComponent = stack.get(ModComponents.SERVER_LOCATION);
+        tooltipComponents.add(Component.translatable("tooltip.item.server_locator_help").withStyle(ChatFormatting.GRAY));
         if (serverLocatorComponent != null) {
             serverLocatorComponent.addToTooltip(context, tooltipComponents::add, tooltipFlag);
         }

@@ -85,6 +85,13 @@
   "item.paradise.digital_arrow": "Digital Arrow",
   "item.paradise.backup_record": "Backup Record",
 
+  "tooltip.item.gardening_staff":     "Cycles a target through its states",
+  "tooltip.item.sculpting_staff":     "Creates a donut of sorts",
+  "tooltip.item.backup_record_help":  "Use on a valid Data Server \nor Reader to backup",
+  "tooltip.item.server_locator_help": "Beeps faster the closer \nyou are to a Data Server",
+  "tooltip.item.scrambler_help_1":    "Hold to hack into restricted servers",
+  "tooltip.item.scrambler_help_2":    "Keep holding to avoid ",
+
   "gui.paradise.uploader.unavailable": "DOWNLOADER DISABLED",
   "gui.paradise.reader.unavailable": "INVALID ADDRESS",
   "gui.paradise.teleport.not_whitelisted": "ACCESS DENIED, NOT WHITELISTED",

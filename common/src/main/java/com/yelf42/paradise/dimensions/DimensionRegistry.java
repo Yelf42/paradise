@@ -26,7 +26,6 @@ import com.google.common.collect.ImmutableList;
 import com.yelf42.paradise.Paradise;
 import com.yelf42.paradise.mixin.*;
 import com.yelf42.paradise.registry.ModPackets;
-import com.yelf42.paradise.dimensions.PlayerRemover;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;

@@ -86,22 +86,46 @@ public final class RegistryUtil {
         }
     }
 
+//    public static <T> Holder.@NotNull Reference<T> registerUnfreezeExact(@NotNull Registry<T> registry, ResourceLocation id, T value) {
+//        if (!registry.containsKey(id)) {
+//            if (registry.getClass() == MappedRegistry.class || registry.getClass() == DefaultedMappedRegistry.class) {
+//                MappedRegistry<T> mapped = (MappedRegistry<T>) registry;
+//                MappedRegistryAccessor<T> accessor = (MappedRegistryAccessor<T>) registry;
+//                boolean frozen = accessor.isFrozen();
+//                if (frozen) accessor.setFrozen(false);
+//                Holder.Reference<T> ref = mapped.register(ResourceKey.create(registry.key(), id), value, RegistrationInfo.BUILT_IN);
+//                if (frozen) registry.freeze();
+//                return ref;
+//            } else {
+//                throw new IllegalStateException("Dynamic Dimensions: Non-vanilla '" + registry.key().location() + "' registry! " + registry.getClass().getName());
+//            }
+//        } else {
+//            Paradise.LOGGER.warn("Tried to add pre-existing key {} (contains: {})", id, registry.getId(registry.get(id)));
+//            return registry.getHolderOrThrow(ResourceKey.create(registry.key(), id));
+//        }
+//    }
+
     public static <T> Holder.@NotNull Reference<T> registerUnfreezeExact(@NotNull Registry<T> registry, ResourceLocation id, T value) {
-        if (!registry.containsKey(id)) {
-            if (registry.getClass() == MappedRegistry.class || registry.getClass() == DefaultedMappedRegistry.class) {
-                MappedRegistry<T> mapped = (MappedRegistry<T>) registry;
-                MappedRegistryAccessor<T> accessor = (MappedRegistryAccessor<T>) registry;
-                boolean frozen = accessor.isFrozen();
-                if (frozen) accessor.setFrozen(false);
-                Holder.Reference<T> ref = mapped.register(ResourceKey.create(registry.key(), id), value, RegistrationInfo.BUILT_IN);
-                if (frozen) registry.freeze();
-                return ref;
-            } else {
-                throw new IllegalStateException("Dynamic Dimensions: Non-vanilla '" + registry.key().location() + "' registry! " + registry.getClass().getName());
-            }
-        } else {
+        if (registry.containsKey(id)) {
             Paradise.LOGGER.warn("Tried to add pre-existing key {} (contains: {})", id, registry.getId(registry.get(id)));
             return registry.getHolderOrThrow(ResourceKey.create(registry.key(), id));
+        }
+
+        java.util.Optional<ResourceKey<T>> existingKey = registry.getResourceKey(value);
+        if (existingKey.isPresent()) {
+            return registry.getHolderOrThrow(existingKey.get());
+        }
+
+        if (registry.getClass() == MappedRegistry.class || registry.getClass() == DefaultedMappedRegistry.class) {
+            MappedRegistry<T> mapped = (MappedRegistry<T>) registry;
+            MappedRegistryAccessor<T> accessor = (MappedRegistryAccessor<T>) registry;
+            boolean frozen = accessor.isFrozen();
+            if (frozen) accessor.setFrozen(false);
+            Holder.Reference<T> ref = mapped.register(ResourceKey.create(registry.key(), id), value, RegistrationInfo.BUILT_IN);
+            if (frozen) registry.freeze();
+            return ref;
+        } else {
+            throw new IllegalStateException("Dynamic Dimensions: Non-vanilla '" + registry.key().location() + "' registry! " + registry.getClass().getName());
         }
     }
 }

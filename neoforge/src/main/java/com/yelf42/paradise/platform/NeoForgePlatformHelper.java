@@ -26,10 +26,13 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 
 public class NeoForgePlatformHelper implements IPlatformHelper {
@@ -96,6 +99,7 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
         for (DimensionRemovedCallback callback : DimensionRegistry.DIMENSION_REMOVED_EVENT) {
             callback.dimensionRemoved(key, level);
         }
+        //NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(level));
     }
 
     @Override
@@ -103,5 +107,13 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
         for (DimensionAddedCallback callback : DimensionRegistry.DIMENSION_ADDED_EVENT) {
             callback.dimensionAdded(key, level);
         }
+        //NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(level));
+    }
+
+    // Fixes the "NeoForge doesn't tick new levels" issue
+    @Override
+    public void updateServerLevels(@NotNull ServerLevel level) {
+        var server = level.getServer();
+        server.markWorldsDirty();
     }
 }

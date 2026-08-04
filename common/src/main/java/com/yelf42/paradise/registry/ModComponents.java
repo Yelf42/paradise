@@ -34,7 +34,7 @@ public class ModComponents {
         @Override
         public void addToTooltip(Item.TooltipContext tooltipContext, Consumer<Component> tooltip, TooltipFlag tooltipFlag) {
             String print = (address.getPath().isEmpty()) ? "Empty" : address.getPath().toUpperCase();
-            tooltip.accept(Component.literal(print).withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.literal(print).withStyle(ChatFormatting.AQUA));
         }
     }
 
@@ -49,7 +49,7 @@ public class ModComponents {
         @Override
         public void addToTooltip(Item.TooltipContext tooltipContext, Consumer<Component> tooltip, TooltipFlag tooltipFlag) {
             String print = (address.isEmpty()) ? "Empty" : address;
-            tooltip.accept(Component.literal(print).withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.literal(print).withStyle(ChatFormatting.AQUA));
         }
     }
 
@@ -63,7 +63,7 @@ public class ModComponents {
         @Override
         public void addToTooltip(Item.TooltipContext tooltipContext, Consumer<Component> tooltip, TooltipFlag tooltipFlag) {
             String print = (location == null) ? "IDLE" : "ACTIVE";
-            tooltip.accept(Component.literal(print).withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.literal(print).withStyle(ChatFormatting.AQUA));
         }
     }
 
