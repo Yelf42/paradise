@@ -50,3 +50,5 @@ If a location is provided, teleports the player to that location within the spec
 * Raids of intruders if your dim is whitelisted
 * Annoying wandering trader if your dim isn't whitelisted
 * Locked dims that require using the DataScrambler to enter (maybe timed, dim gets removed afterwards?)
+* Tunnel to access dungeons dims, but longer access increases intruder chance
+* Trojan horse enemy, like skeleton horse
